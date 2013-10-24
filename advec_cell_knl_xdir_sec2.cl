@@ -24,47 +24,6 @@
 
 #include "ocl_knls.h"
 
-__kernel void advec_cell_xdir_section1_sweep1_kernel(
-    __global const double *restrict volume,      
-    __global const double *restrict vol_flux_x,  
-    __global const double *restrict vol_flux_y,  
-    __global double *restrict pre_vol,     
-    __global double *restrict post_vol)
-{
-    int k = get_global_id(1);
-    int j = get_global_id(0);
-
-    if ( (j<=XMAXPLUSTHREE) && (k<=YMAXPLUSTHREE)) {
-
-        pre_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] = volume[ARRAYXY(j,k,XMAXPLUSFOUR)] 
-                                             + (vol_flux_x[ARRAYXY(j+1,k,XMAXPLUSFIVE)] - vol_flux_x[ARRAYXY(j,k,XMAXPLUSFIVE)] 
-                                                + vol_flux_y[ARRAYXY(j,k+1,XMAXPLUSFOUR)] - vol_flux_y[ARRAYXY(j,k,XMAXPLUSFOUR)]);
-
-        post_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] = pre_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] -(vol_flux_x[ARRAYXY(j+1,k,XMAXPLUSFIVE)] - vol_flux_x[ARRAYXY(j,k,XMAXPLUSFIVE)] ); 
-
-    }
-}
-
-
-__kernel void advec_cell_xdir_section1_sweep2_kernel(
-    __global const double * restrict volume,      
-    __global const double * restrict vol_flux_x,  
-    __global double * restrict pre_vol,     
-    __global double * restrict post_vol)
-{
-
-    int k = get_global_id(1);
-    int j = get_global_id(0);
-
-    if ((j<=XMAXPLUSTHREE) && (k<=YMAXPLUSTHREE)) {
-
-        pre_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] = volume[ARRAYXY(j,k,XMAXPLUSFOUR)] + vol_flux_x[ARRAYXY(j+1,k,XMAXPLUSFIVE)] - vol_flux_x[ARRAYXY(j,k,XMAXPLUSFIVE)]; 
-        post_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] = volume[ARRAYXY(j,k,XMAXPLUSFOUR)]; 
-
-    }
-}
-
-
 __kernel void advec_cell_xdir_section2_kernel(
     __global const double * restrict vertexdx,    
     __global const double * restrict density1,    
@@ -130,50 +89,4 @@ __kernel void advec_cell_xdir_section2_kernel(
                                                ( energy1[ARRAYXY(donor,k,XMAXPLUSFOUR)] + limiter );
     } 
 }
-
-__kernel void advec_cell_xdir_section3_kernel(
-    __global double * restrict density1,    
-    __global double * restrict energy1,     
-    __global const double * restrict mass_flux_x, 
-    __global const double * restrict vol_flux_x,  
-    __global const double * restrict pre_vol,     
-    __global double * restrict pre_mass,    
-    __global double * restrict post_mass,   
-    __global double * restrict advec_vol,   
-    __global double * restrict post_ener,   
-    __global const double * restrict ener_flux)
-{
-    int k = get_global_id(1);
-    int j = get_global_id(0);
-
-    if ((j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSONE)) {
-    
-        pre_mass[ARRAYXY(j,k,XMAXPLUSFIVE)] = density1[ARRAYXY(j, k, XMAXPLUSFOUR)] * pre_vol[ARRAYXY(j, k, XMAXPLUSFIVE)];
-        
-        
-        post_mass[ARRAYXY(j,k,XMAXPLUSFIVE)] = pre_mass[ARRAYXY(j, k, XMAXPLUSFIVE)] + 
-                                               mass_flux_x[ARRAYXY(j  , k, XMAXPLUSFIVE)] - 
-        					                   mass_flux_x[ARRAYXY(j+1, k, XMAXPLUSFIVE)];
-        
-        post_ener[ARRAYXY(j,k,XMAXPLUSFIVE)] = ( energy1[ARRAYXY(j, k, XMAXPLUSFOUR)] * 
-                                                 pre_mass[ARRAYXY(j, k, XMAXPLUSFIVE)] + 
-        	                                     ener_flux[ARRAYXY(j  , k, XMAXPLUSFIVE)] - 
-        	                                     ener_flux[ARRAYXY(j+1, k, XMAXPLUSFIVE)] ) 
-        	                                   / post_mass[ARRAYXY(j, k, XMAXPLUSFIVE)];
-        
-        advec_vol[ARRAYXY(j,k,XMAXPLUSFIVE)] = pre_vol[ARRAYXY(j, k, XMAXPLUSFIVE)] + 
-                                               vol_flux_x[ARRAYXY(j  , k, XMAXPLUSFIVE)] - 
-        					                   vol_flux_x[ARRAYXY(j+1, k, XMAXPLUSFIVE)];
-        
-        density1[ARRAYXY(j,k,XMAXPLUSFOUR)] = post_mass[ARRAYXY(j, k, XMAXPLUSFIVE)] / 
-                                              advec_vol[ARRAYXY(j, k, XMAXPLUSFIVE)];
-        
-        energy1[ARRAYXY(j, k, XMAXPLUSFOUR)] = post_ener[ARRAYXY(j, k, XMAXPLUSFIVE)];
-    }
-}
-
-
-
-
-
 
