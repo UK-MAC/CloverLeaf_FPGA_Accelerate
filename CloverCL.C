@@ -36,6 +36,8 @@
 
 bool CloverCL::initialised;
 
+cl_platform_id CloverCL::platform_c;
+
 cl::Platform CloverCL::platform;
 cl::Context CloverCL::context;
 cl::Device CloverCL::device;
@@ -1013,35 +1015,59 @@ void CloverCL::printDeviceInformation() {
     }
 }
       
-void CloverCL::initPlatform(
-        std::string name) 
+void CloverCL::initPlatform(std::string name) 
 {
     cl_int err;
-    std::vector< cl::Platform > platformList;
+    cl_uint numPlatforms;
+    int platforms_limit = 5;
+    size_t platformVendor_length = 60 * sizeof(char);
+    size_t platformVendor_retsize;
+    char* platformVendor = new char[platformVendor_length];
+    std::string platformVendor_str; 
 
     /*
      * Lowercase the name provided
      */
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-    cl::Platform::get(&platformList);
+    cl_platform_id* platforms = new cl_platform_id[ platforms_limit * sizeof(cl_platform_id)];
+    
+    err = clGetPlatformIDs(platforms_limit, platforms, &numPlatforms);
 
-    checkErr(platformList.size() != 0 ? CL_SUCCESS : -1, "cl::Platform::get");
-    checkErr(0 < platformList.size() ? CL_SUCCESS : -1, "0 < number of platforms");
+    if ( err != CL_SUCCESS || numPlatforms <= 0) {
+        reportError(err, "Querying Platforms");
+    }
 
+    
+    for (int i=0; i<numPlatforms; i++) {
+        err = clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, platformVendor_length, platformVendor, &platformVendor_retsize);
 
-    std::string platformVendor;
-    for (int i = 0; i < platformList.size(); i++) {
-        platformList[i].getInfo((cl_platform_info)CL_PLATFORM_VENDOR, &platformVendor);
-#ifdef OCL_VERBOSE
-        std::cout << "Found platform = " << platformVendor << std::endl;
-#endif
-        std::transform(platformVendor.begin(), platformVendor.end(), platformVendor.begin(), ::tolower);
-        if(platformVendor.find(name) != std::string::npos) {
-            platform = platformList[i];
+        if (err != CL_SUCCESS) {
+            reportError(err, "Getting Platform Info");
+        }
+
+        if (platformVendor_retsize > platformVendor_length) {
+            reportError(err, "Returned platform vendors is longer than buffer");
+        }
+
+        platformVendor_str = std::string(platformVendor);
+        
+        std::transform(platformVendor_str.begin(), platformVendor_str.end(), platformVendor_str.begin(), ::tolower);
+        if(platformVendor_str.find(name) != std::string::npos) {
+            platform_c = platforms[i];
             break;
         }
+        
     }
+
+    clGetPlatformInfo(platform_c, CL_PLATFORM_VENDOR, platformVendor_length, platformVendor, &platformVendor_retsize);
+    platformVendor_str = std::string(platformVendor);
+#ifdef OCL_VERBOSE
+    std::cout << "Set platform to " << platformVendor_str << std::endl;
+#endif
+    
+    delete [] platforms;
+    delete [] platformVendor;
 }
 
 void CloverCL::initContext(

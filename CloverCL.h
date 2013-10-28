@@ -25,6 +25,7 @@
 #define CLOVER_CL_H_
 
 #define __CL_ENABLE_EXCEPTIONS
+#include <CL/cl.h>
 #include <CL/cl.hpp>
 
 #include <string>
@@ -49,6 +50,7 @@ class CloverCL {
 
         static bool initialised;
 
+        static cl_platform_id platform_c;
         static cl::Platform platform;
         static cl::Context context;
         static cl::Device device;
