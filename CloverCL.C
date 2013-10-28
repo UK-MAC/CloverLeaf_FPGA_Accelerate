@@ -144,6 +144,72 @@ cl::Buffer CloverCL::left_recv_buffer;
 cl::Buffer CloverCL::right_send_buffer;
 cl::Buffer CloverCL::right_recv_buffer;
 
+cl_kernel CloverCL::ideal_gas_predict_knl_c;
+cl_kernel CloverCL::ideal_gas_NO_predict_knl_c;
+cl_kernel CloverCL::viscosity_knl_c;
+cl_kernel CloverCL::flux_calc_knl_c;
+cl_kernel CloverCL::accelerate_knl_c;
+cl_kernel CloverCL::advec_mom_vol_knl_c;
+cl_kernel CloverCL::advec_mom_node_x_knl_c;
+cl_kernel CloverCL::advec_mom_node_mass_pre_x_knl_c;
+cl_kernel CloverCL::advec_mom_flux_x_vec1_knl_c;
+cl_kernel CloverCL::advec_mom_flux_x_vecnot1_knl_c;
+cl_kernel CloverCL::advec_mom_vel_x_knl_c;
+cl_kernel CloverCL::advec_mom_node_y_knl_c;
+cl_kernel CloverCL::advec_mom_node_mass_pre_y_knl_c;
+cl_kernel CloverCL::advec_mom_flux_y_vec1_knl_c;
+cl_kernel CloverCL::advec_mom_flux_y_vecnot1_knl_c;
+cl_kernel CloverCL::advec_mom_vel_y_knl_c;
+cl_kernel CloverCL::dt_calc_knl_c;
+cl_kernel CloverCL::advec_cell_xdir_sec1_s1_knl_c;
+cl_kernel CloverCL::advec_cell_xdir_sec1_s2_knl_c;
+cl_kernel CloverCL::advec_cell_xdir_sec2_knl_c;
+cl_kernel CloverCL::advec_cell_xdir_sec3_knl_c;
+cl_kernel CloverCL::advec_cell_ydir_sec1_s1_knl_c;
+cl_kernel CloverCL::advec_cell_ydir_sec1_s2_knl_c;
+cl_kernel CloverCL::advec_cell_ydir_sec2_knl_c;
+cl_kernel CloverCL::advec_cell_ydir_sec3_knl_c;
+cl_kernel CloverCL::pdv_correct_knl_c;
+cl_kernel CloverCL::pdv_predict_knl_c;
+cl_kernel CloverCL::reset_field_knl_c;
+cl_kernel CloverCL::revert_knl_c;
+cl_kernel CloverCL::generate_chunk_knl_c;
+cl_kernel CloverCL::initialise_chunk_cell_x_knl_c;
+cl_kernel CloverCL::initialise_chunk_cell_y_knl_c;
+cl_kernel CloverCL::initialise_chunk_vertex_x_knl_c;
+cl_kernel CloverCL::initialise_chunk_vertex_y_knl_c;
+cl_kernel CloverCL::initialise_chunk_volume_area_knl_c;
+cl_kernel CloverCL::field_summary_knl_c;
+
+cl_kernel CloverCL::update_halo_left_cell_knl_c;
+cl_kernel CloverCL::update_halo_right_cell_knl_c;
+cl_kernel CloverCL::update_halo_top_cell_knl_c;
+cl_kernel CloverCL::update_halo_bottom_cell_knl_c;
+
+cl_kernel CloverCL::update_halo_left_vel_knl_c;
+cl_kernel CloverCL::update_halo_right_vel_knl_c;
+cl_kernel CloverCL::update_halo_top_vel_knl_c;
+cl_kernel CloverCL::update_halo_bottom_vel_knl_c;
+
+cl_kernel CloverCL::update_halo_left_flux_x_knl_c;
+cl_kernel CloverCL::update_halo_right_flux_x_knl_c;
+cl_kernel CloverCL::update_halo_top_flux_x_knl_c;
+cl_kernel CloverCL::update_halo_bottom_flux_x_knl_c;
+
+cl_kernel CloverCL::update_halo_left_flux_y_knl_c;
+cl_kernel CloverCL::update_halo_right_flux_y_knl_c;
+cl_kernel CloverCL::update_halo_top_flux_y_knl_c;
+cl_kernel CloverCL::update_halo_bottom_flux_y_knl_c;
+
+cl_kernel CloverCL::read_top_buffer_knl_c;
+cl_kernel CloverCL::read_right_buffer_knl_c;
+cl_kernel CloverCL::read_bottom_buffer_knl_c;
+cl_kernel CloverCL::read_left_buffer_knl_c;
+cl_kernel CloverCL::write_top_buffer_knl_c;
+cl_kernel CloverCL::write_right_buffer_knl_c;
+cl_kernel CloverCL::write_bottom_buffer_knl_c;
+cl_kernel CloverCL::write_left_buffer_knl_c;
+
 cl::Kernel CloverCL::ideal_gas_predict_knl;
 cl::Kernel CloverCL::ideal_gas_NO_predict_knl;
 cl::Kernel CloverCL::viscosity_knl;
@@ -204,6 +270,7 @@ cl::Kernel CloverCL::write_top_buffer_knl;
 cl::Kernel CloverCL::write_right_buffer_knl;
 cl::Kernel CloverCL::write_bottom_buffer_knl;
 cl::Kernel CloverCL::write_left_buffer_knl;
+
 cl::Kernel CloverCL::minimum_red_cpu_knl;
 cl::Kernel CloverCL::vol_sum_red_cpu_knl; 
 cl::Kernel CloverCL::mass_sum_red_cpu_knl; 
@@ -1745,323 +1812,134 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 #endif 
 
 
-    exit(11);
-
-
-
-
-
-//    try {
-//        program = cl::Program(context, sources, &prog_err);
-//	    checkErr(prog_err, "Program object creation");
-//
-//        if (device_type == CL_DEVICE_TYPE_GPU) {
-//
-//#ifdef OCL_VERBOSE
-//            std::cout << "Executing GPU specific kernels " << std::endl;
-//#endif
-//            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u -DGPU_REDUCTION -cl-strict-aliasing", 
-//                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
-//
-//        } else {
-//
-//#ifdef OCL_VERBOSE
-//            std::cout << "Executing CPU specific kernels " << std::endl;
-//#endif
-//            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u", 
-//                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
-//
-//        }
-//
-//        err = program.build(devices, buildOptions); 
-//
-//    } catch (cl::Error err) {
-//        std::cerr
-//            << "[ERROR]: " 
-//            << err.what()
-//            << "("
-//            << errToString(err.err())
-//            << ")"
-//            << std::endl;
-//        BUILD_LOG();
-//    }
-//
-
-
-
-
     /*
      * Set up the kernels here!
      */
-    try {
-         ideal_gas_predict_knl = cl::Kernel(program, "ideal_gas_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "ideal_gas_predict_kernel");
+    ideal_gas_predict_knl_c = clCreateKernel(program_c, "ideal_gas_ocl_kernel", &err);
+    if (err != CL_SUCCESS) {
+        reportError(err, "ideal_gas_predict_kernel"); 
     }
 
-    try {
-         ideal_gas_NO_predict_knl = cl::Kernel(program, "ideal_gas_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "ideal_gas_NO_predict_kernel");
-    }
 
-    try {
-        viscosity_knl = cl::Kernel(program, "viscosity_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "viscosity_ocl_kernel");
-    }
+    ideal_gas_NO_predict_knl_c = clCreateKernel(program_c, "ideal_gas_ocl_kernel", &err);
 
-    try {
-        flux_calc_knl = cl::Kernel(program, "flux_calc_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "flux_calc_ocl_kernel");
-    }
+    viscosity_knl_c = clCreateKernel(program_c, "viscosity_ocl_kernel", &err);
 
-    try {
-        accelerate_knl = cl::Kernel(program, "accelerate_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "accelerate_ocl_kernel");
-    }
+    flux_calc_knl_c = clCreateKernel(program_c, "flux_calc_ocl_kernel", &err);
 
-    try {
-        advec_cell_xdir_sec1_s1_knl = cl::Kernel(program, "advec_cell_xdir_section1_sweep1_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_xdir_section1_sweep1_kernel");
-    }
+    accelerate_knl_c = clCreateKernel(program_c, "accelerate_ocl_kernel", &err);
 
-    try {
-        advec_cell_xdir_sec1_s2_knl = cl::Kernel(program, "advec_cell_xdir_section1_sweep2_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_xdir_section1_sweep2_kernel");
-    }
+    advec_cell_xdir_sec1_s1_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    
+    advec_cell_xdir_sec1_s2_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section1_sweep2_kernel", &err);
 
-    try {
-        advec_cell_xdir_sec2_knl = cl::Kernel(program, "advec_cell_xdir_section2_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_xdir_section1_sweep2_kernel");
-    }
+    advec_cell_xdir_sec2_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section2_kernel", &err);
+    
+    advec_cell_xdir_sec3_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section3_kernel", &err);
+    
+    advec_cell_ydir_sec1_s1_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section1_sweep1_kernel", &err);
 
-    try {
-        advec_cell_xdir_sec3_knl = cl::Kernel(program, "advec_cell_xdir_section3_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_xdir_section3_kernel");
-    }
+    advec_cell_ydir_sec1_s2_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    
+    advec_cell_ydir_sec2_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section2_kernel", &err);
 
-    try {
-        advec_cell_ydir_sec1_s1_knl = cl::Kernel(program, "advec_cell_ydir_section1_sweep1_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_ydir_section1_sweep1_kernel");
-    }
+    advec_cell_ydir_sec3_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section3_kernel", &err);
 
-    try {
-        advec_cell_ydir_sec1_s2_knl = cl::Kernel(program, "advec_cell_ydir_section1_sweep2_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_ydir_section1_sweep2_kernel");
-    }
+    advec_mom_vol_knl_c = clCreateKernel(program_c, "advec_mom_vol_ocl_kernel", &err);
 
-    try {
-        advec_cell_ydir_sec2_knl = cl::Kernel(program, "advec_cell_ydir_section2_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_ydir_section2_kernel");
-    }
+    advec_mom_node_x_knl_c = clCreateKernel(program_c, "advec_mom_node_ocl_kernel_x", &err);
 
-    try {
-        advec_cell_ydir_sec3_knl = cl::Kernel(program, "advec_cell_ydir_section3_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_cell_ydir_section3_kernel");
-    }
+    advec_mom_node_mass_pre_x_knl_c = clCreateKernel(program_c, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
 
-    try {
-        advec_mom_vol_knl = cl::Kernel(program, "advec_mom_vol_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_vol_ocl_kernel");
-    }
+    advec_mom_flux_x_vec1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_x_vec1", &err);
 
-    try {
-        advec_mom_node_x_knl = cl::Kernel(program, "advec_mom_node_ocl_kernel_x", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_vol_ocl_kernel");
-    }
+    advec_mom_flux_x_vecnot1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
 
-    try {
-        advec_mom_node_mass_pre_x_knl = cl::Kernel(program, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_vol_ocl_kernel");
-    }
+    advec_mom_vel_x_knl_c = clCreateKernel(program_c, "advec_mom_vel_ocl_kernel_x", &err);
 
-    try {
-        advec_mom_flux_x_vec1_knl = cl::Kernel(program, "advec_mom_flux_ocl_kernel_x_vec1", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel vec1");
-    }
+    advec_mom_node_y_knl_c = clCreateKernel(program_c, "advec_mom_node_ocl_kernel_y", &err);
 
-    try {
-        advec_mom_flux_x_vecnot1_knl = cl::Kernel(program, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel vecnot1");
-    }
+    advec_mom_node_mass_pre_y_knl_c = clCreateKernel(program_c, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
 
-    try {
-        advec_mom_vel_x_knl = cl::Kernel(program, "advec_mom_vel_ocl_kernel_x", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel");
-    }
+    advec_mom_flux_y_vec1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_y_vec1", &err);
+    
+    advec_mom_flux_y_vecnot1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
 
-    try {
-        advec_mom_node_y_knl = cl::Kernel(program, "advec_mom_node_ocl_kernel_y", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_vol_ocl_kernel");
-    }
+    advec_mom_vel_y_knl_c = clCreateKernel(program_c, "advec_mom_vel_ocl_kernel_y", &err);       
 
-    try {
-        advec_mom_node_mass_pre_y_knl = cl::Kernel(program, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_vol_ocl_kernel");
-    }
+    pdv_correct_knl_c = clCreateKernel(program_c, "pdv_correct_ocl_kernel", &err);
 
-    try {
-        advec_mom_flux_y_vec1_knl = cl::Kernel(program, "advec_mom_flux_ocl_kernel_y_vec1", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel vec1");
-    }
+    pdv_predict_knl_c = clCreateKernel(program_c, "pdv_predict_ocl_kernel", &err);
 
-    try {
-        advec_mom_flux_y_vecnot1_knl = cl::Kernel(program, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel vecnot1");
-    }
+    dt_calc_knl_c = clCreateKernel(program_c, "calc_dt_ocl_kernel", &err);
 
-    try {
-        advec_mom_vel_y_knl = cl::Kernel(program, "advec_mom_vel_ocl_kernel_y", &err);
-    } catch (cl::Error err) {
-        reportError(err, "advec_mom_ocl_kernel");
-    }
+    revert_knl_c = clCreateKernel(program_c, "revert_ocl_kernel", &err);
 
-    try {
-        pdv_correct_knl = cl::Kernel(program, "pdv_correct_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating pdv_ocl_kernel_correct");
-    }
+    reset_field_knl_c = clCreateKernel(program_c, "reset_field_ocl_kernel", &err);
 
-    try {
-        pdv_predict_knl = cl::Kernel(program, "pdv_predict_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating pdv_ocl_kernel_predict");
-    }
+    generate_chunk_knl_c =  clCreateKernel(program_c, "generate_chunk_ocl_kernel", &err);
 
-    try {
-        dt_calc_knl = cl::Kernel(program, "calc_dt_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "calc_dt_ocl_kernel");
-    }
+    initialise_chunk_cell_x_knl_c = clCreateKernel(program_c, "initialise_chunk_cell_x_ocl_kernel", &err);
 
-    try {
-        revert_knl = cl::Kernel(program, "revert_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating revert_ocl_kernel");
-    }
+    initialise_chunk_cell_y_knl_c = clCreateKernel(program_c, "initialise_chunk_cell_y_ocl_kernel", &err);
 
-    try {
-        reset_field_knl = cl::Kernel(program, "reset_field_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating reset_field_ocl_kernel");
-    }
+    initialise_chunk_vertex_x_knl_c = clCreateKernel(program_c, "initialise_chunk_vertex_x_ocl_kernel", &err);
 
-    try {
-        generate_chunk_knl = cl::Kernel(program, "generate_chunk_ocl_kernel");
-    } catch (cl::Error err) {
-        reportError(err, "creating generate_chunk_ocl_kernel");
-    }
+    initialise_chunk_vertex_y_knl_c = clCreateKernel(program_c, "initialise_chunk_vertex_y_ocl_kernel", &err);
 
-    try {
-        initialise_chunk_cell_x_knl = cl::Kernel(program, "initialise_chunk_cell_x_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating initialise_chunk_cell_x_ocl_kernel");
-    }
+    initialise_chunk_volume_area_knl_c = clCreateKernel(program_c, "initialise_chunk_volume_area_ocl_kernel", &err);
 
-    try {
-        initialise_chunk_cell_y_knl = cl::Kernel(program, "initialise_chunk_cell_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating initialise_chunk_cell_y_ocl_kernel");
-    }
+    field_summary_knl_c = clCreateKernel(program_c, "field_summary_ocl_kernel", &err);
 
-    try {
-        initialise_chunk_vertex_x_knl = cl::Kernel(program, "initialise_chunk_vertex_x_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating initialise_chunk_vertex_x_ocl_kernel");
-    }
+    update_halo_bottom_cell_knl_c = clCreateKernel(program_c, "update_halo_bottom_cell_ocl_kernel", &err);
 
-    try {
-        initialise_chunk_vertex_y_knl = cl::Kernel(program, "initialise_chunk_vertex_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating initialise_chunk_vertex_y_ocl_kernel");
-    }
+    update_halo_bottom_vel_knl_c = clCreateKernel(program_c, "update_halo_bottom_vel_ocl_kernel", &err);
 
-    try {
-        initialise_chunk_volume_area_knl = cl::Kernel(program, "initialise_chunk_volume_area_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating initialise_chunk_volume_area_ocl_kernel");
-    }
+    update_halo_bottom_flux_x_knl_c = clCreateKernel(program_c, "update_halo_bottom_flux_x_ocl_kernel", &err);
 
-    try {
-        field_summary_knl = cl::Kernel(program, "field_summary_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating field_summary_ocl_kernel");
-    }
+    update_halo_bottom_flux_y_knl_c = clCreateKernel(program_c, "update_halo_bottom_flux_y_ocl_kernel", &err);
 
-    try {
-        update_halo_bottom_cell_knl = cl::Kernel(program, "update_halo_bottom_cell_ocl_kernel", &err);
-        update_halo_bottom_vel_knl = cl::Kernel(program, "update_halo_bottom_vel_ocl_kernel", &err);
-        update_halo_bottom_flux_x_knl = cl::Kernel(program, "update_halo_bottom_flux_x_ocl_kernel", &err);
-        update_halo_bottom_flux_y_knl = cl::Kernel(program, "update_halo_bottom_flux_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating update_halo_bottom_ocl_kernel");
-    }
+    update_halo_top_cell_knl_c = clCreateKernel(program_c, "update_halo_top_cell_ocl_kernel", &err);
 
-    try {
-        update_halo_top_cell_knl = cl::Kernel(program, "update_halo_top_cell_ocl_kernel", &err);
-        update_halo_top_vel_knl = cl::Kernel(program, "update_halo_top_vel_ocl_kernel", &err);
-        update_halo_top_flux_x_knl = cl::Kernel(program, "update_halo_top_flux_x_ocl_kernel", &err);
-        update_halo_top_flux_y_knl = cl::Kernel(program, "update_halo_top_flux_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating update_halo_top_ocl_kernel");
-    }
+    update_halo_top_vel_knl_c = clCreateKernel(program_c, "update_halo_top_vel_ocl_kernel", &err); 
 
-    try {
-        update_halo_right_cell_knl = cl::Kernel(program, "update_halo_right_cell_ocl_kernel", &err);
-        update_halo_right_vel_knl = cl::Kernel(program, "update_halo_right_vel_ocl_kernel", &err);
-        update_halo_right_flux_x_knl = cl::Kernel(program, "update_halo_right_flux_x_ocl_kernel", &err);
-        update_halo_right_flux_y_knl = cl::Kernel(program, "update_halo_right_flux_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating update_halo_right_ocl_kernel");
-    }
+    update_halo_top_flux_x_knl_c = clCreateKernel(program_c, "update_halo_top_flux_x_ocl_kernel", &err);
 
-    try {
-        update_halo_left_cell_knl = cl::Kernel(program, "update_halo_left_cell_ocl_kernel", &err);
-        update_halo_left_vel_knl = cl::Kernel(program, "update_halo_left_vel_ocl_kernel", &err);
-        update_halo_left_flux_x_knl = cl::Kernel(program, "update_halo_left_flux_x_ocl_kernel", &err);
-        update_halo_left_flux_y_knl = cl::Kernel(program, "update_halo_left_flux_y_ocl_kernel", &err);
-    } catch (cl::Error err) {
-        reportError(err, "creating update_halo_left_ocl_kernel");
-    }
+    update_halo_top_flux_y_knl_c = clCreateKernel(program_c, "update_halo_top_flux_y_ocl_kernel", &err);
 
-    try {
-        read_top_buffer_knl = cl::Kernel(program, "top_comm_buffer_pack");
-        read_bottom_buffer_knl = cl::Kernel(program, "bottom_comm_buffer_pack");
-        read_right_buffer_knl = cl::Kernel(program, "right_comm_buffer_pack");
-        read_left_buffer_knl = cl::Kernel(program, "left_comm_buffer_pack");
-    } catch(cl::Error err) {
-        reportError(err, "creating comms buffer pack kernels");
-    }
+    update_halo_right_cell_knl_c = clCreateKernel(program_c, "update_halo_right_cell_ocl_kernel", &err);
 
-    try {
-        write_top_buffer_knl = cl::Kernel(program, "top_comm_buffer_unpack");
-        write_bottom_buffer_knl = cl::Kernel(program, "bottom_comm_buffer_unpack");
-        write_right_buffer_knl = cl::Kernel(program, "right_comm_buffer_unpack");
-        write_left_buffer_knl = cl::Kernel(program, "left_comm_buffer_unpack");
-    } catch(cl::Error err) {
-        reportError(err, "creating comms buffer unpack kernels");
-    }
+    update_halo_right_vel_knl_c = clCreateKernel(program_c, "update_halo_right_vel_ocl_kernel", &err);
+
+    update_halo_right_flux_x_knl_c = clCreateKernel(program_c, "update_halo_right_flux_x_ocl_kernel", &err);
+
+    update_halo_right_flux_y_knl_c = clCreateKernel(program_c, "update_halo_right_flux_y_ocl_kernel", &err);
+
+    update_halo_left_cell_knl_c = clCreateKernel(program_c, "update_halo_left_cell_ocl_kernel", &err);
+
+    update_halo_left_vel_knl_c = clCreateKernel(program_c, "update_halo_left_vel_ocl_kernel", &err);
+
+    update_halo_left_flux_x_knl_c = clCreateKernel(program_c, "update_halo_left_flux_x_ocl_kernel", &err);
+
+    update_halo_left_flux_y_knl_c = clCreateKernel(program_c, "update_halo_left_flux_y_ocl_kernel", &err);
+
+    read_top_buffer_knl_c = clCreateKernel(program_c, "top_comm_buffer_pack", &err);
+
+    read_bottom_buffer_knl_c = clCreateKernel(program_c, "bottom_comm_buffer_pack", &err);
+
+    read_right_buffer_knl_c = clCreateKernel(program_c, "right_comm_buffer_pack", &err);
+
+    read_left_buffer_knl_c = clCreateKernel(program_c, "left_comm_buffer_pack", &err);
+
+    write_top_buffer_knl_c = clCreateKernel(program_c, "top_comm_buffer_unpack", &err);
+
+    write_bottom_buffer_knl_c = clCreateKernel(program_c, "bottom_comm_buffer_unpack", &err);
+
+    write_right_buffer_knl_c = clCreateKernel(program_c, "right_comm_buffer_unpack", &err);
+
+    write_left_buffer_knl_c = clCreateKernel(program_c, "left_comm_buffer_unpack", &err);
+
+    exit(5); 
 
 }
 
