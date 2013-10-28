@@ -41,6 +41,7 @@ cl_context CloverCL::context_c;
 cl_device_id CloverCL::device_c;
 cl_command_queue CloverCL::queue_c;
 cl_command_queue CloverCL::outoforder_queue_c;
+cl_program CloverCL::program_c;
 
 cl::Platform CloverCL::platform;
 cl::Context CloverCL::context;
@@ -1624,12 +1625,6 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 {
     cl_int err;
 
-    std::vector<cl::Device> devices;
-    
-    cl::Program::Sources source;
-
-    devices.push_back(device);
-
     std::fstream sourceFile;
     std::string line;
     std::string sourceCode;
@@ -1665,53 +1660,120 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     ADD_SOURCE("./unpack_comms_buffers_knl.cl");
 
     sourceCode = ss.str();
-    cl::Program::Sources sources;
-    sources = cl::Program::Sources(1, std::make_pair(sourceCode.c_str(), sourceCode.length()+1));
+    const char *c_sourceCode = sourceCode.c_str(); 
 
-    /* Build the program */
-    #define BUILD_LOG() \
-        std::string build_log; \
-        program.getBuildInfo(devices[0], CL_PROGRAM_BUILD_LOG, &build_log);     \
-        std::cout << "Build Log:" << std::endl; \
-        std::cout << build_log << std::endl; \
+    program_c = clCreateProgramWithSource(context_c, 1, (const char**)&c_sourceCode, NULL, &err); 
+
+    if (err != CL_SUCCESS) {
+        reportError(err, "Creating program object");
+    }
+
+
+#define BUILD_LOG() \
+    size_t build_log_size; \
+    clGetProgramBuildInfo(program_c, device_c, CL_PROGRAM_BUILD_LOG, 0, NULL, &build_log_size); \
+    char *buildlog = new char[build_log_size]; \
+    clGetProgramBuildInfo(program_c, device_c, CL_PROGRAM_BUILD_LOG, build_log_size, buildlog, NULL); \
+    std::string buildlog_str = std::string(buildlog); \
+    std::cout << "Build log: " << buildlog_str << std::endl; 
+
 
     cl_int prog_err;
     char buildOptions [350];
 
-    try {
-        program = cl::Program(context, sources, &prog_err);
-	    checkErr(prog_err, "Program object creation");
 
-        if (device_type == CL_DEVICE_TYPE_GPU) {
+    if (device_type == CL_DEVICE_TYPE_GPU) {
 
 #ifdef OCL_VERBOSE
-            std::cout << "Executing GPU specific kernels " << std::endl;
+        std::cout << "Executing GPU specific kernels " << std::endl;
 #endif
-            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u -DGPU_REDUCTION -cl-strict-aliasing", 
-                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
 
-        } else {
+        sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u -DGPU_REDUCTION -cl-strict-aliasing", 
+        xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
+    }
+    else {
 
 #ifdef OCL_VERBOSE
-            std::cout << "Executing CPU specific kernels " << std::endl;
+        std::cout << "Executing CPU specific kernels " << std::endl;
 #endif
-            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u", 
-                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
 
-        }
+        sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u", 
+        xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
+    }
 
-        err = program.build(devices, buildOptions); 
 
-    } catch (cl::Error err) {
-        std::cerr
-            << "[ERROR]: " 
-            << err.what()
-            << "("
-            << errToString(err.err())
-            << ")"
-            << std::endl;
+    prog_err = clBuildProgram(program_c, 0, NULL, buildOptions, NULL, NULL); 
+
+    if (prog_err != CL_SUCCESS) {
+        reportError(prog_err, "Building the program");
         BUILD_LOG();
     }
+
+
+#ifdef OCL_VERBOSE
+    cl_uint num_devices = -1; 
+    clGetProgramInfo(program_c, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &num_devices, NULL);
+    size_t ret_buildoptions_size;
+
+    std::cout << "Number of devices associated with program: " << num_devices << std::endl; 
+
+
+    clGetProgramBuildInfo(program_c, device_c, CL_PROGRAM_BUILD_OPTIONS, 0, NULL, &ret_buildoptions_size); 
+    
+    char *ret_buildoptions = new char[ret_buildoptions_size]; 
+
+    clGetProgramBuildInfo(program_c, device_c, CL_PROGRAM_BUILD_OPTIONS, ret_buildoptions_size, ret_buildoptions, NULL); 
+
+    std::string ret_buildoptions_str = std::string(ret_buildoptions);
+    std::cout << "Program built with following build options: " << ret_buildoptions_str << std::endl; 
+
+    BUILD_LOG(); 
+#endif 
+
+
+    exit(11);
+
+
+
+
+
+//    try {
+//        program = cl::Program(context, sources, &prog_err);
+//	    checkErr(prog_err, "Program object creation");
+//
+//        if (device_type == CL_DEVICE_TYPE_GPU) {
+//
+//#ifdef OCL_VERBOSE
+//            std::cout << "Executing GPU specific kernels " << std::endl;
+//#endif
+//            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u -DGPU_REDUCTION -cl-strict-aliasing", 
+//                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
+//
+//        } else {
+//
+//#ifdef OCL_VERBOSE
+//            std::cout << "Executing CPU specific kernels " << std::endl;
+//#endif
+//            sprintf(buildOptions, "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u -DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u -DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u -DWORKGROUP_SIZE_DIVTWO=%u", 
+//                xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, (CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim)/2);
+//
+//        }
+//
+//        err = program.build(devices, buildOptions); 
+//
+//    } catch (cl::Error err) {
+//        std::cerr
+//            << "[ERROR]: " 
+//            << err.what()
+//            << "("
+//            << errToString(err.err())
+//            << ")"
+//            << std::endl;
+//        BUILD_LOG();
+//    }
+//
+
+
 
 
     /*

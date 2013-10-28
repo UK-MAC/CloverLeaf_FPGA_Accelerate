@@ -55,6 +55,7 @@ class CloverCL {
         static cl_device_id device_c;
         static cl_command_queue queue_c;
         static cl_command_queue outoforder_queue_c;
+        static cl_program program_c;
 
         static cl::Platform platform;
         static cl::Context context;
