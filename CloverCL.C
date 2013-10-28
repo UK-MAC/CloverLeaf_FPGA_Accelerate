@@ -39,6 +39,8 @@ bool CloverCL::initialised;
 cl_platform_id CloverCL::platform_c;
 cl_context CloverCL::context_c;
 cl_device_id CloverCL::device_c;
+cl_command_queue CloverCL::queue_c;
+cl_command_queue CloverCL::outoforder_queue_c;
 
 cl::Platform CloverCL::platform;
 cl::Context CloverCL::context;
@@ -1162,9 +1164,21 @@ void CloverCL::initCommandQueue()
 {
     cl_int err;
 
-    queue = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, &err);
+    queue_c = clCreateCommandQueue(context_c, device_c, CL_QUEUE_PROFILING_ENABLE, &err);
 
-    outoforder_queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE|CL_QUEUE_PROFILING_ENABLE, &err);
+    if (err != CL_SUCCESS) {
+        reportError(err, "Creating in order queue");
+    }
+
+    outoforder_queue_c = clCreateCommandQueue(context_c, device_c, CL_QUEUE_PROFILING_ENABLE|CL_QUEUE_PROFILING_ENABLE, &err);
+
+    if (err != CL_SUCCESS) {
+        reportError(err, "Creating out of order queue");
+    }
+
+    //queue = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, &err);
+
+    //outoforder_queue = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE|CL_QUEUE_PROFILING_ENABLE, &err);
 }
 
 void CloverCL::createBuffers(int x_max, int y_max, int num_states)
