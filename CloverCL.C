@@ -38,6 +38,7 @@ bool CloverCL::initialised;
 
 cl_platform_id CloverCL::platform_c;
 cl_context CloverCL::context_c;
+cl_device_id CloverCL::device_c;
 
 cl::Platform CloverCL::platform;
 cl::Context CloverCL::context;
@@ -1110,26 +1111,51 @@ void CloverCL::initContext(std::string preferred_type)
     if (err != CL_SUCCESS) {
         reportError(err, "Error creating context");
     }
-
-    //try {
-
-    //    context = cl::Context ( device_type, cprops, NULL, NULL, &err);
-
-    //} catch (cl::Error err) {
-    //    reportError(err, "Creating context");
-    //}
-
-    exit(8);
 }
 
 void CloverCL::initDevice(int id)
 {
-    std::vector<cl::Device> devices;
-    devices = context.getInfo<CL_CONTEXT_DEVICES>();
+    cl_int err;
+    cl_device_id *devices_list; 
+    size_t devices_list_size;
 
-    checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "devices.size() > 0");
+    err = clGetContextInfo(context_c, CL_CONTEXT_DEVICES, 0, NULL, &devices_list_size);
 
-    device = devices[id];
+    if (err != CL_SUCCESS) {
+        reportError(err, "Failed to get devices list size from context");
+    }
+    if (devices_list_size <= 0) {
+        reportError(err, "Devices list size is <= 0");
+    }
+
+    devices_list = new cl_device_id[devices_list_size / sizeof(cl_device_id)]; 
+
+    err = clGetContextInfo(context_c, CL_CONTEXT_DEVICES, devices_list_size, devices_list, NULL);
+
+    if (err != CL_SUCCESS) {
+        delete [] devices_list;
+        reportError(err, "Failed to create device list");
+    }
+
+    device_c = devices_list[id]; 
+
+#ifdef OCL_VERBOSE
+    size_t device_name_size;
+    char *device_name; 
+    clGetDeviceInfo(device_c, CL_DEVICE_NAME, 0, NULL, &device_name_size); 
+
+    device_name = new char[device_name_size];
+
+    clGetDeviceInfo(device_c, CL_DEVICE_NAME, device_name_size, device_name, NULL);
+
+    std::string device_name_str = std::string(device_name);
+
+    std::cout << "Name of the selected device: " << device_name_str << std::endl; 
+
+    delete [] device_name;
+#endif
+
+    delete [] devices_list;
 }
 
 void CloverCL::initCommandQueue()
