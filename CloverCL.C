@@ -37,6 +37,7 @@
 bool CloverCL::initialised;
 
 cl_platform_id CloverCL::platform_c;
+cl_context CloverCL::context_c;
 
 cl::Platform CloverCL::platform;
 cl::Context CloverCL::context;
@@ -1060,9 +1061,9 @@ void CloverCL::initPlatform(std::string name)
         
     }
 
+#ifdef OCL_VERBOSE
     clGetPlatformInfo(platform_c, CL_PLATFORM_VENDOR, platformVendor_length, platformVendor, &platformVendor_retsize);
     platformVendor_str = std::string(platformVendor);
-#ifdef OCL_VERBOSE
     std::cout << "Set platform to " << platformVendor_str << std::endl;
 #endif
     
@@ -1070,8 +1071,7 @@ void CloverCL::initPlatform(std::string name)
     delete [] platformVendor;
 }
 
-void CloverCL::initContext(
-        std::string preferred_type)
+void CloverCL::initContext(std::string preferred_type)
 {
     cl_int err;
 
@@ -1080,11 +1080,7 @@ void CloverCL::initContext(
      */
     std::transform(preferred_type.begin(), preferred_type.end(), preferred_type.begin(), ::tolower);
 
-    cl_context_properties cprops[3] =
-        { CL_CONTEXT_PLATFORM,
-          (cl_context_properties)(platform)(),
-          0
-        };
+    cl_context_properties cprops[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)platform_c, 0 };
 
     device_type = CL_DEVICE_TYPE_DEFAULT;
 
@@ -1109,13 +1105,21 @@ void CloverCL::initContext(
     /*
      * Get the device context.
      */
-    try {
+    context_c = clCreateContextFromType(cprops, device_type, NULL, NULL, &err);
 
-        context = cl::Context ( device_type, cprops, NULL, NULL, &err);
-
-    } catch (cl::Error err) {
-        reportError(err, "Creating context");
+    if (err != CL_SUCCESS) {
+        reportError(err, "Error creating context");
     }
+
+    //try {
+
+    //    context = cl::Context ( device_type, cprops, NULL, NULL, &err);
+
+    //} catch (cl::Error err) {
+    //    reportError(err, "Creating context");
+    //}
+
+    exit(8);
 }
 
 void CloverCL::initDevice(int id)

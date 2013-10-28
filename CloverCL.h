@@ -51,6 +51,8 @@ class CloverCL {
         static bool initialised;
 
         static cl_platform_id platform_c;
+        static cl_context context_c;
+
         static cl::Platform platform;
         static cl::Context context;
         static cl::Device device;
