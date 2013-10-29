@@ -106,6 +106,8 @@ class CloverCL {
         static const int FIELD_MASS_FLUX_X=14;
         static const int FIELD_MASS_FLUX_Y=15;
 
+        static size_t device_prefer_wg_multiple;
+        static cl_uint native_wg_multiple;
         static size_t prefer_wg_multiple;
         static size_t max_reduction_wg_size;
         static cl_uint device_procs;

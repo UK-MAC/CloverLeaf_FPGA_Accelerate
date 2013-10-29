@@ -51,12 +51,15 @@ cl::Program CloverCL::program;
 cl::CommandQueue CloverCL::queue;
 cl::CommandQueue CloverCL::outoforder_queue;
 
+cl_uint CloverCL::native_wg_multiple;
 size_t CloverCL::prefer_wg_multiple;
 size_t CloverCL::max_reduction_wg_size;
 cl_uint CloverCL::device_procs;
 size_t CloverCL::device_max_wg_size;
 cl_ulong CloverCL::device_local_mem_size;
 cl_device_type CloverCL::device_type; 
+size_t CloverCL::device_prefer_wg_multiple;
+
 int CloverCL::number_of_red_levels;
 int CloverCL::xmax_plusfour_rounded;
 int CloverCL::xmax_plusfive_rounded;
@@ -492,21 +495,37 @@ void CloverCL::calculateKernelLaunchParams(int xmax, int ymax) {
 
 void CloverCL::determineWorkGroupSizeInfo() {
 
-    ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, &prefer_wg_multiple);
-    ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_WORK_GROUP_SIZE, &max_reduction_wg_size);
+    cl_int err; 
+
+    err = clGetKernelWorkGroupInfo(ideal_gas_predict_knl_c, device_c, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(size_t), &prefer_wg_multiple, NULL); 
+    err = clGetKernelWorkGroupInfo(ideal_gas_predict_knl_c, device_c, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &max_reduction_wg_size, NULL); 
+
+    err = clGetDeviceInfo(device_c, CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE, sizeof(cl_uint), &device_prefer_wg_multiple, NULL); 
+    err = clGetDeviceInfo(device_c, CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE, sizeof(cl_uint), &native_wg_multiple, NULL); 
     
-    device.getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &device_procs);
-    device.getInfo(CL_DEVICE_MAX_WORK_GROUP_SIZE, &device_max_wg_size);
-    device.getInfo(CL_DEVICE_LOCAL_MEM_SIZE, &device_local_mem_size);
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &device_procs, NULL); 
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(cl_uint), &device_max_wg_size, NULL); 
+    err = clGetDeviceInfo(device_c, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &device_local_mem_size, NULL); 
+
+    //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, &prefer_wg_multiple);
+    //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_WORK_GROUP_SIZE, &max_reduction_wg_size);
+
+    //device.getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &device_procs);
+    //device.getInfo(CL_DEVICE_MAX_WORK_GROUP_SIZE, &device_max_wg_size);
+    //device.getInfo(CL_DEVICE_LOCAL_MEM_SIZE, &device_local_mem_size);
 
 #ifdef OCL_VERBOSE
-    std::cout << "Size of min reduction work group multiple: " << prefer_wg_multiple << std::endl;
-    std::cout << "Size of min reduction max work group size: " << max_reduction_wg_size << std::endl;
+    std::cout << "Kernel prefer work group multiple: " << prefer_wg_multiple << std::endl;
+    std::cout << "Kernel max work group size: " << max_reduction_wg_size << std::endl;
+
+    std::cout << "Device preferred vector width double multiple: " << device_prefer_wg_multiple << std::endl;
+    std::cout << "Device native vector width double: " << native_wg_multiple << std::endl;
+    
     std::cout << "Device Num of compute units: " << device_procs << std::endl;
     std::cout << "Device Max WG Size: " << device_max_wg_size << std::endl;
     std::cout << "Device Local memmory size: " << device_local_mem_size << std::endl;
 
-    if (device_type == CL_DEVICE_TYPE_CPU) {
+    if (device_type == CL_DEVICE_TYPE_CPU) { 
         std::cout << "Device Type selected: CPU" << std::endl;
     }
     else if (device_type == CL_DEVICE_TYPE_GPU) {
@@ -522,6 +541,7 @@ void CloverCL::determineWorkGroupSizeInfo() {
         std::cout << "ERROR Device Type selected: NOT SUPPORTED" << std::endl;
     }
 #endif
+
 }
 
 void CloverCL::build_reduction_kernel_objects() {
