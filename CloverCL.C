@@ -381,12 +381,12 @@ std::vector<cl_mem> CloverCL::ie_interBuffers;
 std::vector<cl_mem> CloverCL::ke_interBuffers;
 std::vector<cl_mem> CloverCL::press_interBuffers;
 
-std::vector<cl::LocalSpaceArg> CloverCL::min_local_memory_objects;
-std::vector<cl::LocalSpaceArg> CloverCL::vol_local_memory_objects;
-std::vector<cl::LocalSpaceArg> CloverCL::mass_local_memory_objects;
-std::vector<cl::LocalSpaceArg> CloverCL::ie_local_memory_objects;
-std::vector<cl::LocalSpaceArg> CloverCL::ke_local_memory_objects;
-std::vector<cl::LocalSpaceArg> CloverCL::press_local_memory_objects;
+std::vector<int> CloverCL::min_local_memory_objects;
+std::vector<int> CloverCL::vol_local_memory_objects;
+std::vector<int> CloverCL::mass_local_memory_objects;
+std::vector<int> CloverCL::ie_local_memory_objects;
+std::vector<int> CloverCL::ke_local_memory_objects;
+std::vector<int> CloverCL::press_local_memory_objects;
 
 std::vector<cl::Event> CloverCL::global_events;
 cl::Event CloverCL::last_event;
@@ -1007,12 +1007,19 @@ void CloverCL::allocateLocalMemoryObjects() {
     else if (device_type == CL_DEVICE_TYPE_GPU) {
         for (int i=0; i<number_of_red_levels; i++) {
             
-            min_local_memory_objects.push_back(   cl::Local(local_mem_size[i]*sizeof(cl_double))  );
-            vol_local_memory_objects.push_back(   cl::Local(local_mem_size[i]*sizeof(cl_double))  );
-            mass_local_memory_objects.push_back(  cl::Local(local_mem_size[i]*sizeof(cl_double))  );
-            ie_local_memory_objects.push_back(    cl::Local(local_mem_size[i]*sizeof(cl_double))  );
-            ke_local_memory_objects.push_back(    cl::Local(local_mem_size[i]*sizeof(cl_double))  );
-            press_local_memory_objects.push_back( cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            min_local_memory_objects.push_back(   local_mem_size[i]*sizeof(cl_double)  );
+            vol_local_memory_objects.push_back(   local_mem_size[i]*sizeof(cl_double)  );
+            mass_local_memory_objects.push_back(  local_mem_size[i]*sizeof(cl_double)  );
+            ie_local_memory_objects.push_back(    local_mem_size[i]*sizeof(cl_double)  );
+            ke_local_memory_objects.push_back(    local_mem_size[i]*sizeof(cl_double)  );
+            press_local_memory_objects.push_back( local_mem_size[i]*sizeof(cl_double)  );
+
+            //min_local_memory_objects.push_back(   cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            //vol_local_memory_objects.push_back(   cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            //mass_local_memory_objects.push_back(  cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            //ie_local_memory_objects.push_back(    cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            //ke_local_memory_objects.push_back(    cl::Local(local_mem_size[i]*sizeof(cl_double))  );
+            //press_local_memory_objects.push_back( cl::Local(local_mem_size[i]*sizeof(cl_double))  );
         }
 
 #ifdef OCL_VERBOSE
@@ -1024,18 +1031,20 @@ void CloverCL::allocateLocalMemoryObjects() {
         std::cout << "press local memory objects vector size: "   << press_local_memory_objects.size() << std::endl;
 
         for (int i=0; i<number_of_red_levels; i++) {
-           std::cout << "reduction level " << i+1 << "min local object size: "   << min_local_memory_objects[i].size_/sizeof(double) << std::endl;
-           std::cout << "reduction level " << i+1 << "vol local object size: "   << vol_local_memory_objects[i].size_/sizeof(double) << std::endl;
-           std::cout << "reduction level " << i+1 << "mass local object size: "  << mass_local_memory_objects[i].size_/sizeof(double) << std::endl;
-           std::cout << "reduction level " << i+1 << "ie local object size: "    << ie_local_memory_objects[i].size_/sizeof(double) << std::endl;
-           std::cout << "reduction level " << i+1 << "ke local object size: "    << ke_local_memory_objects[i].size_/sizeof(double) << std::endl;
-           std::cout << "reduction level " << i+1 << "press local object size: " << press_local_memory_objects[i].size_/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "min local object size: "   << min_local_memory_objects[i]/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "vol local object size: "   << vol_local_memory_objects[i]/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "mass local object size: "  << mass_local_memory_objects[i]/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "ie local object size: "    << ie_local_memory_objects[i]/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "ke local object size: "    << ke_local_memory_objects[i]/sizeof(double) << std::endl;
+           std::cout << "reduction level " << i+1 << "press local object size: " << press_local_memory_objects[i]/sizeof(double) << std::endl;
         }
 #endif
     }
     else {
         std::cout << "ERROR in CloverCL.C local memory object creation: device type not supported " << std::endl;
     }
+
+    exit(17);
 
 }
 
@@ -1109,8 +1118,6 @@ void CloverCL::allocateReductionInterBuffers() {
     } else {
         std::cout << "ERROR in CloverCL.C allocate inter buffers: device type not supported" << std::endl;
     }
-
-    exit(16);
 
 }
 

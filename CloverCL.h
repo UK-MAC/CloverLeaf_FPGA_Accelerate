@@ -623,12 +623,12 @@ class CloverCL {
         static std::vector<cl_mem> ke_interBuffers;
         static std::vector<cl_mem> press_interBuffers;
 
-        static std::vector<cl::LocalSpaceArg> min_local_memory_objects;
-        static std::vector<cl::LocalSpaceArg> vol_local_memory_objects;
-        static std::vector<cl::LocalSpaceArg> mass_local_memory_objects;
-        static std::vector<cl::LocalSpaceArg> ie_local_memory_objects;
-        static std::vector<cl::LocalSpaceArg> ke_local_memory_objects;
-        static std::vector<cl::LocalSpaceArg> press_local_memory_objects;
+        static std::vector<int> min_local_memory_objects;
+        static std::vector<int> vol_local_memory_objects;
+        static std::vector<int> mass_local_memory_objects;
+        static std::vector<int> ie_local_memory_objects;
+        static std::vector<int> ke_local_memory_objects;
+        static std::vector<int> press_local_memory_objects;
 
     private:
         static std::vector<cl::Event> global_events;
