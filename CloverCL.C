@@ -131,6 +131,7 @@ cl_mem CloverCL::state_ymin_buffer_c;
 cl_mem CloverCL::state_ymax_buffer_c;
 cl_mem CloverCL::state_radius_buffer_c;
 cl_mem CloverCL::state_geometry_buffer_c;
+
 cl_mem CloverCL::cpu_min_red_buffer_c;
 cl_mem CloverCL::cpu_vol_red_buffer_c;
 cl_mem CloverCL::cpu_mass_red_buffer_c;
@@ -373,12 +374,12 @@ std::vector<int> CloverCL::buffer_sizes;
 std::vector<bool> CloverCL::input_even;
 std::vector<int> CloverCL::num_elements_per_wi;
 
-std::vector<cl::Buffer> CloverCL::min_interBuffers;
-std::vector<cl::Buffer> CloverCL::vol_interBuffers;
-std::vector<cl::Buffer> CloverCL::mass_interBuffers;
-std::vector<cl::Buffer> CloverCL::ie_interBuffers;
-std::vector<cl::Buffer> CloverCL::ke_interBuffers;
-std::vector<cl::Buffer> CloverCL::press_interBuffers;
+std::vector<cl_mem> CloverCL::min_interBuffers;
+std::vector<cl_mem> CloverCL::vol_interBuffers;
+std::vector<cl_mem> CloverCL::mass_interBuffers;
+std::vector<cl_mem> CloverCL::ie_interBuffers;
+std::vector<cl_mem> CloverCL::ke_interBuffers;
+std::vector<cl_mem> CloverCL::press_interBuffers;
 
 std::vector<cl::LocalSpaceArg> CloverCL::min_local_memory_objects;
 std::vector<cl::LocalSpaceArg> CloverCL::vol_local_memory_objects;
@@ -1050,12 +1051,12 @@ void CloverCL::allocateReductionInterBuffers() {
 #endif
         }
         else {
-            cpu_min_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
-            cpu_vol_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
-            cpu_mass_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
-            cpu_ie_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
-            cpu_ke_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
-            cpu_press_red_buffer = cl::Buffer(context, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_min_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_vol_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_mass_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_ie_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_ke_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
+            cpu_press_red_buffer_c = clCreateBuffer(context_c, CL_MEM_READ_WRITE, device_procs*sizeof(double), NULL, &err);
 
 #ifdef OCL_VERBOSE
             std::cout << "Intermediate reduction buffers on CPU created with size: " << device_procs << std::endl;
@@ -1067,12 +1068,12 @@ void CloverCL::allocateReductionInterBuffers() {
 
         for (int i=1; i<=number_of_red_levels-1; i++) {
 
-            min_interBuffers.push_back(  cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
-            vol_interBuffers.push_back(  cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
-            mass_interBuffers.push_back( cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
-            ie_interBuffers.push_back(   cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
-            ke_interBuffers.push_back(   cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
-            press_interBuffers.push_back(cl::Buffer( context, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            min_interBuffers.push_back(  clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            vol_interBuffers.push_back(  clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            mass_interBuffers.push_back( clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            ie_interBuffers.push_back(   clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            ke_interBuffers.push_back(   clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
+            press_interBuffers.push_back(clCreateBuffer( context_c, CL_MEM_READ_WRITE, buffer_sizes[i]*sizeof(double), NULL, &err));
 
         }
 
@@ -1086,23 +1087,30 @@ void CloverCL::allocateReductionInterBuffers() {
         std::cout << "press inter buffers vector size: " << press_interBuffers.size() << std::endl;
 
         for (int i=0; i<=number_of_red_levels-2; i++) {
-            min_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+            err = clGetMemObjectInfo(min_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "min inter buffers level: "   << i << " buffer elements: " << size/sizeof(double) << std::endl;
-            vol_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+
+            err = clGetMemObjectInfo(vol_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "vol inter buffers level: "   << i << " buffer elements: " << size/sizeof(double) << std::endl;
-            mass_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+
+            err = clGetMemObjectInfo(mass_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "mass inter buffers level: "  << i << " buffer elements: " << size/sizeof(double) << std::endl;
-            ie_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+
+            err = clGetMemObjectInfo(ie_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "ie inter buffers level: "    << i << " buffer elements: " << size/sizeof(double) << std::endl;
-            ke_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+
+            err = clGetMemObjectInfo(ke_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "ke inter buffers level: "    << i << " buffer elements: " << size/sizeof(double) << std::endl;
-            press_interBuffers[i].getInfo(CL_MEM_SIZE, &size);
+
+            err = clGetMemObjectInfo(press_interBuffers[i], CL_MEM_SIZE, sizeof(size_t), &size, NULL); 
             std::cout << "press inter buffers level: " << i << " buffer elements: " << size/sizeof(double) << std::endl;
         }
 #endif
     } else {
         std::cout << "ERROR in CloverCL.C allocate inter buffers: device type not supported" << std::endl;
     }
+
+    exit(16);
 
 }
 
@@ -1492,7 +1500,6 @@ void CloverCL::createBuffers(int x_max, int y_max, int num_states)
 
     right_recv_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
 
-    exit(13); 
 }
 
 

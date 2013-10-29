@@ -616,12 +616,12 @@ class CloverCL {
         static std::vector<bool> input_even;
         static std::vector<int> num_elements_per_wi;
 
-        static std::vector<cl::Buffer> min_interBuffers;
-        static std::vector<cl::Buffer> vol_interBuffers;
-        static std::vector<cl::Buffer> mass_interBuffers;
-        static std::vector<cl::Buffer> ie_interBuffers;
-        static std::vector<cl::Buffer> ke_interBuffers;
-        static std::vector<cl::Buffer> press_interBuffers;
+        static std::vector<cl_mem> min_interBuffers;
+        static std::vector<cl_mem> vol_interBuffers;
+        static std::vector<cl_mem> mass_interBuffers;
+        static std::vector<cl_mem> ie_interBuffers;
+        static std::vector<cl_mem> ke_interBuffers;
+        static std::vector<cl_mem> press_interBuffers;
 
         static std::vector<cl::LocalSpaceArg> min_local_memory_objects;
         static std::vector<cl::LocalSpaceArg> vol_local_memory_objects;
