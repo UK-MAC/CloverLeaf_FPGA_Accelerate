@@ -601,12 +601,12 @@ class CloverCL {
         static cl::Kernel ke_sum_red_cpu_knl; 
         static cl::Kernel press_sum_red_cpu_knl; 
 
-        static std::vector<cl::Kernel> min_reduction_kernels;
-        static std::vector<cl::Kernel> vol_sum_reduction_kernels;
-        static std::vector<cl::Kernel> mass_sum_reduction_kernels;
-        static std::vector<cl::Kernel> ie_sum_reduction_kernels;
-        static std::vector<cl::Kernel> ke_sum_reduction_kernels;
-        static std::vector<cl::Kernel> press_sum_reduction_kernels;
+        static std::vector<cl_kernel> min_reduction_kernels;
+        static std::vector<cl_kernel> vol_sum_reduction_kernels;
+        static std::vector<cl_kernel> mass_sum_reduction_kernels;
+        static std::vector<cl_kernel> ie_sum_reduction_kernels;
+        static std::vector<cl_kernel> ke_sum_reduction_kernels;
+        static std::vector<cl_kernel> press_sum_reduction_kernels;
 
         static std::vector<int> num_workitems_tolaunch;
         static std::vector<int> num_workitems_per_wg;

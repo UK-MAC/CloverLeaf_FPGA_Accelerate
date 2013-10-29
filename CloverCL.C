@@ -359,12 +359,12 @@ cl::Kernel CloverCL::ie_sum_red_cpu_knl;
 cl::Kernel CloverCL::ke_sum_red_cpu_knl; 
 cl::Kernel CloverCL::press_sum_red_cpu_knl; 
 
-std::vector<cl::Kernel> CloverCL::min_reduction_kernels;
-std::vector<cl::Kernel> CloverCL::vol_sum_reduction_kernels;
-std::vector<cl::Kernel> CloverCL::mass_sum_reduction_kernels;
-std::vector<cl::Kernel> CloverCL::ie_sum_reduction_kernels;
-std::vector<cl::Kernel> CloverCL::ke_sum_reduction_kernels;
-std::vector<cl::Kernel> CloverCL::press_sum_reduction_kernels;
+std::vector<cl_kernel> CloverCL::min_reduction_kernels;
+std::vector<cl_kernel> CloverCL::vol_sum_reduction_kernels;
+std::vector<cl_kernel> CloverCL::mass_sum_reduction_kernels;
+std::vector<cl_kernel> CloverCL::ie_sum_reduction_kernels;
+std::vector<cl_kernel> CloverCL::ke_sum_reduction_kernels;
+std::vector<cl_kernel> CloverCL::press_sum_reduction_kernels;
 
 std::vector<int> CloverCL::num_workitems_tolaunch;
 std::vector<int> CloverCL::num_workitems_per_wg;
@@ -562,95 +562,159 @@ void CloverCL::build_reduction_kernel_objects() {
         if ( number_of_red_levels == 1 ) { 
 
             //build level 1 of CPU reduction 
-            min_reduction_kernels.push_back( cl::Kernel(program, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back( clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
 
-            min_reduction_kernels[0].setArg(      0, CloverCL::dt_min_val_array_buffer);
-            vol_sum_reduction_kernels[0].setArg(  0, CloverCL::vol_tmp_buffer);
-            mass_sum_reduction_kernels[0].setArg( 0, CloverCL::mass_tmp_buffer);
-            ie_sum_reduction_kernels[0].setArg(   0, CloverCL::ie_tmp_buffer);
-            ke_sum_reduction_kernels[0].setArg(   0, CloverCL::ke_tmp_buffer);
-            press_sum_reduction_kernels[0].setArg(0, CloverCL::press_tmp_buffer);
+            err = clSetKernelArg(min_reduction_kernels[0],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
+            err = clSetKernelArg(vol_sum_reduction_kernels[0],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
+            err = clSetKernelArg(mass_sum_reduction_kernels[0],   0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer_c);
+            err = clSetKernelArg(ie_sum_reduction_kernels[0],     0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer_c);
+            err = clSetKernelArg(ke_sum_reduction_kernels[0],     0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer_c);
+            err = clSetKernelArg(press_sum_reduction_kernels[0],  0, sizeof(cl_mem), &CloverCL::press_tmp_buffer_c);
 
-            min_reduction_kernels[1].setArg(      1, CloverCL::dt_min_val_buffer);
-            vol_sum_reduction_kernels[1].setArg(1, CloverCL::vol_sum_val_buffer); 
-            mass_sum_reduction_kernels[1].setArg(1, CloverCL::mass_sum_val_buffer); 
-            ie_sum_reduction_kernels[1].setArg(1, CloverCL::ie_sum_val_buffer);
-            ke_sum_reduction_kernels[1].setArg(1, CloverCL::ke_sum_val_buffer); 
-            press_sum_reduction_kernels[1].setArg(1, CloverCL::press_sum_val_buffer);
+            //min_reduction_kernels[0].setArg(      0, CloverCL::dt_min_val_array_buffer);
+            //vol_sum_reduction_kernels[0].setArg(  0, CloverCL::vol_tmp_buffer);
+            //mass_sum_reduction_kernels[0].setArg( 0, CloverCL::mass_tmp_buffer);
+            //ie_sum_reduction_kernels[0].setArg(   0, CloverCL::ie_tmp_buffer);
+            //ke_sum_reduction_kernels[0].setArg(   0, CloverCL::ke_tmp_buffer);
+            //press_sum_reduction_kernels[0].setArg(0, CloverCL::press_tmp_buffer);
 
-            min_reduction_kernels[0].setArg(      2, CloverCL::num_elements_per_wi[0]);
-            vol_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            mass_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]);
-            ie_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            ke_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            press_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            err = clSetKernelArg(min_reduction_kernels[1],        1, sizeof(cl_mem), &CloverCL::dt_min_val_buffer_c); 
+            err = clSetKernelArg(vol_sum_reduction_kernels[1],    1, sizeof(cl_mem), &CloverCL::vol_sum_val_buffer_c); 
+            err = clSetKernelArg(mass_sum_reduction_kernels[1],   1, sizeof(cl_mem), &CloverCL::mass_sum_val_buffer_c); 
+            err = clSetKernelArg(ie_sum_reduction_kernels[1],     1, sizeof(cl_mem), &CloverCL::ie_sum_val_buffer_c); 
+            err = clSetKernelArg(ke_sum_reduction_kernels[1],     1, sizeof(cl_mem), &CloverCL::ke_sum_val_buffer_c); 
+            err = clSetKernelArg(press_sum_reduction_kernels[1],  1, sizeof(cl_mem), &CloverCL::press_sum_val_buffer_c); 
+
+            //min_reduction_kernels[1].setArg(      1, CloverCL::dt_min_val_buffer);
+            //vol_sum_reduction_kernels[1].setArg(1, CloverCL::vol_sum_val_buffer); 
+            //mass_sum_reduction_kernels[1].setArg(1, CloverCL::mass_sum_val_buffer); 
+            //ie_sum_reduction_kernels[1].setArg(1, CloverCL::ie_sum_val_buffer);
+            //ke_sum_reduction_kernels[1].setArg(1, CloverCL::ke_sum_val_buffer); 
+            //press_sum_reduction_kernels[1].setArg(1, CloverCL::press_sum_val_buffer);
+
+            err = clSetKernelArg(min_reduction_kernels[0],        2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(vol_sum_reduction_kernels[0],    2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(mass_sum_reduction_kernels[0],   2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(ie_sum_reduction_kernels[0],     2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(ke_sum_reduction_kernels[0],     2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(press_sum_reduction_kernels[0],  2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+
+            //min_reduction_kernels[0].setArg(      2, CloverCL::num_elements_per_wi[0]);
+            //vol_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //mass_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]);
+            //ie_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //ke_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //press_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
 
         }
         else {
 
             //build level 1 of CPU reduction 
-            min_reduction_kernels.push_back( cl::Kernel(program, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back(        clCreateKernel(program_c, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back(    clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back(   clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back(  clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
 
-            min_reduction_kernels[0].setArg(      0, CloverCL::dt_min_val_array_buffer);
-            vol_sum_reduction_kernels[0].setArg(  0, CloverCL::vol_tmp_buffer);
-            mass_sum_reduction_kernels[0].setArg( 0, CloverCL::mass_tmp_buffer);
-            ie_sum_reduction_kernels[0].setArg(   0, CloverCL::ie_tmp_buffer);
-            ke_sum_reduction_kernels[0].setArg(   0, CloverCL::ke_tmp_buffer);
-            press_sum_reduction_kernels[0].setArg(0, CloverCL::press_tmp_buffer);
+            err = clSetKernelArg(min_reduction_kernels[0],       0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
+            err = clSetKernelArg(vol_sum_reduction_kernels[0],   0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
+            err = clSetKernelArg(mass_sum_reduction_kernels[0],  0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer_c);
+            err = clSetKernelArg(ie_sum_reduction_kernels[0],    0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer_c);
+            err = clSetKernelArg(ke_sum_reduction_kernels[0],    0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer_c);
+            err = clSetKernelArg(press_sum_reduction_kernels[0], 0, sizeof(cl_mem), &CloverCL::press_tmp_buffer_c);
+
+            //min_reduction_kernels[0].setArg(      0, CloverCL::dt_min_val_array_buffer);
+            //vol_sum_reduction_kernels[0].setArg(  0, CloverCL::vol_tmp_buffer);
+            //mass_sum_reduction_kernels[0].setArg( 0, CloverCL::mass_tmp_buffer);
+            //ie_sum_reduction_kernels[0].setArg(   0, CloverCL::ie_tmp_buffer);
+            //ke_sum_reduction_kernels[0].setArg(   0, CloverCL::ke_tmp_buffer);
+            //press_sum_reduction_kernels[0].setArg(0, CloverCL::press_tmp_buffer);
             
-            min_reduction_kernels[0].setArg(      1, CloverCL::cpu_min_red_buffer);
-            vol_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_vol_red_buffer); 
-            mass_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_mass_red_buffer); 
-            ie_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_ie_red_buffer); 
-            ke_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_ke_red_buffer); 
-            press_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_press_red_buffer); 
+            err = clSetKernelArg(min_reduction_kernels[0],       1, sizeof(cl_mem), &CloverCL::cpu_min_red_buffer_c); 
+            err = clSetKernelArg(vol_sum_reduction_kernels[0],   1, sizeof(cl_mem), &CloverCL::cpu_vol_red_buffer_c); 
+            err = clSetKernelArg(mass_sum_reduction_kernels[0],  1, sizeof(cl_mem), &CloverCL::cpu_mass_red_buffer_c); 
+            err = clSetKernelArg(ie_sum_reduction_kernels[0],    1, sizeof(cl_mem), &CloverCL::cpu_ie_red_buffer_c); 
+            err = clSetKernelArg(ke_sum_reduction_kernels[0],    1, sizeof(cl_mem), &CloverCL::cpu_ke_red_buffer_c); 
+            err = clSetKernelArg(press_sum_reduction_kernels[0], 1, sizeof(cl_mem), &CloverCL::cpu_press_red_buffer_c); 
 
-            min_reduction_kernels[0].setArg(      2, CloverCL::num_elements_per_wi[0]);
-            vol_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            mass_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]);
-            ie_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            ke_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
-            press_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //min_reduction_kernels[0].setArg(      1, CloverCL::cpu_min_red_buffer);
+            //vol_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_vol_red_buffer); 
+            //mass_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_mass_red_buffer); 
+            //ie_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_ie_red_buffer); 
+            //ke_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_ke_red_buffer); 
+            //press_sum_reduction_kernels[0].setArg(1, CloverCL::cpu_press_red_buffer); 
+
+            err = clSetKernelArg(min_reduction_kernels[0],       2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(vol_sum_reduction_kernels[0],   2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(mass_sum_reduction_kernels[0],  2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(ie_sum_reduction_kernels[0],    2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(ke_sum_reduction_kernels[0],    2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+            err = clSetKernelArg(press_sum_reduction_kernels[0], 2, sizeof(int), &CloverCL::num_elements_per_wi[0]);
+
+            //min_reduction_kernels[0].setArg(      2, CloverCL::num_elements_per_wi[0]);
+            //vol_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //mass_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]);
+            //ie_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //ke_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
+            //press_sum_reduction_kernels[0].setArg(2, CloverCL::num_elements_per_wi[0]); 
 
 
             //build level 2 of CPU reduction 
-            min_reduction_kernels.push_back( cl::Kernel(program, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back(        clCreateKernel(program_c, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back(    clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back(   clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back(  clCreateKernel(program_c, "reduction_sum_cpu_ocl_kernel", &err));
 
-            min_reduction_kernels[1].setArg(      0, CloverCL::cpu_min_red_buffer);
-            vol_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_vol_red_buffer); 
-            mass_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_mass_red_buffer); 
-            ie_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_ie_red_buffer); 
-            ke_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_ke_red_buffer);
-            press_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_press_red_buffer); 
+            err = clSetKernelArg(min_reduction_kernels[1],       0, sizeof(cl_mem), &CloverCL::cpu_min_red_buffer_c); 
+            err = clSetKernelArg(vol_sum_reduction_kernels[1],   0, sizeof(cl_mem), &CloverCL::cpu_vol_red_buffer_c); 
+            err = clSetKernelArg(mass_sum_reduction_kernels[1],  0, sizeof(cl_mem), &CloverCL::cpu_mass_red_buffer_c); 
+            err = clSetKernelArg(ie_sum_reduction_kernels[1],    0, sizeof(cl_mem), &CloverCL::cpu_ie_red_buffer_c); 
+            err = clSetKernelArg(ke_sum_reduction_kernels[1],    0, sizeof(cl_mem), &CloverCL::cpu_ke_red_buffer_c); 
+            err = clSetKernelArg(press_sum_reduction_kernels[1], 0, sizeof(cl_mem), &CloverCL::cpu_press_red_buffer_c); 
+        
+
+            //min_reduction_kernels[1].setArg(      0, CloverCL::cpu_min_red_buffer);
+            //vol_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_vol_red_buffer); 
+            //mass_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_mass_red_buffer); 
+            //ie_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_ie_red_buffer); 
+            //ke_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_ke_red_buffer);
+            //press_sum_reduction_kernels[1].setArg(0, CloverCL::cpu_press_red_buffer); 
+
+            err = clSetKernelArg(min_reduction_kernels[1],       1, sizeof(cl_mem), &CloverCL::dt_min_val_buffer_c); 
+            err = clSetKernelArg(vol_sum_reduction_kernels[1],   1, sizeof(cl_mem), &CloverCL::vol_sum_val_buffer_c); 
+            err = clSetKernelArg(mass_sum_reduction_kernels[1],  1, sizeof(cl_mem), &CloverCL::mass_sum_val_buffer_c); 
+            err = clSetKernelArg(ie_sum_reduction_kernels[1],    1, sizeof(cl_mem), &CloverCL::ie_sum_val_buffer_c); 
+            err = clSetKernelArg(ke_sum_reduction_kernels[1],    1, sizeof(cl_mem), &CloverCL::ke_sum_val_buffer_c); 
+            err = clSetKernelArg(press_sum_reduction_kernels[1], 1, sizeof(cl_mem), &CloverCL::press_sum_val_buffer_c); 
             
-            min_reduction_kernels[1].setArg(      1, CloverCL::dt_min_val_buffer);
-            vol_sum_reduction_kernels[1].setArg(1, CloverCL::vol_sum_val_buffer); 
-            mass_sum_reduction_kernels[1].setArg(1, CloverCL::mass_sum_val_buffer); 
-            ie_sum_reduction_kernels[1].setArg(1, CloverCL::ie_sum_val_buffer);
-            ke_sum_reduction_kernels[1].setArg(1, CloverCL::ke_sum_val_buffer); 
-            press_sum_reduction_kernels[1].setArg(1, CloverCL::press_sum_val_buffer);
+            //min_reduction_kernels[1].setArg(      1, CloverCL::dt_min_val_buffer);
+            //vol_sum_reduction_kernels[1].setArg(1, CloverCL::vol_sum_val_buffer); 
+            //mass_sum_reduction_kernels[1].setArg(1, CloverCL::mass_sum_val_buffer); 
+            //ie_sum_reduction_kernels[1].setArg(1, CloverCL::ie_sum_val_buffer);
+            //ke_sum_reduction_kernels[1].setArg(1, CloverCL::ke_sum_val_buffer); 
+            //press_sum_reduction_kernels[1].setArg(1, CloverCL::press_sum_val_buffer);
 
-            min_reduction_kernels[1].setArg(      2, CloverCL::num_elements_per_wi[1]);
-            vol_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
-            mass_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
-            ie_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
-            ke_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
-            press_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
+            err = clSetKernelArg(min_reduction_kernels[1],       2, sizeof(int), &CloverCL::num_elements_per_wi[1]); 
+            err = clSetKernelArg(vol_sum_reduction_kernels[1],   2, sizeof(int), &CloverCL::num_elements_per_wi[1]);
+            err = clSetKernelArg(mass_sum_reduction_kernels[1],  2, sizeof(int), &CloverCL::num_elements_per_wi[1]);
+            err = clSetKernelArg(ie_sum_reduction_kernels[1],    2, sizeof(int), &CloverCL::num_elements_per_wi[1]);
+            err = clSetKernelArg(ke_sum_reduction_kernels[1],    2, sizeof(int), &CloverCL::num_elements_per_wi[1]);
+            err = clSetKernelArg(press_sum_reduction_kernels[1], 2, sizeof(int), &CloverCL::num_elements_per_wi[1]);
+
+            //min_reduction_kernels[1].setArg(      2, CloverCL::num_elements_per_wi[1]);
+            //vol_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
+            //mass_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
+            //ie_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
+            //ke_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
+            //press_sum_reduction_kernels[1].setArg(2, CloverCL::num_elements_per_wi[1]); 
 
         }
         
@@ -663,129 +727,222 @@ void CloverCL::build_reduction_kernel_objects() {
             if (CloverCL::size_limits[i-1] == -1) { 
 
                 //build a normal GPU reduction kernel
-                min_reduction_kernels.push_back( cl::Kernel(program, "reduction_minimum_ocl_kernel", &err) );
-                vol_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_ocl_kernel", &err));
-                mass_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_ocl_kernel", &err));
-                ie_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_ocl_kernel", &err));
-                ke_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_ocl_kernel", &err));
-                press_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_ocl_kernel", &err));
+                min_reduction_kernels.push_back(        clCreateKernel(program_c, "reduction_minimum_ocl_kernel", &err) );
+                vol_sum_reduction_kernels.push_back(    clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
+                mass_sum_reduction_kernels.push_back(   clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
+                ie_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
+                ke_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
+                press_sum_reduction_kernels.push_back(  clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
 
                 if (i==1) {
-                    min_reduction_kernels[i-1].setArg(      0, CloverCL::dt_min_val_array_buffer);
-                    vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_tmp_buffer);
-                    mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_tmp_buffer);
-                    ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_tmp_buffer);
-                    ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_tmp_buffer);
-                    press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_tmp_buffer);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer);
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer);
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer);
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer);
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer);
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_tmp_buffer);
+
+                    //min_reduction_kernels[i-1].setArg(      0, CloverCL::dt_min_val_array_buffer);
+                    //vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_tmp_buffer);
+                    //mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_tmp_buffer);
+                    //ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_tmp_buffer);
+                    //ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_tmp_buffer);
+                    //press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_tmp_buffer);
                 }
                 else {
-                    min_reduction_kernels[i-1].setArg(0, CloverCL::min_interBuffers[i-2]);
-                    vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_interBuffers[i-2]);
-                    mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_interBuffers[i-2]);
-                    ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_interBuffers[i-2]);
-                    ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_interBuffers[i-2]);
-                    press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_interBuffers[i-2]);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],        0, sizeof(cl_mem), &CloverCL::min_interBuffers[i-2]);
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_interBuffers[i-2]);
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_interBuffers[i-2]);
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_interBuffers[i-2]);
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_interBuffers[i-2]);
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_interBuffers[i-2]);
+
+                    //min_reduction_kernels[i-1].setArg(0, CloverCL::min_interBuffers[i-2]);
+                    //vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_interBuffers[i-2]);
+                    //mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_interBuffers[i-2]);
+                    //ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_interBuffers[i-2]);
+                    //ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_interBuffers[i-2]);
+                    //press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_interBuffers[i-2]);
                 }
 
-                min_reduction_kernels[i-1].setArg(1, CloverCL::min_local_memory_objects[i-1]);
-                vol_sum_reduction_kernels[i-1].setArg(1,   CloverCL::vol_local_memory_objects[i-1]);
-                mass_sum_reduction_kernels[i-1].setArg(1,  CloverCL::mass_local_memory_objects[i-1]);
-                ie_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ie_local_memory_objects[i-1]);
-                ke_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ke_local_memory_objects[i-1]);
-                press_sum_reduction_kernels[i-1].setArg(1, CloverCL::press_local_memory_objects[i-1]);
+                err = clSetKernelArg(min_reduction_kernels[i-1],       1, CloverCL::min_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    1, CloverCL::vol_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   1, CloverCL::mass_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     1, CloverCL::ie_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     1, CloverCL::ke_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(press_sum_reduction_kernels[i-1],  1, CloverCL::press_local_memory_objects[i-1], NULL); 
+
+                //min_reduction_kernels[i-1].setArg(1, CloverCL::min_local_memory_objects[i-1]);
+                //vol_sum_reduction_kernels[i-1].setArg(1,   CloverCL::vol_local_memory_objects[i-1]);
+                //mass_sum_reduction_kernels[i-1].setArg(1,  CloverCL::mass_local_memory_objects[i-1]);
+                //ie_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ie_local_memory_objects[i-1]);
+                //ke_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ke_local_memory_objects[i-1]);
+                //press_sum_reduction_kernels[i-1].setArg(1, CloverCL::press_local_memory_objects[i-1]);
 
                 if (i==CloverCL::number_of_red_levels) {
-                    min_reduction_kernels[i-1].setArg(2, CloverCL::dt_min_val_buffer);
-                    vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_sum_val_buffer);
-                    mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_sum_val_buffer);
-                    ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_sum_val_buffer);
-                    ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_sum_val_buffer);
-                    press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_sum_val_buffer);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       2, sizeof(cl_mem), &CloverCL::dt_min_val_buffer_c); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    2, sizeof(cl_mem), &CloverCL::vol_sum_val_buffer_c); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   2, sizeof(cl_mem), &CloverCL::mass_sum_val_buffer_c); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ie_sum_val_buffer_c); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ke_sum_val_buffer_c); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  2, sizeof(cl_mem), &CloverCL::press_sum_val_buffer_c); 
+
+                    //min_reduction_kernels[i-1].setArg(2, CloverCL::dt_min_val_buffer);
+                    //vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_sum_val_buffer);
+                    //mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_sum_val_buffer);
+                    //ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_sum_val_buffer);
+                    //ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_sum_val_buffer);
+                    //press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_sum_val_buffer);
                 }
                 else {
-                    min_reduction_kernels[i-1].setArg(2, CloverCL::min_interBuffers[i-1]);
-                    vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_interBuffers[i-1]);
-                    mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_interBuffers[i-1]);
-                    ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_interBuffers[i-1]);
-                    ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_interBuffers[i-1]);
-                    press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_interBuffers[i-1]);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       2, sizeof(cl_mem), &CloverCL::min_interBuffers[i-1]); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    2, sizeof(cl_mem), &CloverCL::vol_interBuffers[i-1]); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   2, sizeof(cl_mem), &CloverCL::mass_interBuffers[i-1]); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ie_interBuffers[i-1]); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ke_interBuffers[i-1]); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  2, sizeof(cl_mem), &CloverCL::press_interBuffers[i-1]); 
+
+                    //min_reduction_kernels[i-1].setArg(2, CloverCL::min_interBuffers[i-1]);
+                    //vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_interBuffers[i-1]);
+                    //mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_interBuffers[i-1]);
+                    //ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_interBuffers[i-1]);
+                    //ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_interBuffers[i-1]);
+                    //press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_interBuffers[i-1]);
                 }
             }
             else {
 
                 //build a last level GPU reduction kernel
-                min_reduction_kernels.push_back( cl::Kernel(program, "reduction_minimum_last_ocl_kernel", &err)  );
-                vol_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_last_ocl_kernel", &err));
-                mass_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_last_ocl_kernel", &err));
-                ie_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_last_ocl_kernel", &err));
-                ke_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_last_ocl_kernel", &err));
-                press_sum_reduction_kernels.push_back( cl::Kernel(program, "reduction_sum_last_ocl_kernel", &err));
+                min_reduction_kernels.push_back(        clCreateKernel(program_c, "reduction_minimum_last_ocl_kernel", &err)  );
+                vol_sum_reduction_kernels.push_back(    clCreateKernel(program_c, "reduction_sum_last_ocl_kernel", &err));
+                mass_sum_reduction_kernels.push_back(   clCreateKernel(program_c, "reduction_sum_last_ocl_kernel", &err));
+                ie_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_last_ocl_kernel", &err));
+                ke_sum_reduction_kernels.push_back(     clCreateKernel(program_c, "reduction_sum_last_ocl_kernel", &err));
+                press_sum_reduction_kernels.push_back(  clCreateKernel(program_c, "reduction_sum_last_ocl_kernel", &err));
 
                 if (i==1) {
                     //if on first level then set input to equal source buffer
-                    min_reduction_kernels[i-1].setArg(0, CloverCL::dt_min_val_array_buffer);
-                    vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_tmp_buffer);
-                    mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_tmp_buffer);
-                    ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_tmp_buffer);
-                    ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_tmp_buffer);
-                    press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_tmp_buffer);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer_c); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer_c); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer_c); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_tmp_buffer_c); 
+
+                    //min_reduction_kernels[i-1].setArg(0, CloverCL::dt_min_val_array_buffer);
+                    //vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_tmp_buffer);
+                    //mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_tmp_buffer);
+                    //ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_tmp_buffer);
+                    //ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_tmp_buffer);
+                    //press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_tmp_buffer);
                 }
                 else {
-                    min_reduction_kernels[i-1].setArg(0, CloverCL::min_interBuffers[i-2]);
-                    vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_interBuffers[i-2]);
-                    mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_interBuffers[i-2]);
-                    ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_interBuffers[i-2]);
-                    ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_interBuffers[i-2]);
-                    press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_interBuffers[i-2]);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       0, sizeof(cl_mem), &CloverCL::min_interBuffers[i-2]); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_interBuffers[i-2]); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_interBuffers[i-2]); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_interBuffers[i-2]); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_interBuffers[i-2]); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_interBuffers[i-2]); 
+
+                    //min_reduction_kernels[i-1].setArg(0, CloverCL::min_interBuffers[i-2]);
+                    //vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_interBuffers[i-2]);
+                    //mass_sum_reduction_kernels[i-1].setArg( 0, CloverCL::mass_interBuffers[i-2]);
+                    //ie_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ie_interBuffers[i-2]);
+                    //ke_sum_reduction_kernels[i-1].setArg(   0, CloverCL::ke_interBuffers[i-2]);
+                    //press_sum_reduction_kernels[i-1].setArg(0, CloverCL::press_interBuffers[i-2]);
                 }
 
-                min_reduction_kernels[i-1].setArg(1, CloverCL::min_local_memory_objects[i-1]);
-                vol_sum_reduction_kernels[i-1].setArg(1,   CloverCL::vol_local_memory_objects[i-1]);
-                mass_sum_reduction_kernels[i-1].setArg(1,  CloverCL::mass_local_memory_objects[i-1]);
-                ie_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ie_local_memory_objects[i-1]);
-                ke_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ke_local_memory_objects[i-1]);
-                press_sum_reduction_kernels[i-1].setArg(1, CloverCL::press_local_memory_objects[i-1]);
+                err = clSetKernelArg(min_reduction_kernels[i-1],       1, CloverCL::min_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    1, CloverCL::vol_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   1, CloverCL::mass_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     1, CloverCL::ie_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     1, CloverCL::ke_local_memory_objects[i-1], NULL); 
+                err = clSetKernelArg(press_sum_reduction_kernels[i-1],  1, CloverCL::press_local_memory_objects[i-1], NULL); 
+
+                //min_reduction_kernels[i-1].setArg(1, CloverCL::min_local_memory_objects[i-1]);
+                //vol_sum_reduction_kernels[i-1].setArg(1,   CloverCL::vol_local_memory_objects[i-1]);
+                //mass_sum_reduction_kernels[i-1].setArg(1,  CloverCL::mass_local_memory_objects[i-1]);
+                //ie_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ie_local_memory_objects[i-1]);
+                //ke_sum_reduction_kernels[i-1].setArg(1,    CloverCL::ke_local_memory_objects[i-1]);
+                //press_sum_reduction_kernels[i-1].setArg(1, CloverCL::press_local_memory_objects[i-1]);
 
                 if (i==CloverCL::number_of_red_levels) {
                     //if last level of reduction set output to be output buffer
-                    min_reduction_kernels[i-1].setArg(2, CloverCL::dt_min_val_buffer);
-                    vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_sum_val_buffer);
-                    mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_sum_val_buffer);
-                    ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_sum_val_buffer);
-                    ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_sum_val_buffer);
-                    press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_sum_val_buffer);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       2, sizeof(cl_mem), &CloverCL::dt_min_val_buffer_c); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    2, sizeof(cl_mem), &CloverCL::vol_sum_val_buffer_c); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   2, sizeof(cl_mem), &CloverCL::mass_sum_val_buffer_c); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ie_sum_val_buffer_c); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ke_sum_val_buffer_c); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  2, sizeof(cl_mem), &CloverCL::press_sum_val_buffer_c); 
+
+                    //min_reduction_kernels[i-1].setArg(2, CloverCL::dt_min_val_buffer);
+                    //vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_sum_val_buffer);
+                    //mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_sum_val_buffer);
+                    //ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_sum_val_buffer);
+                    //ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_sum_val_buffer);
+                    //press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_sum_val_buffer);
                 }
                 else {
-                    min_reduction_kernels[i-1].setArg(2, CloverCL::min_interBuffers[i-1]);
-                    vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_interBuffers[i-1]);
-                    mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_interBuffers[i-1]);
-                    ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_interBuffers[i-1]);
-                    ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_interBuffers[i-1]);
-                    press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_interBuffers[i-1]);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       2, sizeof(cl_mem), &CloverCL::min_interBuffers[i-1]); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    2, sizeof(cl_mem), &CloverCL::vol_interBuffers[i-1]); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   2, sizeof(cl_mem), &CloverCL::mass_interBuffers[i-1]); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ie_interBuffers[i-1]); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     2, sizeof(cl_mem), &CloverCL::ke_interBuffers[i-1]); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  2, sizeof(cl_mem), &CloverCL::press_interBuffers[i-1]); 
+
+                    //min_reduction_kernels[i-1].setArg(2, CloverCL::min_interBuffers[i-1]);
+                    //vol_sum_reduction_kernels[i-1].setArg(2,   CloverCL::vol_interBuffers[i-1]);
+                    //mass_sum_reduction_kernels[i-1].setArg(2,  CloverCL::mass_interBuffers[i-1]);
+                    //ie_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ie_interBuffers[i-1]);
+                    //ke_sum_reduction_kernels[i-1].setArg(2,    CloverCL::ke_interBuffers[i-1]);
+                    //press_sum_reduction_kernels[i-1].setArg(2, CloverCL::press_interBuffers[i-1]);
                 }
 
-                min_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
-                vol_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
-                mass_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
-                ie_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
-                ke_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
-                press_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                err = clSetKernelArg(min_reduction_kernels[i-1],       3, sizeof(int), &CloverCL::size_limits[i-1]); 
+                err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    3, sizeof(int), &CloverCL::size_limits[i-1]); 
+                err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   3, sizeof(int), &CloverCL::size_limits[i-1]); 
+                err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     3, sizeof(int), &CloverCL::size_limits[i-1]); 
+                err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     3, sizeof(int), &CloverCL::size_limits[i-1]); 
+                err = clSetKernelArg(press_sum_reduction_kernels[i-1],  3, sizeof(int), &CloverCL::size_limits[i-1]); 
+
+                //min_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                //vol_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                //mass_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                //ie_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                //ke_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
+                //press_sum_reduction_kernels[i-1].setArg(3, CloverCL::size_limits[i-1]);
 
                 if (CloverCL::input_even[i-1]==true) {
-                    min_reduction_kernels[i-1].setArg(4, 1);
-                    vol_sum_reduction_kernels[i-1].setArg(4, 1);
-                    mass_sum_reduction_kernels[i-1].setArg(4, 1);
-                    ie_sum_reduction_kernels[i-1].setArg(4, 1);
-                    ke_sum_reduction_kernels[i-1].setArg(4, 1);
-                    press_sum_reduction_kernels[i-1].setArg(4, 1);
+                    int even = 1;
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       4, sizeof(int), &even); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    4, sizeof(int), &even); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   4, sizeof(int), &even); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     4, sizeof(int), &even); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     4, sizeof(int), &even); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  4, sizeof(int), &even); 
+
+                    //min_reduction_kernels[i-1].setArg(4, 1);
+                    //vol_sum_reduction_kernels[i-1].setArg(4, 1);
+                    //mass_sum_reduction_kernels[i-1].setArg(4, 1);
+                    //ie_sum_reduction_kernels[i-1].setArg(4, 1);
+                    //ke_sum_reduction_kernels[i-1].setArg(4, 1);
+                    //press_sum_reduction_kernels[i-1].setArg(4, 1);
                 }
                 else {
-                    min_reduction_kernels[i-1].setArg(4, 0);
-                    vol_sum_reduction_kernels[i-1].setArg(4, 0);
-                    mass_sum_reduction_kernels[i-1].setArg(4, 0);
-                    ie_sum_reduction_kernels[i-1].setArg(4, 0);
-                    ke_sum_reduction_kernels[i-1].setArg(4, 0);
-                    press_sum_reduction_kernels[i-1].setArg(4, 0);
+                    int even = 0;
+                    err = clSetKernelArg(min_reduction_kernels[i-1],       4, sizeof(int), &even); 
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    4, sizeof(int), &even); 
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   4, sizeof(int), &even); 
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     4, sizeof(int), &even); 
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     4, sizeof(int), &even); 
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  4, sizeof(int), &even); 
+
+                    //min_reduction_kernels[i-1].setArg(4, 0);
+                    //vol_sum_reduction_kernels[i-1].setArg(4, 0);
+                    //mass_sum_reduction_kernels[i-1].setArg(4, 0);
+                    //ie_sum_reduction_kernels[i-1].setArg(4, 0);
+                    //ke_sum_reduction_kernels[i-1].setArg(4, 0);
+                    //press_sum_reduction_kernels[i-1].setArg(4, 0);
                 }
             }
         }
@@ -795,6 +952,8 @@ void CloverCL::build_reduction_kernel_objects() {
         std::cout << "ERROR in CloverCL build reduction structure objectes method: device type is unsupported" 
                   << std::endl;
     }
+
+    exit(19);
 }
 
 void CloverCL::calculateReductionStructure(int xmax, int ymax) {
@@ -1043,8 +1202,6 @@ void CloverCL::allocateLocalMemoryObjects() {
     else {
         std::cout << "ERROR in CloverCL.C local memory object creation: device type not supported " << std::endl;
     }
-
-    exit(17);
 
 }
 
