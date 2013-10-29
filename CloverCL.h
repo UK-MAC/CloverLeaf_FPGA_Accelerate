@@ -277,6 +277,91 @@ class CloverCL {
 
         static void dumpBinary();
 
+        static cl_mem density0_buffer_c;
+        static cl_mem density1_buffer_c;
+        static cl_mem energy0_buffer_c;
+        static cl_mem energy1_buffer_c;
+        static cl_mem pressure_buffer_c;
+        static cl_mem soundspeed_buffer_c;
+        static cl_mem celldx_buffer_c;
+        static cl_mem celldy_buffer_c;
+        static cl_mem viscosity_buffer_c;
+        static cl_mem xvel0_buffer_c;
+        static cl_mem yvel0_buffer_c;
+        static cl_mem xvel1_buffer_c;
+        static cl_mem yvel1_buffer_c;
+        static cl_mem xarea_buffer_c;
+        static cl_mem yarea_buffer_c;
+        static cl_mem vol_flux_x_buffer_c;
+        static cl_mem vol_flux_y_buffer_c;
+        static cl_mem mass_flux_x_buffer_c;
+        static cl_mem mass_flux_y_buffer_c;
+        static cl_mem stepbymass_buffer_c;
+        static cl_mem volume_buffer_c;
+
+        static cl_mem vol_tmp_buffer_c;
+        static cl_mem mass_tmp_buffer_c;
+        static cl_mem ie_tmp_buffer_c;
+        static cl_mem ke_tmp_buffer_c;
+        static cl_mem press_tmp_buffer_c;
+
+        static cl_mem node_flux_buffer_c;
+        static cl_mem node_mass_post_buffer_c;
+        static cl_mem node_mass_pre_buffer_c;
+        static cl_mem advec_vel_buffer_c;
+        static cl_mem mom_flux_buffer_c;
+        static cl_mem pre_vol_buffer_c;
+        static cl_mem post_vol_buffer_c;
+
+        static cl_mem vertexdx_buffer_c;
+        static cl_mem vertexx_buffer_c;
+        static cl_mem vertexdy_buffer_c;
+        static cl_mem vertexy_buffer_c;
+        static cl_mem cellx_buffer_c;
+        static cl_mem celly_buffer_c;
+
+        static cl_mem dt_min_val_array_buffer_c;
+        static cl_mem dt_min_val_buffer_c;
+
+        static cl_mem vol_sum_val_buffer_c;
+        static cl_mem mass_sum_val_buffer_c;
+        static cl_mem ie_sum_val_buffer_c;
+        static cl_mem ke_sum_val_buffer_c;
+        static cl_mem press_sum_val_buffer_c;
+
+        static cl_mem pre_mass_buffer_c;
+        static cl_mem post_mass_buffer_c;
+        static cl_mem advec_vol_buffer_c;
+        static cl_mem post_ener_buffer_c;
+        static cl_mem ener_flux_buffer_c;
+
+        static cl_mem state_density_buffer_c;
+        static cl_mem state_energy_buffer_c;
+        static cl_mem state_xvel_buffer_c;
+        static cl_mem state_yvel_buffer_c;
+        static cl_mem state_xmin_buffer_c;
+        static cl_mem state_xmax_buffer_c;
+        static cl_mem state_ymin_buffer_c;
+        static cl_mem state_ymax_buffer_c;
+        static cl_mem state_radius_buffer_c;
+        static cl_mem state_geometry_buffer_c;
+
+        static cl_mem top_send_buffer_c;
+        static cl_mem top_recv_buffer_c;
+        static cl_mem bottom_send_buffer_c;
+        static cl_mem bottom_recv_buffer_c;
+        static cl_mem left_send_buffer_c;
+        static cl_mem left_recv_buffer_c;
+        static cl_mem right_send_buffer_c;
+        static cl_mem right_recv_buffer_c;
+
+        static cl_mem cpu_min_red_buffer_c;
+        static cl_mem cpu_vol_red_buffer_c;
+        static cl_mem cpu_mass_red_buffer_c;
+        static cl_mem cpu_ie_red_buffer_c;
+        static cl_mem cpu_ke_red_buffer_c;
+        static cl_mem cpu_press_red_buffer_c;
+
         static cl::Buffer density0_buffer;
         static cl::Buffer density1_buffer;
         static cl::Buffer energy0_buffer;

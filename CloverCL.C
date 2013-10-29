@@ -67,6 +67,83 @@ int CloverCL::mpi_rank;
 int CloverCL::xmax_c;
 int CloverCL::ymax_c;
 
+cl_mem CloverCL::density0_buffer_c;
+cl_mem CloverCL::density1_buffer_c;
+cl_mem CloverCL::energy0_buffer_c;
+cl_mem CloverCL::energy1_buffer_c;
+cl_mem CloverCL::pressure_buffer_c;
+cl_mem CloverCL::soundspeed_buffer_c;
+cl_mem CloverCL::celldx_buffer_c;
+cl_mem CloverCL::celldy_buffer_c;
+cl_mem CloverCL::viscosity_buffer_c;
+cl_mem CloverCL::xvel0_buffer_c;
+cl_mem CloverCL::yvel0_buffer_c;
+cl_mem CloverCL::xvel1_buffer_c;
+cl_mem CloverCL::yvel1_buffer_c;
+cl_mem CloverCL::xarea_buffer_c;
+cl_mem CloverCL::yarea_buffer_c;
+cl_mem CloverCL::vol_flux_x_buffer_c;
+cl_mem CloverCL::vol_flux_y_buffer_c;
+cl_mem CloverCL::mass_flux_x_buffer_c;
+cl_mem CloverCL::mass_flux_y_buffer_c;
+cl_mem CloverCL::stepbymass_buffer_c;
+cl_mem CloverCL::volume_buffer_c;
+cl_mem CloverCL::node_flux_buffer_c;
+cl_mem CloverCL::node_mass_post_buffer_c;
+cl_mem CloverCL::node_mass_pre_buffer_c;
+cl_mem CloverCL::advec_vel_buffer_c;
+cl_mem CloverCL::mom_flux_buffer_c;
+cl_mem CloverCL::pre_vol_buffer_c;
+cl_mem CloverCL::post_vol_buffer_c;
+cl_mem CloverCL::vertexdx_buffer_c;
+cl_mem CloverCL::vertexx_buffer_c;
+cl_mem CloverCL::vertexdy_buffer_c;
+cl_mem CloverCL::vertexy_buffer_c;
+cl_mem CloverCL::pre_mass_buffer_c;
+cl_mem CloverCL::post_mass_buffer_c;
+cl_mem CloverCL::advec_vol_buffer_c;
+cl_mem CloverCL::post_ener_buffer_c;
+cl_mem CloverCL::ener_flux_buffer_c;
+cl_mem CloverCL::cellx_buffer_c;
+cl_mem CloverCL::celly_buffer_c;
+cl_mem CloverCL::dt_min_val_array_buffer_c;
+cl_mem CloverCL::dt_min_val_buffer_c;
+cl_mem CloverCL::vol_tmp_buffer_c;
+cl_mem CloverCL::mass_tmp_buffer_c;
+cl_mem CloverCL::ie_tmp_buffer_c;
+cl_mem CloverCL::ke_tmp_buffer_c;
+cl_mem CloverCL::press_tmp_buffer_c;
+cl_mem CloverCL::vol_sum_val_buffer_c;
+cl_mem CloverCL::mass_sum_val_buffer_c;
+cl_mem CloverCL::ie_sum_val_buffer_c;
+cl_mem CloverCL::ke_sum_val_buffer_c;
+cl_mem CloverCL::press_sum_val_buffer_c;
+cl_mem CloverCL::state_density_buffer_c;
+cl_mem CloverCL::state_energy_buffer_c;
+cl_mem CloverCL::state_xvel_buffer_c;
+cl_mem CloverCL::state_yvel_buffer_c;
+cl_mem CloverCL::state_xmin_buffer_c;
+cl_mem CloverCL::state_xmax_buffer_c;
+cl_mem CloverCL::state_ymin_buffer_c;
+cl_mem CloverCL::state_ymax_buffer_c;
+cl_mem CloverCL::state_radius_buffer_c;
+cl_mem CloverCL::state_geometry_buffer_c;
+cl_mem CloverCL::cpu_min_red_buffer_c;
+cl_mem CloverCL::cpu_vol_red_buffer_c;
+cl_mem CloverCL::cpu_mass_red_buffer_c;
+cl_mem CloverCL::cpu_ie_red_buffer_c;
+cl_mem CloverCL::cpu_ke_red_buffer_c;
+cl_mem CloverCL::cpu_press_red_buffer_c;
+
+cl_mem CloverCL::top_send_buffer_c;
+cl_mem CloverCL::top_recv_buffer_c;
+cl_mem CloverCL::bottom_send_buffer_c;
+cl_mem CloverCL::bottom_recv_buffer_c;
+cl_mem CloverCL::left_send_buffer_c;
+cl_mem CloverCL::left_recv_buffer_c;
+cl_mem CloverCL::right_send_buffer_c;
+cl_mem CloverCL::right_recv_buffer_c;
+
 cl::Buffer CloverCL::density0_buffer;
 cl::Buffer CloverCL::density1_buffer;
 cl::Buffer CloverCL::energy0_buffer;
@@ -1253,147 +1330,149 @@ void CloverCL::createBuffers(int x_max, int y_max, int num_states)
 {
     cl_int err;
 
-    density0_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    density0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    density1_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    density1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    energy0_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    energy0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    energy1_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    energy1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    pressure_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    pressure_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    soundspeed_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    soundspeed_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    celldx_buffer = cl::Buffer( context, CL_MEM_READ_ONLY, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    celldx_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_ONLY, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    celldy_buffer = cl::Buffer( context, CL_MEM_READ_ONLY, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    celldy_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_ONLY, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    cellx_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*sizeof(double), NULL, &err);
+    cellx_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*sizeof(double), NULL, &err);
 
-    celly_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+4)*sizeof(double), NULL, &err);
+    celly_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+4)*sizeof(double), NULL, &err);
 
-    viscosity_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    viscosity_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    xvel0_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    xvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    yvel0_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    yvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    xvel1_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    xvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    yvel1_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    yvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    xarea_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    xarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
 
-    yarea_buffer = cl::Buffer( context, CL_MEM_READ_ONLY, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
+    yarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_ONLY, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
 
-    vol_flux_x_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    vol_flux_x_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
 
-    vol_flux_y_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
+    vol_flux_y_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
 
-    mass_flux_x_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    mass_flux_x_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
 
-    mass_flux_y_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
+    mass_flux_y_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
 
-    stepbymass_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    stepbymass_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    volume_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
+    volume_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    vertexdx_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*sizeof(double), NULL, &err);
+    vertexdx_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*sizeof(double), NULL, &err);
 
-    vertexx_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*sizeof(double), NULL, &err);
+    vertexx_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*sizeof(double), NULL, &err);
 
-    vertexdy_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*sizeof(double), NULL, &err);
+    vertexdy_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*sizeof(double), NULL, &err);
 
-    vertexy_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*sizeof(double), NULL, &err);
+    vertexy_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*sizeof(double), NULL, &err);
 
-    mass_flux_x_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    mass_flux_x_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
 
-    mass_flux_y_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
+    mass_flux_y_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
 
-    node_flux_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    node_flux_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    node_mass_post_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    node_mass_post_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    node_mass_pre_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    node_mass_pre_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    post_vol_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    post_vol_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    pre_vol_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    pre_vol_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    pre_mass_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    pre_mass_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    post_mass_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    post_mass_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    advec_vel_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    advec_vel_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    mom_flux_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    mom_flux_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    advec_vol_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    advec_vol_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    post_ener_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    post_ener_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    ener_flux_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    ener_flux_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    dt_min_val_array_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    dt_min_val_array_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    dt_min_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    dt_min_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    vol_sum_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    vol_sum_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    mass_sum_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    mass_sum_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    ie_sum_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    ie_sum_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    ke_sum_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    ke_sum_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    press_sum_val_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
+    press_sum_val_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, sizeof(double), NULL, &err);
 
-    state_density_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_density_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_energy_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_energy_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_xvel_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_xvel_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_yvel_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_yvel_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_xmin_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_xmin_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_xmax_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_xmax_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_ymin_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_ymin_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_ymax_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_ymax_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_radius_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL); 
+    state_radius_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(double), NULL, &err); 
 
-    state_geometry_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, num_states*sizeof(int), NULL); 
+    state_geometry_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, num_states*sizeof(int), NULL, &err); 
 
-    vol_tmp_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    vol_tmp_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    mass_tmp_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    mass_tmp_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    ie_tmp_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    ie_tmp_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    ke_tmp_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    ke_tmp_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    press_tmp_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
+    press_tmp_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max)*(y_max)*sizeof(double), NULL, &err);
 
-    top_send_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
+    top_send_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
 
-    top_recv_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
+    top_recv_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
 
-    bottom_send_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
+    bottom_send_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
 
-    bottom_recv_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
+    bottom_recv_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*2*sizeof(double), NULL, &err);
 
-    left_send_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
+    left_send_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
 
-    left_recv_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
+    left_recv_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
 
-    right_send_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
+    right_send_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
 
-    right_recv_buffer = cl::Buffer( context, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
+    right_recv_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (y_max+5)*2*sizeof(double), NULL, &err);
+
+    exit(13); 
 }
 
 
@@ -1938,8 +2017,6 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     write_right_buffer_knl_c = clCreateKernel(program_c, "right_comm_buffer_unpack", &err);
 
     write_left_buffer_knl_c = clCreateKernel(program_c, "left_comm_buffer_unpack", &err);
-
-    exit(5); 
 
 }
 
