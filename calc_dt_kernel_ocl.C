@@ -100,7 +100,7 @@ void calc_dt_kernel_ocl_(
     /*
      * Run the calc dt kernel
      */
-    CloverCL::enqueueKernel_nooffsets(CloverCL::dt_calc_knl, *xmax+2, *ymax+2);
+    CloverCL::enqueueKernel_nooffsets(CloverCL::dt_calc_knl_c, *xmax+2, *ymax+2);
 
 
 

@@ -58,35 +58,50 @@ void advec_mom_kernel_ocl_(
     gettimeofday(&t_start, NULL);
 #endif
 
+    cl_int err; 
+
     try {
         int mom_sweep=*drctn+2*(*swp_nmbr-1);
-        CloverCL::advec_mom_vol_knl.setArg(5, mom_sweep);
+        //CloverCL::advec_mom_vol_knl.setArg(5, mom_sweep);
+        err = clSetKernelArg(CloverCL::advec_mom_vol_knl_c, 5, sizeof(int), &mom_sweep);
 
         if (*whch_vl== 1) {
-            CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
+            clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
 
-            CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
+            clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
 
-            CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
 
-            CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
 
-            CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer);
 
-            CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::xvel1_buffer);
+            //CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer);
         } else {
 
-            CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
 
-            CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2,  sizeof(cl_mem), &CloverCL::yvel1_buffer);
 
-            CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
 
-            CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
 
-            CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer);
 
-            CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::yvel1_buffer);
+            //CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer);
         }
 
     } catch (cl::Error err) {
@@ -95,35 +110,35 @@ void advec_mom_kernel_ocl_(
 
 
 
-    CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vol_knl, *xmax+4, *ymax+4);
+    CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vol_knl_c, *xmax+4, *ymax+4);
 
     if (*drctn == 1) {
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_x_knl, *xmax+4, *ymax+3);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_x_knl_c, *xmax+4, *ymax+3);
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_mass_pre_x_knl, *xmax+4, *ymax+3);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_mass_pre_x_knl_c, *xmax+4, *ymax+3);
 
         if (*vctr==1) {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_x_vec1_knl, *xmax+3, *ymax+3);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_x_vec1_knl_c, *xmax+3, *ymax+3);
         } else {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_x_vecnot1_knl, *xmax+3, *ymax+3);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_x_vecnot1_knl_c, *xmax+3, *ymax+3);
         }
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vel_x_knl, *xmax+3, *ymax+3);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vel_x_knl_c, *xmax+3, *ymax+3);
 
     } else {
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_y_knl, *xmax+3, *ymax+4);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_y_knl_c, *xmax+3, *ymax+4);
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_mass_pre_y_knl, *xmax+3, *ymax+4);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_node_mass_pre_y_knl_c, *xmax+3, *ymax+4);
 
         if (*vctr==1) {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_y_vec1_knl, *xmax+3, *ymax+3);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_y_vec1_knl_c, *xmax+3, *ymax+3);
         } else {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_y_vecnot1_knl, *xmax+3, *ymax+3);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_flux_y_vecnot1_knl_c, *xmax+3, *ymax+3);
         }
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vel_y_knl, *xmax+3, *ymax+3);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_mom_vel_y_knl_c, *xmax+3, *ymax+3);
 
     }
 

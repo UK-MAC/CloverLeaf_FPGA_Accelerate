@@ -59,49 +59,59 @@ void initialise_chunk_kernel_ocl_(
     gettimeofday(&t_start, NULL);
 #endif
 
+    cl_int err; 
+
     try {
-        CloverCL::initialise_chunk_cell_x_knl.setArg(0, *dx);
+        //CloverCL::initialise_chunk_cell_x_knl.setArg(0, *dx);
+        err = clSetKernelArg(CloverCL::initialise_chunk_cell_x_knl_c, 0, sizeof(double), dx); 
     } catch(cl::Error err) {
         CloverCL::reportError(err, "initialise chunk setting arguments cell x kernel");
     }
 
 
     try {
-        CloverCL::initialise_chunk_cell_y_knl.setArg(0, *dy);
+        //CloverCL::initialise_chunk_cell_y_knl.setArg(0, *dy);
+        err = clSetKernelArg(CloverCL::initialise_chunk_cell_y_knl_c, 0, sizeof(double), dy); 
     } catch(cl::Error err) {
         CloverCL::reportError(err, "initialise chunk setting arguments cell y kernel");
     }
 
     try {
-        CloverCL::initialise_chunk_vertex_x_knl.setArg(0, *xmin);
-        CloverCL::initialise_chunk_vertex_x_knl.setArg(1, *dx);
+        //CloverCL::initialise_chunk_vertex_x_knl.setArg(0, *xmin);
+        err = clSetKernelArg(CloverCL::initialise_chunk_vertex_x_knl_c, 0, sizeof(double), xmin); 
+        //CloverCL::initialise_chunk_vertex_x_knl.setArg(1, *dx);
+        err = clSetKernelArg(CloverCL::initialise_chunk_vertex_x_knl_c, 1, sizeof(double), dx); 
     } catch(cl::Error err) {
         CloverCL::reportError(err, "initialise chunk setting arguments vertex x kernel");
     }
 
     try {
-        CloverCL::initialise_chunk_vertex_y_knl.setArg(0, *ymin);
-        CloverCL::initialise_chunk_vertex_y_knl.setArg(1, *dy);
+        //CloverCL::initialise_chunk_vertex_y_knl.setArg(0, *ymin);
+        err = clSetKernelArg(CloverCL::initialise_chunk_vertex_y_knl_c, 0, sizeof(double), ymin); 
+        //CloverCL::initialise_chunk_vertex_y_knl.setArg(1, *dy);
+        err = clSetKernelArg(CloverCL::initialise_chunk_vertex_y_knl_c, 1, sizeof(double), dy); 
     } catch(cl::Error err) {
         CloverCL::reportError(err, "initialise chunk setting arguments vertex y kernel");
     }
 
     try {
-        CloverCL::initialise_chunk_volume_area_knl.setArg(0, *dx);
-        CloverCL::initialise_chunk_volume_area_knl.setArg(1, *dy);
+        //CloverCL::initialise_chunk_volume_area_knl.setArg(0, *dx);
+        err = clSetKernelArg(CloverCL::initialise_chunk_volume_area_knl_c, 0, sizeof(double), dx); 
+        //CloverCL::initialise_chunk_volume_area_knl.setArg(1, *dy);
+        err = clSetKernelArg(CloverCL::initialise_chunk_volume_area_knl_c, 1, sizeof(double), dy); 
     } catch(cl::Error err) {
         CloverCL::reportError(err, "initialise chunk setting arguments volume area kernel");
     }
 
-    CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_x_knl, *x_min, *x_max+5);
+    CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_x_knl_c, *x_min, *x_max+5);
 
-    CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_y_knl, *y_min, *y_max+5);
+    CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_y_knl_c, *y_min, *y_max+5);
 
-    CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_x_knl, *x_min, *x_max+4);
+    CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_x_knl_c, *x_min, *x_max+4);
 
-    CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_y_knl, *y_min, *y_max+4);
+    CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_y_knl_c, *y_min, *y_max+4);
 
-    CloverCL::enqueueKernel_nooffsets( CloverCL::initialise_chunk_volume_area_knl, *x_max+4, *y_max+4);
+    CloverCL::enqueueKernel_nooffsets( CloverCL::initialise_chunk_volume_area_knl_c, *x_max+4, *y_max+4);
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;

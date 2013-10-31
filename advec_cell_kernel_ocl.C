@@ -69,25 +69,25 @@ void advec_cell_kernel_ocl_(
     if (*dir_dum == g_xdir) {
 
         if (*sweepnumber == 1) {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec1_s1_knl, *xmax+4, *ymax+4);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec1_s1_knl_c, *xmax+4, *ymax+4);
         } else {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec1_s2_knl, *xmax+4, *ymax+4);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec1_s2_knl_c, *xmax+4, *ymax+4);
         }
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec2_knl, *xmax+4, *ymax+2);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec2_knl_c, *xmax+4, *ymax+2);
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec3_knl, *xmax+2, *ymax+2);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_xdir_sec3_knl_c, *xmax+2, *ymax+2);
 
     } else {
         if (*sweepnumber == 1) {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec1_s1_knl, *xmax+4, *ymax+4);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec1_s1_knl_c, *xmax+4, *ymax+4);
         } else {
-            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec1_s2_knl, *xmax+4, *ymax+4);
+            CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec1_s2_knl_c, *xmax+4, *ymax+4);
         }
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec2_knl, *xmax+2, *ymax+4);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec2_knl_c, *xmax+2, *ymax+4);
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec3_knl, *xmax+2, *ymax+2);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::advec_cell_ydir_sec3_knl_c, *xmax+2, *ymax+2);
     }
 
 #if PROFILE_OCL_KERNELS

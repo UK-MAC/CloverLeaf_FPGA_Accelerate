@@ -116,7 +116,7 @@ class CloverCL {
         static cl_device_type device_type;
 
         static int number_of_red_levels;
-        static cl::Event last_event;
+        static cl_event last_event;
 
         static int mpi_rank; 
         static int xmax_c;
@@ -242,11 +242,11 @@ class CloverCL {
                 double* mass_flux_x,
                 double* mass_flux_y);
 
-        static void enqueueKernel_nooffsets( cl::Kernel kernel, int num_x, int num_y);
+        static void enqueueKernel_nooffsets(cl_kernel kernel, int num_x, int num_y);
 
-        static void enqueueKernel( cl::Kernel kernel, int x_min, int x_max, int y_min, int y_max);
+        static void enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, int y_max);
 
-        static void enqueueKernel( cl::Kernel kernel, int min, int max);
+        static void enqueueKernel(cl_kernel kernel, int min, int max);
 
         static void initialiseKernelArgs(
                 int x_min,

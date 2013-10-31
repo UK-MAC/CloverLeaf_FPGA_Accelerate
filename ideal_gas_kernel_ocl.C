@@ -55,11 +55,11 @@ void ideal_gas_kernel_ocl_(
 
     if ( *prdct == 0 ) {
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::ideal_gas_predict_knl, *xmax+2, *ymax+2);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::ideal_gas_predict_knl_c, *xmax+2, *ymax+2);
 
     } else {
 
-        CloverCL::enqueueKernel_nooffsets( CloverCL::ideal_gas_NO_predict_knl, *xmax+2, *ymax+2);
+        CloverCL::enqueueKernel_nooffsets( CloverCL::ideal_gas_NO_predict_knl_c, *xmax+2, *ymax+2);
 
     }
 

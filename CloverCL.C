@@ -389,7 +389,7 @@ std::vector<int> CloverCL::ke_local_memory_objects;
 std::vector<int> CloverCL::press_local_memory_objects;
 
 std::vector<cl::Event> CloverCL::global_events;
-cl::Event CloverCL::last_event;
+cl_event CloverCL::last_event;
 
 
 void CloverCL::init(
@@ -2759,8 +2759,12 @@ void CloverCL::writeAllCommunicationBuffers(
     }
 }
 
-void CloverCL::enqueueKernel_nooffsets( cl::Kernel kernel, int num_x, int num_y)
+void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
 {
+    cl_int err; 
+    size_t global_wi [2] = {num_x, num_y}; 
+    size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
+
 #if PROFILE_OCL_KERNELS
     long knl_start; 
     long knl_end;
@@ -2779,35 +2783,62 @@ void CloverCL::enqueueKernel_nooffsets( cl::Kernel kernel, int num_x, int num_y)
     }
 
     try {
+                
+        err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
-        queue.enqueueNDRangeKernel( kernel, cl::NullRange, cl::NDRange(x_rnd, y_rnd), 
-                                    cl::NDRange(fixed_wg_min_size_large_dim,fixed_wg_min_size_small_dim), 
-                                    NULL, &last_event); 
+
+        //queue.enqueueNDRangeKernel( kernel, cl::NullRange, cl::NDRange(x_rnd, y_rnd), 
+        //                            cl::NDRange(fixed_wg_min_size_large_dim,fixed_wg_min_size_small_dim), 
+        //                            NULL, &last_event); 
     } catch(cl::Error err) {
 
-        std::string kernel_name;
-        kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-        std::cout << "launching kernel: " << kernel_name << "xnum: " << x_rnd << " ynum: " << num_y 
+        size_t kernel_name_size;
+        char *kernel_name;
+
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
+        kernel_name = new char[kernel_name_size];  
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+        //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+
+        std::string kernel_name_str = std::string(kernel_name);
+
+        std::cout << "launching kernel: " << kernel_name_str << " xnum: " << x_rnd << " ynum: " << num_y 
                   << " wg_x: " << fixed_wg_min_size_large_dim << " wg_y: " << fixed_wg_min_size_small_dim << std::endl;
-        reportError(err, kernel_name);
+
+        reportError(err, kernel_name_str);
     }
 
 #if PROFILE_OCL_KERNELS
     cl_ulong knl_start, knl_end;
 
-    kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-    last_event.wait();
+    size_t kernel_name_size;
+    char *kernel_name;
 
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
+    kernel_name = new char[kernel_name_size];  
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+    //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
 
-    std::cout << "[PROFILING]: " << kernel_name << " OpenCL kernel took "
-        << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
-        << " seconds (device time)" << std::endl;
+    std::string kernel_name_str = std::string(kernel_name);
+    //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+
+
+    clWaitForEvents(1, &last_event); 
+    //last_event.wait();
+
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &knl_start, NULL); 
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &knl_end, NULL); 
+
+    std::cout << "[PROFILING]: " << kernel_name_str << " OpenCL kernel took "
+              << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
+              << " seconds (device time)" << std::endl;
 #endif
 }
 
-void CloverCL::enqueueKernel( cl::Kernel kernel, int x_min, int x_max, int y_min, int y_max)
+void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, int y_max)
 {
 #if PROFILE_OCL_KERNELS
     long knl_start; 
@@ -2825,15 +2856,29 @@ void CloverCL::enqueueKernel( cl::Kernel kernel, int x_min, int x_max, int y_min
 
     x_max_opt = x_rnd + x_min - 1;
 
+    cl_int err;
+    size_t global_wi [2] = {x_max_opt, y_max};  
+    size_t offsets [2] = {x_min, y_min};
+    size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
+
     try {
-        queue.enqueueNDRangeKernel( kernel, cl::NDRange(x_min, y_min), cl::NDRange(x_max_opt, y_max), 
-                                    cl::NDRange(fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim), 
-                                    NULL, &last_event);
+        //queue.enqueueNDRangeKernel( kernel, cl::NDRange(x_min, y_min), cl::NDRange(x_max_opt, y_max), 
+        //                            cl::NDRange(fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim), 
+        //                            NULL, &last_event);
+
+        err = clEnqueueNDRangeKernel(queue_c, kernel, 2, offsets, global_wi, local_wi, 0, NULL, &last_event); 
     } catch(cl::Error err) {
 
-        std::string kernel_name;
-        kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-        std::cout << "launching kernel: " << kernel_name << "xmin: " << x_min << " xmax: " << x_max_opt 
+        char * kernel_name;
+        size_t kernel_name_size; 
+
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
+        kernel_name = new char[kernel_name_size];
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+        //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+
+        std::string kernel_name_str = std::string(kernel_name); 
+        std::cout << "launching kernel: " << kernel_name_str << " xmin: " << x_min << " xmax: " << x_max_opt 
                                           << " ymin: " << y_min << " ymax: " << y_max << std::endl;
         reportError(err, kernel_name);
     }
@@ -2841,24 +2886,39 @@ void CloverCL::enqueueKernel( cl::Kernel kernel, int x_min, int x_max, int y_min
 #if PROFILE_OCL_KERNELS
     cl_ulong knl_start, knl_end;
 
-    kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-    last_event.wait();
+    size_t kernel_name_size;
+    char *kernel_name;
 
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
+    kernel_name = new char[kernel_name_size];
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+    //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
 
-    std::cout << "[PROFILING]: " << kernel_name << " OpenCL kernel took "
-        << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
-        << " seconds (device time)" << std::endl;
+    std::string kernel_name_str = std::string(kernel_name);
+    //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+
+    clWaitForEvents(1, &last_event);
+    //last_event.wait();
+
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &knl_start, NULL);
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &knl_end, NULL);
+
+    std::cout << "[PROFILING]: " << kernel_name_str << " OpenCL kernel took "
+              << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
+              << " seconds (device time)" << std::endl;
 #endif
 }
 
-void CloverCL::enqueueKernel( cl::Kernel kernel, int min, int max)
+void CloverCL::enqueueKernel(cl_kernel kernel, int min, int max)
 {
 #if PROFILE_OCL_KERNELS
     long knl_start; 
     long knl_end;
 #endif
+    cl_int err; 
 
     int tot = (max - min) + 1;
 
@@ -2872,29 +2932,53 @@ void CloverCL::enqueueKernel( cl::Kernel kernel, int min, int max)
     min_opt = min;
 
     max_opt = rnd + min - 1;
+    size_t offsets [1] = {min_opt};
+    size_t global_wi [1] = {max_opt}; 
 
     try {
-        queue.enqueueNDRangeKernel( kernel, cl::NDRange(min_opt), cl::NDRange(max_opt), cl::NullRange, NULL, &last_event);
+        //queue.enqueueNDRangeKernel( kernel, cl::NDRange(min_opt), cl::NDRange(max_opt), cl::NullRange, NULL, &last_event);
+
+        err = clEnqueueNDRangeKernel(queue_c, kernel, 1, offsets, global_wi, NULL, 0, NULL, &last_event);
 
     } catch(cl::Error err) {
 
-        std::string kernel_name;
-        kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-        reportError(err, kernel_name);
+        char* kernel_name;
+        size_t kernel_name_size;
+        
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size); 
+        kernel_name = new char[kernel_name_size];
+        clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+        //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+
+        std::string kernel_name_str = std::string(kernel_name);
+        reportError(err, kernel_name_str);
     }
 
 #if PROFILE_OCL_KERNELS
     cl_ulong knl_start, knl_end;
 
-    kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
-    last_event.wait();
+    //kernel.getInfo(CL_KERNEL_FUNCTION_NAME, &kernel_name);
+    char* kernel_name;
+    size_t kernel_name_size;
+    
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
+    kernel_name = new char[kernel_name_size];
+    clGerKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
 
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
-    last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+    std::string kernel_name_str = std::string(kernel_name);
 
-    std::cout << "[PROFILING]: " << kernel_name << " OpenCL kernel took "
-        << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
-        << " seconds (device time)" << std::endl;
+    //last_event.wait();
+    clWaitForEvents(1, &last_event);
+
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_START, &knl_start);
+    //last_event.getProfilingInfo(CL_PROFILING_COMMAND_END, &knl_end);
+
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &knl_start, NULL);
+    clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &knl_end, NULL);
+
+    std::cout << "[PROFILING]: " << kernel_name_str << " OpenCL kernel took "
+              << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
+              << " seconds (device time)" << std::endl;
 #endif
 }
 

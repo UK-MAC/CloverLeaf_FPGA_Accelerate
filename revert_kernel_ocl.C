@@ -51,7 +51,7 @@ void revert_kernel_ocl_(
     gettimeofday(&t_start, NULL);
 #endif
 
-    CloverCL::enqueueKernel_nooffsets( CloverCL::revert_knl, *xmax+2, *ymax+2);
+    CloverCL::enqueueKernel_nooffsets( CloverCL::revert_knl_c, *xmax+2, *ymax+2);
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;

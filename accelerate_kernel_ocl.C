@@ -52,14 +52,18 @@ extern "C" void accelerate_kernel_ocl_(
     timeval t_start;
     gettimeofday(&t_start, NULL);
 #endif
+    cl_int err; 
 
     try {
-        CloverCL::accelerate_knl.setArg(0, *dbyt);
+        //CloverCL::accelerate_knl.setArg(0, *dbyt);
+
+        err = clSetKernelArg(CloverCL::accelerate_knl_c, 0, sizeof(double), dbyt);
+
     } catch(cl::Error err) {
         CloverCL::reportError(err, "accelerate_knl setting arguments");
     }
 
-    CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl, *xmax+3, *ymax+3);
+    CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl_c, *xmax+3, *ymax+3);
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;

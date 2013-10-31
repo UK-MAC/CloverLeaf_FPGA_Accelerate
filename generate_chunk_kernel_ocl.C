@@ -193,7 +193,7 @@ void generate_chunk_kernel_ocl_(
     cl::Event::waitForEvents(events);
     events.clear();
 
-    CloverCL::enqueueKernel( CloverCL::generate_chunk_knl, *xmin, *xmax+4, *ymin, *ymax+4);
+    CloverCL::enqueueKernel( CloverCL::generate_chunk_knl_c, *xmin, *xmax+4, *ymin, *ymax+4);
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;
