@@ -67,41 +67,41 @@ void advec_mom_kernel_ocl_(
 
         if (*whch_vl== 1) {
             //CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
-            clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
-            clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::xvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::xvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
 
             //CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::xvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
 
             //CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::xvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
         } else {
 
             //CloverCL::advec_mom_flux_x_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_x_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2,  sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_x_vecnot1_knl_c, 2,  sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_y_vec1_knl.setArg(2, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vec1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
 
             //CloverCL::advec_mom_flux_y_vecnot1_knl.setArg(2, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_flux_y_vecnot1_knl_c, 2, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
 
             //CloverCL::advec_mom_vel_x_knl.setArg(3, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_x_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
 
             //CloverCL::advec_mom_vel_y_knl.setArg(3, CloverCL::yvel1_buffer);
-            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer);
+            err = clSetKernelArg(CloverCL::advec_mom_vel_y_knl_c, 3, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
         }
 
     } catch (cl::Error err) {

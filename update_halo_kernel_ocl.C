@@ -72,8 +72,12 @@ void update_halo_kernel_ocl_(
 {
 
     cl_int err;
+    int one = 1;
+    int minusone = -1; 
 
-    std::vector<cl::Event> events2;
+    //std::vector<cl::Event> events2;
+    size_t global_wi [2];
+    size_t local_wi [2]; 
 
 #if PROFILE_OCL_KERNELS
     cl_ulong knl_start, knl_end;
@@ -92,19 +96,23 @@ void update_halo_kernel_ocl_(
 
     /* Perform the halo updates for the top and bottom faces in parallel */
 
-    events2.push_back(CloverCL::last_event);
-    CloverCL::outoforder_queue.enqueueWaitForEvents(events2);
+    //events2.push_back(CloverCL::last_event);
+    //CloverCL::outoforder_queue.enqueueWaitForEvents(events2);
+
+    err = clEnqueueWaitForEvents(CloverCL::outoforder_queue_c, 1, &CloverCL::last_event);
 
     if ( fields[ARRAY1D(CloverCL::field_density0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density0_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
-                                         CloverCL::xmax_plusfour_rounded,*depth,
-                                         CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                                               CloverCL::xmax_plusfour_rounded,*depth,
+                                               CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
 
             } catch(cl::Error err) {
                 CloverCL::reportError(err, "update halo density0 running bottom knl");
@@ -113,10 +121,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density0_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -129,10 +139,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density1_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -142,10 +154,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density1_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -159,10 +173,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -172,10 +188,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -189,10 +207,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -202,10 +222,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -219,10 +241,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -232,10 +256,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -248,10 +274,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -261,10 +289,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -277,10 +307,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -290,10 +322,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -306,11 +340,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel0_buffer);
-                CloverCL::update_halo_bottom_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel0_buffer);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -320,11 +357,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel0_buffer);
-                CloverCL::update_halo_top_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel0_buffer);
+                //CloverCL::update_halo_top_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -337,11 +377,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel1_buffer);
-                CloverCL::update_halo_bottom_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel1_buffer);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -351,11 +394,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel1_buffer);
-                CloverCL::update_halo_top_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel1_buffer);
+                //CloverCL::update_halo_top_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -368,11 +414,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel0_buffer);
-                CloverCL::update_halo_bottom_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel0_buffer);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -382,11 +431,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel0_buffer);
-                CloverCL::update_halo_top_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel0_buffer);
+                //CloverCL::update_halo_top_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -399,11 +451,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel1_buffer);
-                CloverCL::update_halo_bottom_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel1_buffer);
+                //CloverCL::update_halo_bottom_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -413,11 +468,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel1_buffer);
-                CloverCL::update_halo_top_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel1_buffer);
+                //CloverCL::update_halo_top_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -430,10 +488,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                //CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -443,10 +503,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                //CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -459,10 +521,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                //CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -472,10 +536,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                //CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -488,10 +554,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                //CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -501,10 +569,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                //CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -517,10 +587,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                //CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -530,10 +602,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                //CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
             } catch(cl::Error err) {
@@ -544,7 +618,8 @@ void update_halo_kernel_ocl_(
 
 
     /* Sync between top/bottom updates and left/right updates */
-    CloverCL::outoforder_queue.enqueueBarrier();
+    //CloverCL::outoforder_queue.enqueueBarrier();
+    err = clEnqueueBarrier(CloverCL::outoforder_queue_c);
 
 
     /* Perform left and right halo updates in parallel  */
@@ -553,10 +628,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density0_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density0_buffer);
+                err = clSetKernelArg(CloverCL::CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -566,10 +643,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density0_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -583,10 +662,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density1_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -596,10 +677,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density1_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -613,10 +696,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -626,10 +711,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy0_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -643,10 +730,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -656,10 +745,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy1_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -673,10 +764,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -686,10 +779,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::pressure_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -702,10 +797,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -715,10 +812,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::viscosity_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -731,10 +830,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -744,10 +845,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -760,11 +863,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel0_buffer);
-                CloverCL::update_halo_left_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel0_buffer);
+                //CloverCL::update_halo_left_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -774,11 +880,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel0_buffer);
-                CloverCL::update_halo_right_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel0_buffer);
+                //CloverCL::update_halo_right_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -791,11 +900,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel1_buffer);
-                CloverCL::update_halo_left_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel1_buffer);
+                //CloverCL::update_halo_left_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -805,11 +917,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel1_buffer);
-                CloverCL::update_halo_right_vel_knl.setArg(2, -1);
+                //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel1_buffer);
+                //CloverCL::update_halo_right_vel_knl.setArg(2, -1);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &minusone);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -822,11 +937,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel0_buffer);
-                CloverCL::update_halo_left_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel0_buffer);
+                //CloverCL::update_halo_left_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -836,11 +954,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel0_buffer);
-                CloverCL::update_halo_right_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel0_buffer);
+                //CloverCL::update_halo_right_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -853,11 +974,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel1_buffer);
-                CloverCL::update_halo_left_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel1_buffer);
+                //CloverCL::update_halo_left_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
 
@@ -868,11 +992,14 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel1_buffer);
-                CloverCL::update_halo_right_vel_knl.setArg(2, 1);
+                //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel1_buffer);
+                //CloverCL::update_halo_right_vel_knl.setArg(2, 1);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
+                err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &one);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -885,10 +1012,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                //CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -898,10 +1027,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                //CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -914,10 +1045,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                //CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -927,10 +1060,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                //CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -943,10 +1078,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                //CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -956,10 +1093,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                //CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -972,10 +1111,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                //CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -985,10 +1126,12 @@ void update_halo_kernel_ocl_(
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
             try {
 
-                CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
-                CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                //CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
+                //CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 0, sizeof(int), depth); 
+                err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl,
+                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
             } catch(cl::Error err) {
@@ -1001,7 +1144,8 @@ void update_halo_kernel_ocl_(
     /*
      * Wait for all update left and right halo kernels to execute
      */
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c); 
 
 
 

@@ -75,25 +75,26 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
     gettimeofday(&t_start, NULL);
 #endif
 
-    cl::Buffer *field_buffer; 
+    cl_mem *field_buffer; 
     int launch_height, comms_knl_launch_small_dim; 
+    cl_int err; 
 
     switch(*nameoffield) {
-        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer; break;
-        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer; break;
-        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer; break;
-        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer; break;
-        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer; break;
-        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer; break;
-        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer; break;
-        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer; break;
-        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer; break;
-        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer; break;
-        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer; break;
+        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer_c; break;
+        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer_c; break;
+        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer_c; break;
+        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer_c; break;
+        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer_c; break;
+        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer_c; break;
+        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer_c; break;
+        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer_c; break;
+        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer_c; break;
+        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer_c; break;
+        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer_c; break;
     }
 
 #ifdef OCL_VERBOSE
@@ -115,23 +116,38 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
         comms_knl_launch_small_dim =  1;
     }
 
+    size_t global_wi [2] = {*depth, launch_height};
+    size_t local_wi [2] = {comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim};
+
     // call clfinish on the inorder queue to ensure everything is finished
-    CloverCL::queue.finish(); 
+    //CloverCL::queue.finish(); 
+    err = clFinish(CloverCL::queue_c); 
 
     // if left exchange enqueue on outoforder pack kernel for left buffer after setting args
     if ( *left_neighbour != CloverCL::external_face) {
-        CloverCL::read_left_buffer_knl.setArg(0, *depth);
-        CloverCL::read_left_buffer_knl.setArg(1, *xinc);
-        CloverCL::read_left_buffer_knl.setArg(2, *yinc);
-        CloverCL::read_left_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::read_left_buffer_knl.setArg(4, CloverCL::left_send_buffer);
+        //CloverCL::read_left_buffer_knl.setArg(0, *depth);
+        //CloverCL::read_left_buffer_knl.setArg(1, *xinc);
+        //CloverCL::read_left_buffer_knl.setArg(2, *yinc);
+        //CloverCL::read_left_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::read_left_buffer_knl.setArg(4, CloverCL::left_send_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_left_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(*depth, launch_height), 
-                                                        cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::read_left_buffer_knl_c, 0, sizeof(int), depth); 
+        err = clSetKernelArg(CloverCL::read_left_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::read_left_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::read_left_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::read_left_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::left_send_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_left_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(*depth, launch_height), 
+        //                                                cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
+        //                                                NULL, NULL); 
+
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::read_left_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL); 
+
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " packing left buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch height: " << launch_height 
+        std::cout << "Process: " << CloverCL::mpi_rank << " packing left buffer. Depth: " << *depth << " xinc: " << *xinc 
+                  << " yinc: " << *yinc << " launch height: " << launch_height 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_small_dim << " wg_y: " << CloverCL::fixed_wg_min_size_large_dim << std::endl; 
 #endif
     }
@@ -139,19 +155,31 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
 
     // if right exchange enqueue on outoforder pack kernel for right buffer after setting args
     if ( *right_neighbour != CloverCL::external_face) {
-        CloverCL::read_right_buffer_knl.setArg(0, *depth);
-        CloverCL::read_right_buffer_knl.setArg(1, *xinc);
-        CloverCL::read_right_buffer_knl.setArg(2, *yinc);
-        CloverCL::read_right_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::read_right_buffer_knl.setArg(4, CloverCL::right_send_buffer);
+        //CloverCL::read_right_buffer_knl.setArg(0, *depth);
+        //CloverCL::read_right_buffer_knl.setArg(1, *xinc);
+        //CloverCL::read_right_buffer_knl.setArg(2, *yinc);
+        //CloverCL::read_right_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::read_right_buffer_knl.setArg(4, CloverCL::right_send_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_right_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(*depth, launch_height), 
-                                                        cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::read_right_buffer_knl_c, 0, sizeof(int), depth);
+        err = clSetKernelArg(CloverCL::read_right_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::read_right_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::read_right_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::read_right_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::right_send_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_right_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(*depth, launch_height), 
+        //                                                cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
+        //                                                NULL, NULL); 
+
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::read_right_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL);
+
+        
 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " packing right buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch height: " << launch_height 
+        std::cout << "Process: " << CloverCL::mpi_rank << " packing right buffer. Depth: " << *depth << " xinc: " << *xinc 
+                  << " yinc: " << *yinc << " launch height: " << launch_height 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_small_dim << " wg_y: " << CloverCL::fixed_wg_min_size_large_dim << std::endl; 
 #endif
 
@@ -160,7 +188,8 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
     // enqueue a barrier on the out of order queue
     if ( (*left_neighbour != CloverCL::external_face) || (*right_neighbour != CloverCL::external_face)) 
     {   
-        CloverCL::outoforder_queue.enqueueBarrier(); 
+        //CloverCL::outoforder_queue.enqueueBarrier(); 
+        err = clEnqueueBarrier(CloverCL::outoforder_queue_c);
 #ifdef OCL_VERBOSE
         std::cout << "Process: " << CloverCL::mpi_rank << " enqueuing a barrier between l and r pack and read back functions" << std::endl;  
 #endif
@@ -169,26 +198,33 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
     // if left exchange enqueue a buffer read back for the left send buffer
     if ( *left_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::left_send_buffer, CL_FALSE, 0,
-                                                     *num_elements*sizeof(double), host_left_snd_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::left_send_buffer, CL_FALSE, 0,
+        //                                             *num_elements*sizeof(double), host_left_snd_buffer, NULL, NULL);
+        err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::left_send_buffer_c, CL_FALSE, 0, 
+                                  *num_elements*sizeof(double), host_left_snd_buffer, 0, NULL, NULL); 
 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " reading back left send buffer" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " reading back left send buffer" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     // if right exchange enequeue a buffer read back for the right send buffer
     if ( *right_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::right_send_buffer, CL_FALSE, 0, 
-                                                     *num_elements*sizeof(double), host_right_snd_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::right_send_buffer, CL_FALSE, 0, 
+        //                                             *num_elements*sizeof(double), host_right_snd_buffer, NULL, NULL);
+        err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::right_send_buffer_c, CL_FALSE, 0, 
+                                  *num_elements*sizeof(double), host_right_snd_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " reading back right send buffer" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " reading back right send buffer" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     //call clfinish on the out of order queue
-    CloverCL::outoforder_queue.finish(); 
+    //CloverCL::outoforder_queue.finish(); 
+    err = clFinish(CloverCL::outoforder_queue_c);
 
 
 #if PROFILE_OCL_KERNELS
@@ -196,8 +232,8 @@ void pack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right_n
     gettimeofday(&t_end, NULL);
 
     std::cout << "[PROFILING]: pack comms buffer left and right OpenCL kernel took "
-        << (t_end.tv_usec - t_start.tv_usec)*CloverCL::US_TO_SECONDS
-        << " seconds (host time)" << std::endl;
+              << (t_end.tv_usec - t_start.tv_usec)*CloverCL::US_TO_SECONDS
+              << " seconds (host time)" << std::endl;
 #endif
 }
 
@@ -217,8 +253,9 @@ void unpack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right
     gettimeofday(&t_start, NULL);
 #endif
 
-    cl::Buffer *field_buffer; 
+    cl_mem *field_buffer; 
     int launch_height, comms_knl_launch_small_dim; 
+    cl_int err; 
 
 #ifdef OCL_VERBOSE
     std::cout << "Process: " << CloverCL::mpi_rank << " unpacking left and right comms buffers, left neighbour: " 
@@ -226,21 +263,21 @@ void unpack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right
 #endif
 
     switch(*nameoffield) {
-        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer; break;
-        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer; break;
-        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer; break;
-        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer; break;
-        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer; break;
-        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer; break;
-        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer; break;
-        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer; break;
-        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer; break;
-        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer; break;
-        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer; break;
+        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer_c; break;
+        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer_c; break;
+        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer_c; break;
+        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer_c; break;
+        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer_c; break;
+        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer_c; break;
+        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer_c; break;
+        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer_c; break;
+        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer_c; break;
+        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer_c; break;
+        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer_c; break;
     }
 
     if ( *yinc == 1 ) {
@@ -257,68 +294,98 @@ void unpack_comms_buffers_left_right_kernel_ocl_(int *left_neighbour, int *right
         comms_knl_launch_small_dim =  1;
     }
 
+    size_t global_wi [2] = {*depth, launch_height};
+    size_t local_wi [2] = {comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim};
+
+
     //if left exchange then enqueue a biffer write to transfer the info from the host buffer to the card
     if ( *left_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::left_recv_buffer, CL_FALSE, 0,
-                                                     *num_elements*sizeof(double), host_left_rcv_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::left_recv_buffer, CL_FALSE, 0,
+        //                                             *num_elements*sizeof(double), host_left_rcv_buffer, NULL, NULL);
+        err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::left_recv_buffer_c, CL_FALSE, 0, 
+                                   *num_elements*sizeof(double), host_left_rcv_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " writing left rcv buffer back to device" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " writing left rcv buffer back to device" << " num of elements" 
+                  << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     //if right exchange then enqueue a biffer write to transfer the info from the host buffer to the card
     if ( *right_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::right_recv_buffer, CL_FALSE, 0,
-                                                     *num_elements*sizeof(double), host_right_rcv_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::right_recv_buffer, CL_FALSE, 0,
+        //                                             *num_elements*sizeof(double), host_right_rcv_buffer, NULL, NULL);
+        err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::right_recv_buffer_c, CL_FALSE, 0, 
+                                   *num_elements*sizeof(double), host_right_rcv_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " writing right rcv buffer back to device" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " writing right rcv buffer back to device" << " num of elements" 
+                  << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
 
     // call Barrier to prevent unpack kernels runnig before data is written 
-    CloverCL::outoforder_queue.enqueueBarrier(); 
+    //CloverCL::outoforder_queue.enqueueBarrier(); 
+    err = clEnqueueBarrier(CloverCL::outoforder_queue_c);
 
     // if left exhange enqueue and unpack left kernel on the outorder queue
     if ( *left_neighbour != CloverCL::external_face) {
-        CloverCL::write_left_buffer_knl.setArg(0, *depth);
-        CloverCL::write_left_buffer_knl.setArg(1, *xinc);
-        CloverCL::write_left_buffer_knl.setArg(2, *yinc);
-        CloverCL::write_left_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::write_left_buffer_knl.setArg(4, CloverCL::left_recv_buffer); 
+        //CloverCL::write_left_buffer_knl.setArg(0, *depth);
+        //CloverCL::write_left_buffer_knl.setArg(1, *xinc);
+        //CloverCL::write_left_buffer_knl.setArg(2, *yinc);
+        //CloverCL::write_left_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::write_left_buffer_knl.setArg(4, CloverCL::left_recv_buffer); 
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_left_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(*depth, launch_height), 
-                                                        cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::write_left_buffer_knl_c, 0, sizeof(int), depth);
+        err = clSetKernelArg(CloverCL::write_left_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::write_left_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::write_left_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::write_left_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::left_recv_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_left_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(*depth, launch_height), 
+        //                                                cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
+        //                                                NULL, NULL); 
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::write_left_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking left rcv buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch height: " << launch_height 
+        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking left rcv buffer. Depth: " << *depth << " xinc: " << *xinc 
+                  << " yinc: " << *yinc << " launch height: " << launch_height 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_small_dim << " wg_y: " << CloverCL::fixed_wg_min_size_large_dim << std::endl; 
 #endif
     }
 
     // if right exchange enqueue the unpack right kernel on the outoforder queue
     if ( *right_neighbour != CloverCL::external_face) {
-        CloverCL::write_right_buffer_knl.setArg(0, *depth);
-        CloverCL::write_right_buffer_knl.setArg(1, *xinc);
-        CloverCL::write_right_buffer_knl.setArg(2, *yinc);
-        CloverCL::write_right_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::write_right_buffer_knl.setArg(4, CloverCL::right_recv_buffer);
+        //CloverCL::write_right_buffer_knl.setArg(0, *depth);
+        //CloverCL::write_right_buffer_knl.setArg(1, *xinc);
+        //CloverCL::write_right_buffer_knl.setArg(2, *yinc);
+        //CloverCL::write_right_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::write_right_buffer_knl.setArg(4, CloverCL::right_recv_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_right_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(*depth, launch_height), 
-                                                        cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::write_right_buffer_knl_c, 0, sizeof(int), depth);
+        err = clSetKernelArg(CloverCL::write_right_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::write_right_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::write_right_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::write_right_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::right_recv_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_right_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(*depth, launch_height), 
+        //                                                cl::NDRange(comms_knl_launch_small_dim, CloverCL::fixed_wg_min_size_large_dim),
+        //                                                NULL, NULL); 
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::write_right_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking right rcv buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch height: " << launch_height 
+        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking right rcv buffer. Depth: " << *depth << " xinc: " << *xinc 
+                  << " yinc: " << *yinc << " launch height: " << launch_height 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_small_dim << " wg_y: " << CloverCL::fixed_wg_min_size_large_dim << std::endl; 
 #endif
     }
 
     // call clfinish on the outof order queue if either left or rigth exchange
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c);
 
 
 #if PROFILE_OCL_KERNELS
@@ -347,8 +414,9 @@ void pack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom_n
     gettimeofday(&t_start, NULL);
 #endif
 
-    cl::Buffer *field_buffer; 
+    cl_mem *field_buffer; 
     int launch_width, comms_knl_launch_small_dim; 
+    cl_int err; 
 
 #ifdef OCL_VERBOSE
     std::cout << "Process: " << CloverCL::mpi_rank << " packing top and bottom comms buffers, bottom neighbour: " 
@@ -356,21 +424,21 @@ void pack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom_n
 #endif
 
     switch(*nameoffield) {
-        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer; break;
-        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer; break;
-        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer; break;
-        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer; break;
-        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer; break;
-        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer; break;
-        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer; break;
-        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer; break;
-        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer; break;
-        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer; break;
-        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer; break;
+        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer_c; break;
+        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer_c; break;
+        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer_c; break;
+        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer_c; break;
+        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer_c; break;
+        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer_c; break;
+        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer_c; break;
+        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer_c; break;
+        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer_c; break;
+        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer_c; break;
+        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer_c; break;
     }
 
     if (*xinc == 1) {
@@ -387,69 +455,97 @@ void pack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom_n
         comms_knl_launch_small_dim =  1;
     }
 
+    size_t global_wi [2] = {launch_width, *depth};
+    size_t local_wi [2] = {CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim}; 
+
     // if bottom exchange enqueue on outoforder pack kernel for bottom buffer after setting args
     if ( *bottom_neighbour != CloverCL::external_face ) {
-        CloverCL::read_bottom_buffer_knl.setArg(0, *depth);
-        CloverCL::read_bottom_buffer_knl.setArg(1, *xinc);
-        CloverCL::read_bottom_buffer_knl.setArg(2, *yinc);
-        CloverCL::read_bottom_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::read_bottom_buffer_knl.setArg(4, CloverCL::bottom_send_buffer);
+        //CloverCL::read_bottom_buffer_knl.setArg(0, *depth);
+        //CloverCL::read_bottom_buffer_knl.setArg(1, *xinc);
+        //CloverCL::read_bottom_buffer_knl.setArg(2, *yinc);
+        //CloverCL::read_bottom_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::read_bottom_buffer_knl.setArg(4, CloverCL::bottom_send_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_bottom_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(launch_width, *depth),
-                                                        cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::read_bottom_buffer_knl_c, 0, sizeof(int), depth); 
+        err = clSetKernelArg(CloverCL::read_bottom_buffer_knl_c, 1, sizeof(int), xinc); 
+        err = clSetKernelArg(CloverCL::read_bottom_buffer_knl_c, 2, sizeof(int), yinc); 
+        err = clSetKernelArg(CloverCL::read_bottom_buffer_knl_c, 3, sizeof(cl_mem), field_buffer); 
+        err = clSetKernelArg(CloverCL::read_bottom_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::bottom_send_buffer_c); 
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_bottom_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(launch_width, *depth),
+        //                                                cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
+        //                                                NULL, NULL); 
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::read_bottom_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " packing bottom buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width
+        std::cout << "Process: " << CloverCL::mpi_rank << " packing bottom buffer. Depth: " << *depth 
+                  << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width
                   << " wg_x: " << CloverCL::fixed_wg_min_size_large_dim << " wg_y: " << CloverCL::fixed_wg_min_size_small_dim << std::endl; 
 #endif
     }
 
     // if top exchange enqueue on outoforder pack kernel for top buffer after setting args
     if ( *top_neighbour != CloverCL::external_face ) {
-        CloverCL::read_top_buffer_knl.setArg(0, *depth);
-        CloverCL::read_top_buffer_knl.setArg(1, *xinc);
-        CloverCL::read_top_buffer_knl.setArg(2, *yinc);
-        CloverCL::read_top_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::read_top_buffer_knl.setArg(4, CloverCL::top_send_buffer);
+        //CloverCL::read_top_buffer_knl.setArg(0, *depth);
+        //CloverCL::read_top_buffer_knl.setArg(1, *xinc);
+        //CloverCL::read_top_buffer_knl.setArg(2, *yinc);
+        //CloverCL::read_top_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::read_top_buffer_knl.setArg(4, CloverCL::top_send_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_top_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(launch_width, *depth),
-                                                        cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
-                                                        NULL, NULL); 
+        err = clSetKernelArg(CloverCL::read_top_buffer_knl_c, 0, sizeof(int), depth); 
+        err = clSetKernelArg(CloverCL::read_top_buffer_knl_c, 1, sizeof(int), xinc); 
+        err = clSetKernelArg(CloverCL::read_top_buffer_knl_c, 2, sizeof(int), yinc); 
+        err = clSetKernelArg(CloverCL::read_top_buffer_knl_c, 3, sizeof(cl_mem), field_buffer); 
+        err = clSetKernelArg(CloverCL::read_top_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::top_send_buffer_c); 
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::read_top_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(launch_width, *depth),
+        //                                                cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
+        //                                                NULL, NULL); 
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::read_top_buffer_knl_c, 2, NULL, 
+                                    global_wi, local_wi, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " packing top buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width
+        std::cout << "Process: " << CloverCL::mpi_rank << " packing top buffer. Depth: " << *depth 
+                  << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width
                   << " wg_x: " << CloverCL::fixed_wg_min_size_large_dim << " wg_y: " << CloverCL::fixed_wg_min_size_small_dim << std::endl; 
 #endif
     }
 
     // enqueue a barrier on the out of order queue
     if ( (*top_neighbour != CloverCL::external_face) || (*bottom_neighbour != CloverCL::external_face))
-    {   CloverCL::outoforder_queue.enqueueBarrier(); }
+    {  err = clEnqueueBarrier(CloverCL::outoforder_queue_c); }
 
     // if bottom exchange enqueue a buffer read back for the bottom send buffer
     if ( *bottom_neighbour != CloverCL::external_face ) {
 
-        CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::bottom_send_buffer, CL_FALSE, 0, 
-                                                     *num_elements*sizeof(double), host_bottom_snd_buffer);
+        //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::bottom_send_buffer, CL_FALSE, 0, 
+        //                                             *num_elements*sizeof(double), host_bottom_snd_buffer);
+        err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::bottom_send_buffer_c, CL_FALSE, 0, 
+                                  *num_elements*sizeof(double), host_bottom_snd_buffer, 0, NULL, NULL); 
 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " reading back bottom send buffer" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " reading back bottom send buffer" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     // if top exchange enequeue a buffer read back for the top send buffer
     if ( *top_neighbour != CloverCL::external_face ) {
 
-        CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::top_send_buffer, CL_FALSE, 0, 
-                                                     *num_elements*sizeof(double), host_top_snd_buffer);
+        //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::top_send_buffer, CL_FALSE, 0, 
+        //                                             *num_elements*sizeof(double), host_top_snd_buffer);
+        err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::top_send_buffer_c, CL_FALSE, 0,
+                                  *num_elements*sizeof(double), host_top_snd_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " reading back top send buffer" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " reading back top send buffer" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     //call clfinish on the out of order queue
-    CloverCL::outoforder_queue.finish(); 
+    //CloverCL::outoforder_queue.finish(); 
+    err = clFinish(CloverCL::outoforder_queue_c);
 
 
 #if PROFILE_OCL_KERNELS
@@ -478,8 +574,9 @@ void unpack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom
     gettimeofday(&t_start, NULL);
 #endif
 
-    cl::Buffer *field_buffer;
+    cl_mem *field_buffer;
     int launch_width, comms_knl_launch_small_dim; 
+    cl_int err; 
 
 #ifdef OCL_VERBOSE
     std::cout << "Process: " << CloverCL::mpi_rank << " unpacking top and bottom comms buffers, bottom neighbour: " 
@@ -489,39 +586,45 @@ void unpack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom
     //if bottom exchange then enqueue a buffer write to transfer the data to the card 
     if ( *bottom_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::bottom_recv_buffer, CL_FALSE, 0,
-                                                     *num_elements*sizeof(double), host_bottom_rcv_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::bottom_recv_buffer, CL_FALSE, 0,
+        //                                             *num_elements*sizeof(double), host_bottom_rcv_buffer, NULL, NULL);
+        err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::bottom_recv_buffer_c, CL_FALSE, 0, 
+                                  *num_elements*sizeof(double), host_bottom_rcv_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " writing bottom rcv buffer back to device" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " writing bottom rcv buffer back to device" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     // if top exchage then enqueue a buffer write to transfer the data to  the card 
     if ( *top_neighbour != CloverCL::external_face) {
 
-        CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::top_recv_buffer, CL_FALSE, 0,
-                                                     *num_elements*sizeof(double), host_top_rcv_buffer, NULL, NULL);
+        //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::top_recv_buffer, CL_FALSE, 0,
+        //                                             *num_elements*sizeof(double), host_top_rcv_buffer, NULL, NULL);
+        err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::top_recv_buffer_c, CL_FALSE, 0, 
+                                  *num_elements*sizeof(double), host_top_rcv_buffer, 0, NULL, NULL); 
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " writing top rcv buffer back to device" << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
+        std::cout << "Process: " << CloverCL::mpi_rank << " writing top rcv buffer back to device" 
+                  << " num of elements" << (*num_elements*sizeof(double)) / sizeof(double) << std::endl; 
 #endif
     }
 
     switch(*nameoffield) {
-        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer; break;
-        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer; break;
-        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer; break;
-        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer; break;
-        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer; break;
-        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer; break;
-        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer; break;
-        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer; break;
-        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer; break;
-        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer; break;
-        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer; break;
-        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer; break;
-        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer; break;
+        case CloverCL::FIELD_DENSITY0: field_buffer = &CloverCL::density0_buffer_c; break;
+        case CloverCL::FIELD_DENSITY1: field_buffer = &CloverCL::density1_buffer_c; break;
+        case CloverCL::FIELD_ENERGY0: field_buffer = &CloverCL::energy0_buffer_c; break;
+        case CloverCL::FIELD_ENERGY1: field_buffer = &CloverCL::energy1_buffer_c; break;
+        case CloverCL::FIELD_PRESSURE: field_buffer = &CloverCL::pressure_buffer_c; break;
+        case CloverCL::FIELD_VISCOSITY: field_buffer = &CloverCL::viscosity_buffer_c; break;
+        case CloverCL::FIELD_SOUNDSPEED: field_buffer = &CloverCL::soundspeed_buffer_c; break;
+        case CloverCL::FIELD_XVEL0: field_buffer = &CloverCL::xvel0_buffer_c; break;
+        case CloverCL::FIELD_XVEL1: field_buffer = &CloverCL::xvel1_buffer_c; break;
+        case CloverCL::FIELD_YVEL0: field_buffer = &CloverCL::yvel0_buffer_c; break;
+        case CloverCL::FIELD_YVEL1: field_buffer = &CloverCL::yvel1_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_X: field_buffer = &CloverCL::vol_flux_x_buffer_c; break;
+        case CloverCL::FIELD_VOL_FLUX_Y: field_buffer = &CloverCL::vol_flux_y_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_X: field_buffer = &CloverCL::mass_flux_x_buffer_c; break;
+        case CloverCL::FIELD_MASS_FLUX_Y: field_buffer = &CloverCL::mass_flux_y_buffer_c; break;
     }
 
     if (*xinc == 1) {
@@ -538,24 +641,38 @@ void unpack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom
         comms_knl_launch_small_dim =  1;
     }
 
+    size_t global_wi [2] = {launch_width, *depth};
+    size_t local_wi [2] = {CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim};
+
     // call clfinish to sync while the above ops finsih, could if test this possibly 
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c);
+    
 
 
     // if bottom exhange enqueue and unpack bottom kernel on the outorder queue
     if ( *bottom_neighbour != CloverCL::external_face) {
-        CloverCL::write_bottom_buffer_knl.setArg(0, *depth);
-        CloverCL::write_bottom_buffer_knl.setArg(1, *xinc);
-        CloverCL::write_bottom_buffer_knl.setArg(2, *yinc);
-        CloverCL::write_bottom_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::write_bottom_buffer_knl.setArg(4, CloverCL::bottom_recv_buffer);
+        //CloverCL::write_bottom_buffer_knl.setArg(0, *depth);
+        //CloverCL::write_bottom_buffer_knl.setArg(1, *xinc);
+        //CloverCL::write_bottom_buffer_knl.setArg(2, *yinc);
+        //CloverCL::write_bottom_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::write_bottom_buffer_knl.setArg(4, CloverCL::bottom_recv_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_bottom_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(launch_width, *depth),
-                                                        cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
-                                                        NULL, NULL);
+        err = clSetKernelArg(CloverCL::write_bottom_buffer_knl_c, 0, sizeof(int), depth);
+        err = clSetKernelArg(CloverCL::write_bottom_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::write_bottom_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::write_bottom_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::write_bottom_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::bottom_recv_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_bottom_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(launch_width, *depth),
+        //                                                cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
+        //                                                NULL, NULL);
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::write_bottom_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL);
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking bottom rcv buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width 
+        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking bottom rcv buffer. Depth: " << *depth 
+                  << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_large_dim << " wg_y: " <<  CloverCL::fixed_wg_min_size_small_dim<< std::endl; 
 #endif
     }
@@ -563,25 +680,35 @@ void unpack_comms_buffers_top_bottom_kernel_ocl_(int *top_neighbour, int *bottom
 
     // if top exchange enqueue the unpack top kernel on the outoforder queue
     if ( *top_neighbour != CloverCL::external_face) {
-        CloverCL::write_top_buffer_knl.setArg(0, *depth);
-        CloverCL::write_top_buffer_knl.setArg(1, *xinc);
-        CloverCL::write_top_buffer_knl.setArg(2, *yinc);
-        CloverCL::write_top_buffer_knl.setArg(3, *field_buffer);
-        CloverCL::write_top_buffer_knl.setArg(4, CloverCL::top_recv_buffer);
+        //CloverCL::write_top_buffer_knl.setArg(0, *depth);
+        //CloverCL::write_top_buffer_knl.setArg(1, *xinc);
+        //CloverCL::write_top_buffer_knl.setArg(2, *yinc);
+        //CloverCL::write_top_buffer_knl.setArg(3, *field_buffer);
+        //CloverCL::write_top_buffer_knl.setArg(4, CloverCL::top_recv_buffer);
 
-        CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_top_buffer_knl, cl::NullRange,
-                                                        cl::NDRange(launch_width, *depth),
-                                                        cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
-                                                        NULL, NULL);
+        err = clSetKernelArg(CloverCL::write_top_buffer_knl_c, 0, sizeof(int), depth);
+        err = clSetKernelArg(CloverCL::write_top_buffer_knl_c, 1, sizeof(int), xinc);
+        err = clSetKernelArg(CloverCL::write_top_buffer_knl_c, 2, sizeof(int), yinc);
+        err = clSetKernelArg(CloverCL::write_top_buffer_knl_c, 3, sizeof(cl_mem), field_buffer);
+        err = clSetKernelArg(CloverCL::write_top_buffer_knl_c, 4, sizeof(cl_mem), &CloverCL::top_recv_buffer_c);
+
+        //CloverCL::outoforder_queue.enqueueNDRangeKernel(CloverCL::write_top_buffer_knl, cl::NullRange,
+        //                                                cl::NDRange(launch_width, *depth),
+        //                                                cl::NDRange(CloverCL::fixed_wg_min_size_large_dim, comms_knl_launch_small_dim),
+        //                                                NULL, NULL);
+        err = clEnqueueNDRangeKernel(CloverCL::outoforder_queue_c, CloverCL::write_top_buffer_knl_c, 2, NULL, 
+                                     global_wi, local_wi, 0, NULL, NULL);
 #ifdef OCL_VERBOSE
-        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking top rcv buffer. Depth: " << *depth << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width 
+        std::cout << "Process: " << CloverCL::mpi_rank << " unpacking top rcv buffer. Depth: " << *depth 
+                  << " xinc: " << *xinc << " yinc: " << *yinc << " launch width: " << launch_width 
                   << " wg_x: " << CloverCL::fixed_wg_min_size_large_dim << " wg_y: " <<  CloverCL::fixed_wg_min_size_small_dim<< std::endl; 
 #endif
     }
 
     // call clfinish on the outof order queue if either top or bottom exchange
     // could possibly just enqueue a barrier and let the update halo do its thing = future opts 
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c);
 
 
 #if PROFILE_OCL_KERNELS

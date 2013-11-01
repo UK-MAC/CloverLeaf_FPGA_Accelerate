@@ -43,14 +43,6 @@ cl_command_queue CloverCL::queue_c;
 cl_command_queue CloverCL::outoforder_queue_c;
 cl_program CloverCL::program_c;
 
-cl::Platform CloverCL::platform;
-cl::Context CloverCL::context;
-cl::Device CloverCL::device;
-cl::Program CloverCL::program;
-
-cl::CommandQueue CloverCL::queue;
-cl::CommandQueue CloverCL::outoforder_queue;
-
 cl_uint CloverCL::native_wg_multiple;
 size_t CloverCL::prefer_wg_multiple;
 size_t CloverCL::max_reduction_wg_size;
@@ -148,83 +140,6 @@ cl_mem CloverCL::left_recv_buffer_c;
 cl_mem CloverCL::right_send_buffer_c;
 cl_mem CloverCL::right_recv_buffer_c;
 
-cl::Buffer CloverCL::density0_buffer;
-cl::Buffer CloverCL::density1_buffer;
-cl::Buffer CloverCL::energy0_buffer;
-cl::Buffer CloverCL::energy1_buffer;
-cl::Buffer CloverCL::pressure_buffer;
-cl::Buffer CloverCL::soundspeed_buffer;
-cl::Buffer CloverCL::celldx_buffer;
-cl::Buffer CloverCL::celldy_buffer;
-cl::Buffer CloverCL::viscosity_buffer;
-cl::Buffer CloverCL::xvel0_buffer;
-cl::Buffer CloverCL::yvel0_buffer;
-cl::Buffer CloverCL::xvel1_buffer;
-cl::Buffer CloverCL::yvel1_buffer;
-cl::Buffer CloverCL::xarea_buffer;
-cl::Buffer CloverCL::yarea_buffer;
-cl::Buffer CloverCL::vol_flux_x_buffer;
-cl::Buffer CloverCL::vol_flux_y_buffer;
-cl::Buffer CloverCL::mass_flux_x_buffer;
-cl::Buffer CloverCL::mass_flux_y_buffer;
-cl::Buffer CloverCL::stepbymass_buffer;
-cl::Buffer CloverCL::volume_buffer;
-cl::Buffer CloverCL::node_flux_buffer;
-cl::Buffer CloverCL::node_mass_post_buffer;
-cl::Buffer CloverCL::node_mass_pre_buffer;
-cl::Buffer CloverCL::advec_vel_buffer;
-cl::Buffer CloverCL::mom_flux_buffer;
-cl::Buffer CloverCL::pre_vol_buffer;
-cl::Buffer CloverCL::post_vol_buffer;
-cl::Buffer CloverCL::vertexdx_buffer;
-cl::Buffer CloverCL::vertexx_buffer;
-cl::Buffer CloverCL::vertexdy_buffer;
-cl::Buffer CloverCL::vertexy_buffer;
-cl::Buffer CloverCL::pre_mass_buffer;
-cl::Buffer CloverCL::post_mass_buffer;
-cl::Buffer CloverCL::advec_vol_buffer;
-cl::Buffer CloverCL::post_ener_buffer;
-cl::Buffer CloverCL::ener_flux_buffer;
-cl::Buffer CloverCL::cellx_buffer;
-cl::Buffer CloverCL::celly_buffer;
-cl::Buffer CloverCL::dt_min_val_array_buffer;
-cl::Buffer CloverCL::dt_min_val_buffer;
-cl::Buffer CloverCL::vol_tmp_buffer;
-cl::Buffer CloverCL::mass_tmp_buffer;
-cl::Buffer CloverCL::ie_tmp_buffer;
-cl::Buffer CloverCL::ke_tmp_buffer;
-cl::Buffer CloverCL::press_tmp_buffer;
-cl::Buffer CloverCL::vol_sum_val_buffer;
-cl::Buffer CloverCL::mass_sum_val_buffer;
-cl::Buffer CloverCL::ie_sum_val_buffer;
-cl::Buffer CloverCL::ke_sum_val_buffer;
-cl::Buffer CloverCL::press_sum_val_buffer;
-cl::Buffer CloverCL::state_density_buffer;
-cl::Buffer CloverCL::state_energy_buffer;
-cl::Buffer CloverCL::state_xvel_buffer;
-cl::Buffer CloverCL::state_yvel_buffer;
-cl::Buffer CloverCL::state_xmin_buffer;
-cl::Buffer CloverCL::state_xmax_buffer;
-cl::Buffer CloverCL::state_ymin_buffer;
-cl::Buffer CloverCL::state_ymax_buffer;
-cl::Buffer CloverCL::state_radius_buffer;
-cl::Buffer CloverCL::state_geometry_buffer;
-cl::Buffer CloverCL::cpu_min_red_buffer;
-cl::Buffer CloverCL::cpu_vol_red_buffer;
-cl::Buffer CloverCL::cpu_mass_red_buffer;
-cl::Buffer CloverCL::cpu_ie_red_buffer;
-cl::Buffer CloverCL::cpu_ke_red_buffer;
-cl::Buffer CloverCL::cpu_press_red_buffer;
-
-cl::Buffer CloverCL::top_send_buffer;
-cl::Buffer CloverCL::top_recv_buffer;
-cl::Buffer CloverCL::bottom_send_buffer;
-cl::Buffer CloverCL::bottom_recv_buffer;
-cl::Buffer CloverCL::left_send_buffer;
-cl::Buffer CloverCL::left_recv_buffer;
-cl::Buffer CloverCL::right_send_buffer;
-cl::Buffer CloverCL::right_recv_buffer;
-
 cl_kernel CloverCL::ideal_gas_predict_knl_c;
 cl_kernel CloverCL::ideal_gas_NO_predict_knl_c;
 cl_kernel CloverCL::viscosity_knl_c;
@@ -291,74 +206,6 @@ cl_kernel CloverCL::write_right_buffer_knl_c;
 cl_kernel CloverCL::write_bottom_buffer_knl_c;
 cl_kernel CloverCL::write_left_buffer_knl_c;
 
-cl::Kernel CloverCL::ideal_gas_predict_knl;
-cl::Kernel CloverCL::ideal_gas_NO_predict_knl;
-cl::Kernel CloverCL::viscosity_knl;
-cl::Kernel CloverCL::flux_calc_knl;
-cl::Kernel CloverCL::accelerate_knl;
-cl::Kernel CloverCL::advec_mom_vol_knl;
-cl::Kernel CloverCL::advec_mom_node_x_knl;
-cl::Kernel CloverCL::advec_mom_node_mass_pre_x_knl;
-cl::Kernel CloverCL::advec_mom_flux_x_vec1_knl;
-cl::Kernel CloverCL::advec_mom_flux_x_vecnot1_knl;
-cl::Kernel CloverCL::advec_mom_vel_x_knl;
-cl::Kernel CloverCL::advec_mom_node_y_knl;
-cl::Kernel CloverCL::advec_mom_node_mass_pre_y_knl;
-cl::Kernel CloverCL::advec_mom_flux_y_vec1_knl;
-cl::Kernel CloverCL::advec_mom_flux_y_vecnot1_knl;
-cl::Kernel CloverCL::advec_mom_vel_y_knl;
-cl::Kernel CloverCL::dt_calc_knl;
-cl::Kernel CloverCL::advec_cell_xdir_sec1_s1_knl;
-cl::Kernel CloverCL::advec_cell_xdir_sec1_s2_knl;
-cl::Kernel CloverCL::advec_cell_xdir_sec2_knl;
-cl::Kernel CloverCL::advec_cell_xdir_sec3_knl;
-cl::Kernel CloverCL::advec_cell_ydir_sec1_s1_knl;
-cl::Kernel CloverCL::advec_cell_ydir_sec1_s2_knl;
-cl::Kernel CloverCL::advec_cell_ydir_sec2_knl;
-cl::Kernel CloverCL::advec_cell_ydir_sec3_knl;
-cl::Kernel CloverCL::pdv_correct_knl;
-cl::Kernel CloverCL::pdv_predict_knl;
-cl::Kernel CloverCL::reset_field_knl;
-cl::Kernel CloverCL::revert_knl;
-cl::Kernel CloverCL::generate_chunk_knl;
-cl::Kernel CloverCL::initialise_chunk_cell_x_knl;
-cl::Kernel CloverCL::initialise_chunk_cell_y_knl;
-cl::Kernel CloverCL::initialise_chunk_vertex_x_knl;
-cl::Kernel CloverCL::initialise_chunk_vertex_y_knl;
-cl::Kernel CloverCL::initialise_chunk_volume_area_knl;
-cl::Kernel CloverCL::field_summary_knl;
-cl::Kernel CloverCL::update_halo_left_cell_knl;
-cl::Kernel CloverCL::update_halo_right_cell_knl;
-cl::Kernel CloverCL::update_halo_top_cell_knl;
-cl::Kernel CloverCL::update_halo_bottom_cell_knl;
-cl::Kernel CloverCL::update_halo_left_vel_knl;
-cl::Kernel CloverCL::update_halo_right_vel_knl;
-cl::Kernel CloverCL::update_halo_top_vel_knl;
-cl::Kernel CloverCL::update_halo_bottom_vel_knl;
-cl::Kernel CloverCL::update_halo_left_flux_x_knl;
-cl::Kernel CloverCL::update_halo_right_flux_x_knl;
-cl::Kernel CloverCL::update_halo_top_flux_x_knl;
-cl::Kernel CloverCL::update_halo_bottom_flux_x_knl;
-cl::Kernel CloverCL::update_halo_left_flux_y_knl;
-cl::Kernel CloverCL::update_halo_right_flux_y_knl;
-cl::Kernel CloverCL::update_halo_top_flux_y_knl;
-cl::Kernel CloverCL::update_halo_bottom_flux_y_knl;
-cl::Kernel CloverCL::read_top_buffer_knl;
-cl::Kernel CloverCL::read_right_buffer_knl;
-cl::Kernel CloverCL::read_bottom_buffer_knl;
-cl::Kernel CloverCL::read_left_buffer_knl;
-cl::Kernel CloverCL::write_top_buffer_knl;
-cl::Kernel CloverCL::write_right_buffer_knl;
-cl::Kernel CloverCL::write_bottom_buffer_knl;
-cl::Kernel CloverCL::write_left_buffer_knl;
-
-cl::Kernel CloverCL::minimum_red_cpu_knl;
-cl::Kernel CloverCL::vol_sum_red_cpu_knl; 
-cl::Kernel CloverCL::mass_sum_red_cpu_knl; 
-cl::Kernel CloverCL::ie_sum_red_cpu_knl; 
-cl::Kernel CloverCL::ke_sum_red_cpu_knl; 
-cl::Kernel CloverCL::press_sum_red_cpu_knl; 
-
 std::vector<cl_kernel> CloverCL::min_reduction_kernels;
 std::vector<cl_kernel> CloverCL::vol_sum_reduction_kernels;
 std::vector<cl_kernel> CloverCL::mass_sum_reduction_kernels;
@@ -366,8 +213,8 @@ std::vector<cl_kernel> CloverCL::ie_sum_reduction_kernels;
 std::vector<cl_kernel> CloverCL::ke_sum_reduction_kernels;
 std::vector<cl_kernel> CloverCL::press_sum_reduction_kernels;
 
-std::vector<int> CloverCL::num_workitems_tolaunch;
-std::vector<int> CloverCL::num_workitems_per_wg;
+std::vector<size_t> CloverCL::num_workitems_tolaunch;
+std::vector<size_t> CloverCL::num_workitems_per_wg;
 std::vector<int> CloverCL::local_mem_size;
 std::vector<int> CloverCL::size_limits;
 std::vector<int> CloverCL::buffer_sizes;
@@ -388,7 +235,7 @@ std::vector<int> CloverCL::ie_local_memory_objects;
 std::vector<int> CloverCL::ke_local_memory_objects;
 std::vector<int> CloverCL::press_local_memory_objects;
 
-std::vector<cl::Event> CloverCL::global_events;
+//std::vector<cl::Event> CloverCL::global_events;
 cl_event CloverCL::last_event;
 
 
@@ -735,12 +582,12 @@ void CloverCL::build_reduction_kernel_objects() {
                 press_sum_reduction_kernels.push_back(  clCreateKernel(program_c, "reduction_sum_ocl_kernel", &err));
 
                 if (i==1) {
-                    err = clSetKernelArg(min_reduction_kernels[i-1],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer);
-                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer);
-                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer);
-                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer);
-                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer);
-                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_tmp_buffer);
+                    err = clSetKernelArg(min_reduction_kernels[i-1],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
+                    err = clSetKernelArg(vol_sum_reduction_kernels[i-1],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
+                    err = clSetKernelArg(mass_sum_reduction_kernels[i-1],   0, sizeof(cl_mem), &CloverCL::mass_tmp_buffer_c);
+                    err = clSetKernelArg(ie_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ie_tmp_buffer_c);
+                    err = clSetKernelArg(ke_sum_reduction_kernels[i-1],     0, sizeof(cl_mem), &CloverCL::ke_tmp_buffer_c);
+                    err = clSetKernelArg(press_sum_reduction_kernels[i-1],  0, sizeof(cl_mem), &CloverCL::press_tmp_buffer_c);
 
                     //min_reduction_kernels[i-1].setArg(      0, CloverCL::dt_min_val_array_buffer);
                     //vol_sum_reduction_kernels[i-1].setArg(  0, CloverCL::vol_tmp_buffer);
@@ -2222,65 +2069,76 @@ void CloverCL::readVisualisationBuffers(
 
     cl::Event event1, event2, event3, event4, event5, event6, event7, event8;
     std::vector<cl::Event> events;
+    cl_int err; 
 
     try {
-        queue.enqueueReadBuffer( CloverCL::vertexx_buffer, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::vertexx_buffer, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexx_buffer_c, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() vertexx");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::vertexy_buffer, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, NULL, &event2);
+        //queue.enqueueReadBuffer( CloverCL::vertexy_buffer, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, NULL, &event2);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexy_buffer_c, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() vertexy");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, NULL, &event3);
+        //queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, NULL, &event3);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, 0, NULL, NULL ); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() density0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, NULL, &event4);
+        //queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, NULL, &event4);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() energy0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, NULL, &event5);
+        //queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, NULL, &event5);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() pressure");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, NULL, &event6);
+        //queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, NULL, &event6);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() viscosity");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, NULL, &event7);
+        //queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, NULL, &event7);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() xvel0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, NULL, &event8);
+        //queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, NULL, &event8);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readVisualisationBuffers() yvel0");
     }
 
-    events.push_back(event1);
-    events.push_back(event2);
-    events.push_back(event3);
-    events.push_back(event4);
-    events.push_back(event5);
-    events.push_back(event6);
-    events.push_back(event7);
-    events.push_back(event8);
+    //events.push_back(event1);
+    //events.push_back(event2);
+    //events.push_back(event3);
+    //events.push_back(event4);
+    //events.push_back(event5);
+    //events.push_back(event6);
+    //events.push_back(event7);
+    //events.push_back(event8);
 
-    cl::Event::waitForEvents(events);
+    //cl::Event::waitForEvents(events);
+    
+    err = clFinish(CloverCL::queue_c);
 }
 
 void CloverCL::readCommunicationBuffer(
@@ -2295,103 +2153,103 @@ void CloverCL::readCommunicationBuffer(
         double* buffer,
         int* which_edge)
 {
-    cl::Buffer* field_buffer;
-    cl::Buffer* comm_buffer;
-    cl::Event event1;
-    int buff_length;
-    int buff_min;
+    //cl::Buffer* field_buffer;
+    //cl::Buffer* comm_buffer;
+    //cl::Event event1;
+    //int buff_length;
+    //int buff_min;
 
-    global_events.clear();
-    global_events.push_back(last_event);
+    //global_events.clear();
+    //global_events.push_back(last_event);
 
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    //int rank;
+    //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::stringstream ss_rank;
-    ss_rank << rank;
+    //std::stringstream ss_rank;
+    //ss_rank << rank;
 
-    switch(*field_name) {
-        case FIELD_DENSITY0: field_buffer = &density0_buffer; break;
-        case FIELD_DENSITY1: field_buffer = &density1_buffer; break;
-        case FIELD_ENERGY0: field_buffer = &energy0_buffer; break;
-        case FIELD_ENERGY1: field_buffer = &energy1_buffer; break;
-        case FIELD_PRESSURE: field_buffer = &pressure_buffer; break;
-        case FIELD_VISCOSITY: field_buffer = &viscosity_buffer; break;
-        case FIELD_SOUNDSPEED: field_buffer = &soundspeed_buffer; break;
-        case FIELD_XVEL0: field_buffer = &xvel0_buffer; break;
-        case FIELD_XVEL1: field_buffer = &xvel1_buffer; break;
-        case FIELD_YVEL0: field_buffer = &yvel0_buffer; break;
-        case FIELD_YVEL1: field_buffer = &yvel1_buffer; break;
-        case FIELD_VOL_FLUX_X: field_buffer = &vol_flux_x_buffer; break;
-        case FIELD_VOL_FLUX_Y: field_buffer = &vol_flux_y_buffer; break;
-        case FIELD_MASS_FLUX_X: field_buffer = &mass_flux_x_buffer; break;
-        case FIELD_MASS_FLUX_Y: field_buffer = &mass_flux_y_buffer; break;
-    }
+    //switch(*field_name) {
+    //    case FIELD_DENSITY0: field_buffer = &density0_buffer; break;
+    //    case FIELD_DENSITY1: field_buffer = &density1_buffer; break;
+    //    case FIELD_ENERGY0: field_buffer = &energy0_buffer; break;
+    //    case FIELD_ENERGY1: field_buffer = &energy1_buffer; break;
+    //    case FIELD_PRESSURE: field_buffer = &pressure_buffer; break;
+    //    case FIELD_VISCOSITY: field_buffer = &viscosity_buffer; break;
+    //    case FIELD_SOUNDSPEED: field_buffer = &soundspeed_buffer; break;
+    //    case FIELD_XVEL0: field_buffer = &xvel0_buffer; break;
+    //    case FIELD_XVEL1: field_buffer = &xvel1_buffer; break;
+    //    case FIELD_YVEL0: field_buffer = &yvel0_buffer; break;
+    //    case FIELD_YVEL1: field_buffer = &yvel1_buffer; break;
+    //    case FIELD_VOL_FLUX_X: field_buffer = &vol_flux_x_buffer; break;
+    //    case FIELD_VOL_FLUX_Y: field_buffer = &vol_flux_y_buffer; break;
+    //    case FIELD_MASS_FLUX_X: field_buffer = &mass_flux_x_buffer; break;
+    //    case FIELD_MASS_FLUX_Y: field_buffer = &mass_flux_y_buffer; break;
+    //}
 
-    cl::size_t<3> b_origin;
-    cl::size_t<3> h_origin;
-    cl::size_t<3> region;
+    //cl::size_t<3> b_origin;
+    //cl::size_t<3> h_origin;
+    //cl::size_t<3> region;
 
-    size_t b_row_pitch = sizeof(double) * (*xmax + *xinc + 4);
-    size_t b_slice_pitch = 0;
-    size_t h_row_pitch = 0;
-    size_t h_slice_pitch = 0;
+    //size_t b_row_pitch = sizeof(double) * (*xmax + *xinc + 4);
+    //size_t b_slice_pitch = 0;
+    //size_t h_row_pitch = 0;
+    //size_t h_slice_pitch = 0;
 
-    h_origin[0] = 0;
-    h_origin[1] = 0;
-    h_origin[2] = 0;
+    //h_origin[0] = 0;
+    //h_origin[1] = 0;
+    //h_origin[2] = 0;
 
-    switch(*which_edge) {
-        case 1: comm_buffer = &(top_send_buffer);
-                buff_length = *xmax + *xinc + (2 * *depth);
-                buff_min = *xmin; 
-                b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
-                b_origin[1] = ((*ymax+1)-(*depth-1));
-                b_origin[2] = 0;
-                region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
-                region[1] = *depth;
-                region[2] = 1;
-                break;
-        case 2: comm_buffer = &right_send_buffer;
-                buff_length = *ymax + *yinc + (2 * *depth);
-                buff_min = *ymin; 
-                b_origin[0] = ((*xmax+1)-(*depth-1))*sizeof(double);
-                b_origin[1] = ((*ymin+1) - (*depth));
-                b_origin[2] = 0;
-                region[0] = (*depth)*sizeof(double);
-                region[1] = (*ymax)+*yinc+(2* *depth);
-                region[2] = 1;
-                break;
-        case 3: comm_buffer = &bottom_send_buffer;
-                buff_length = *xmax + *xinc + (2 * *depth);
-                buff_min = *xmin; 
-                b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
-                b_origin[1] = (*ymin+1+*yinc);
-                b_origin[2] = 0;
-                region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
-                region[1] = *depth;
-                region[2] = 1;
-                break;
-        case 4: comm_buffer = &left_send_buffer;
-                buff_length = *ymax + *yinc + (2 * *depth);
-                buff_min = *ymin; 
-                b_origin[0] = ((*xmin+1+*xinc)*sizeof(double));
-                b_origin[1] = ((*ymin+1) - (*depth));
-                b_origin[2] = 0;
-                region[0] = (*depth)*sizeof(double);
-                region[1] = (*ymax)+*yinc+(2* *depth);
-                region[2] = 1;
-                break;
-    }
+    //switch(*which_edge) {
+    //    case 1: comm_buffer = &(top_send_buffer);
+    //            buff_length = *xmax + *xinc + (2 * *depth);
+    //            buff_min = *xmin; 
+    //            b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
+    //            b_origin[1] = ((*ymax+1)-(*depth-1));
+    //            b_origin[2] = 0;
+    //            region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
+    //            region[1] = *depth;
+    //            region[2] = 1;
+    //            break;
+    //    case 2: comm_buffer = &right_send_buffer;
+    //            buff_length = *ymax + *yinc + (2 * *depth);
+    //            buff_min = *ymin; 
+    //            b_origin[0] = ((*xmax+1)-(*depth-1))*sizeof(double);
+    //            b_origin[1] = ((*ymin+1) - (*depth));
+    //            b_origin[2] = 0;
+    //            region[0] = (*depth)*sizeof(double);
+    //            region[1] = (*ymax)+*yinc+(2* *depth);
+    //            region[2] = 1;
+    //            break;
+    //    case 3: comm_buffer = &bottom_send_buffer;
+    //            buff_length = *xmax + *xinc + (2 * *depth);
+    //            buff_min = *xmin; 
+    //            b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
+    //            b_origin[1] = (*ymin+1+*yinc);
+    //            b_origin[2] = 0;
+    //            region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
+    //            region[1] = *depth;
+    //            region[2] = 1;
+    //            break;
+    //    case 4: comm_buffer = &left_send_buffer;
+    //            buff_length = *ymax + *yinc + (2 * *depth);
+    //            buff_min = *ymin; 
+    //            b_origin[0] = ((*xmin+1+*xinc)*sizeof(double));
+    //            b_origin[1] = ((*ymin+1) - (*depth));
+    //            b_origin[2] = 0;
+    //            region[0] = (*depth)*sizeof(double);
+    //            region[1] = (*ymax)+*yinc+(2* *depth);
+    //            region[2] = 1;
+    //            break;
+    //}
 
-    buff_length = buff_length * *depth;
+    //buff_length = buff_length * *depth;
 
-    try {
-        queue.enqueueReadBufferRect( *field_buffer, CL_TRUE, b_origin, h_origin, region, b_row_pitch, 
-                                     b_slice_pitch, h_row_pitch, h_slice_pitch, buffer, &global_events);
-    } catch (cl::Error err) {
-        reportError(err, "readCommunicationBuffer enqueueReadBufferRect");
-    }
+    //try {
+    //    queue.enqueueReadBufferRect( *field_buffer, CL_TRUE, b_origin, h_origin, region, b_row_pitch, 
+    //                                 b_slice_pitch, h_row_pitch, h_slice_pitch, buffer, &global_events);
+    //} catch (cl::Error err) {
+    //    reportError(err, "readCommunicationBuffer enqueueReadBufferRect");
+    //}
 }
 
 void CloverCL::writeCommunicationBuffer(
@@ -2406,101 +2264,101 @@ void CloverCL::writeCommunicationBuffer(
         double* buffer,
         int* which_edge)
 {
-    cl::Buffer* field_buffer;
-    cl::Buffer* comm_buffer;
-    cl::Kernel* comm_kernel;
-    cl::Event event1;
-    int buff_length;
-    int buff_min;
+    //cl::Buffer* field_buffer;
+    //cl::Buffer* comm_buffer;
+    //cl::Kernel* comm_kernel;
+    //cl::Event event1;
+    //int buff_length;
+    //int buff_min;
 
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    //int rank;
+    //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::stringstream ss_rank;
-    ss_rank << rank;
+    //std::stringstream ss_rank;
+    //ss_rank << rank;
 
-    switch(*field_name) {
-        case FIELD_DENSITY0: field_buffer = &density0_buffer; break;
-        case FIELD_DENSITY1: field_buffer = &density1_buffer; break;
-        case FIELD_ENERGY0: field_buffer = &energy0_buffer; break;
-        case FIELD_ENERGY1: field_buffer = &energy1_buffer; break;
-        case FIELD_PRESSURE: field_buffer = &pressure_buffer; break;
-        case FIELD_VISCOSITY: field_buffer = &viscosity_buffer; break;
-        case FIELD_SOUNDSPEED: field_buffer = &soundspeed_buffer; break;
-        case FIELD_XVEL0: field_buffer = &xvel0_buffer; break;
-        case FIELD_XVEL1: field_buffer = &xvel1_buffer; break;
-        case FIELD_YVEL0: field_buffer = &yvel0_buffer; break;
-        case FIELD_YVEL1: field_buffer = &yvel1_buffer; break;
-        case FIELD_VOL_FLUX_X: field_buffer = &vol_flux_x_buffer; break;
-        case FIELD_VOL_FLUX_Y: field_buffer = &vol_flux_y_buffer; break;
-        case FIELD_MASS_FLUX_X: field_buffer = &mass_flux_x_buffer; break;
-        case FIELD_MASS_FLUX_Y: field_buffer = &mass_flux_y_buffer; break;
-    }
+    //switch(*field_name) {
+    //    case FIELD_DENSITY0: field_buffer = &density0_buffer; break;
+    //    case FIELD_DENSITY1: field_buffer = &density1_buffer; break;
+    //    case FIELD_ENERGY0: field_buffer = &energy0_buffer; break;
+    //    case FIELD_ENERGY1: field_buffer = &energy1_buffer; break;
+    //    case FIELD_PRESSURE: field_buffer = &pressure_buffer; break;
+    //    case FIELD_VISCOSITY: field_buffer = &viscosity_buffer; break;
+    //    case FIELD_SOUNDSPEED: field_buffer = &soundspeed_buffer; break;
+    //    case FIELD_XVEL0: field_buffer = &xvel0_buffer; break;
+    //    case FIELD_XVEL1: field_buffer = &xvel1_buffer; break;
+    //    case FIELD_YVEL0: field_buffer = &yvel0_buffer; break;
+    //    case FIELD_YVEL1: field_buffer = &yvel1_buffer; break;
+    //    case FIELD_VOL_FLUX_X: field_buffer = &vol_flux_x_buffer; break;
+    //    case FIELD_VOL_FLUX_Y: field_buffer = &vol_flux_y_buffer; break;
+    //    case FIELD_MASS_FLUX_X: field_buffer = &mass_flux_x_buffer; break;
+    //    case FIELD_MASS_FLUX_Y: field_buffer = &mass_flux_y_buffer; break;
+    //}
 
-    cl::size_t<3> b_origin;
-    cl::size_t<3> h_origin;
-    cl::size_t<3> region;
+    //cl::size_t<3> b_origin;
+    //cl::size_t<3> h_origin;
+    //cl::size_t<3> region;
 
-    size_t b_row_pitch = sizeof(double) * (*xmax + *xinc + 4);
-    size_t b_slice_pitch = 0;
-    size_t h_row_pitch = 0;
-    size_t h_slice_pitch = 0;
+    //size_t b_row_pitch = sizeof(double) * (*xmax + *xinc + 4);
+    //size_t b_slice_pitch = 0;
+    //size_t h_row_pitch = 0;
+    //size_t h_slice_pitch = 0;
 
-    h_origin[0] = 0;
-    h_origin[1] = 0;
-    h_origin[2] = 0;
+    //h_origin[0] = 0;
+    //h_origin[1] = 0;
+    //h_origin[2] = 0;
 
-    switch(*which_edge) {
-        case 1: comm_buffer = &(top_send_buffer);
-                buff_length = *xmax + *xinc + (2 * *depth);
-                buff_min = *xmin; 
-                b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
-                b_origin[1] = ((*ymax+1)+1+*yinc);
-                b_origin[2] = 0;
-                region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
-                region[1] = *depth;
-                region[2] = 1;
-                break;
-        case 2: comm_buffer = &right_send_buffer;
-                buff_length = *ymax + *yinc + (2 * *depth);
-                buff_min = *ymin; 
-                b_origin[0] = ((*xmax+1)+1+*xinc)*sizeof(double);
-                b_origin[1] = ((*ymin+1) - (*depth));
-                b_origin[2] = 0;
-                region[0] = (*depth)*sizeof(double);
-                region[1] = (*ymax)+*yinc+(2* *depth);
-                region[2] = 1;
-                break;
-        case 3: comm_buffer = &bottom_send_buffer;
-                buff_length = *xmax + *xinc + (2 * *depth);
-                buff_min = *xmin; 
-                b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
-                b_origin[1] = (*ymin+1)-*depth;
-                b_origin[2] = 0;
-                region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
-                region[1] = *depth;
-                region[2] = 1;
-                break;
-        case 4: comm_buffer = &left_send_buffer;
-                buff_length = *ymax + *yinc + (2 * *depth);
-                buff_min = *ymin; 
-                b_origin[0] = ((*xmin+1-(*depth))*sizeof(double));
-                b_origin[1] = ((*ymin+1) - (*depth));
-                b_origin[2] = 0;
-                region[0] = (*depth)*sizeof(double);
-                region[1] = (*ymax)+*yinc+(2* *depth);
-                region[2] = 1;
-                break;
-    }
+    //switch(*which_edge) {
+    //    case 1: comm_buffer = &(top_send_buffer);
+    //            buff_length = *xmax + *xinc + (2 * *depth);
+    //            buff_min = *xmin; 
+    //            b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
+    //            b_origin[1] = ((*ymax+1)+1+*yinc);
+    //            b_origin[2] = 0;
+    //            region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
+    //            region[1] = *depth;
+    //            region[2] = 1;
+    //            break;
+    //    case 2: comm_buffer = &right_send_buffer;
+    //            buff_length = *ymax + *yinc + (2 * *depth);
+    //            buff_min = *ymin; 
+    //            b_origin[0] = ((*xmax+1)+1+*xinc)*sizeof(double);
+    //            b_origin[1] = ((*ymin+1) - (*depth));
+    //            b_origin[2] = 0;
+    //            region[0] = (*depth)*sizeof(double);
+    //            region[1] = (*ymax)+*yinc+(2* *depth);
+    //            region[2] = 1;
+    //            break;
+    //    case 3: comm_buffer = &bottom_send_buffer;
+    //            buff_length = *xmax + *xinc + (2 * *depth);
+    //            buff_min = *xmin; 
+    //            b_origin[0] = ((*xmin+1) - *depth)*sizeof(double);
+    //            b_origin[1] = (*ymin+1)-*depth;
+    //            b_origin[2] = 0;
+    //            region[0] = ((*xmax)+*xinc+2*(*depth))*sizeof(double);
+    //            region[1] = *depth;
+    //            region[2] = 1;
+    //            break;
+    //    case 4: comm_buffer = &left_send_buffer;
+    //            buff_length = *ymax + *yinc + (2 * *depth);
+    //            buff_min = *ymin; 
+    //            b_origin[0] = ((*xmin+1-(*depth))*sizeof(double));
+    //            b_origin[1] = ((*ymin+1) - (*depth));
+    //            b_origin[2] = 0;
+    //            region[0] = (*depth)*sizeof(double);
+    //            region[1] = (*ymax)+*yinc+(2* *depth);
+    //            region[2] = 1;
+    //            break;
+    //}
 
-    buff_length = buff_length * *depth;
+    //buff_length = buff_length * *depth;
 
-    try {
-        queue.enqueueWriteBufferRect( *field_buffer, CL_TRUE, b_origin, h_origin, region, b_row_pitch, 
-                                      b_slice_pitch, h_row_pitch, h_slice_pitch, buffer); 
-    } catch (cl::Error err) {
-        reportError(err, "writeCommunicationBuffer enqueueWriteBufferRect");
-    }
+    //try {
+    //    queue.enqueueWriteBufferRect( *field_buffer, CL_TRUE, b_origin, h_origin, region, b_row_pitch, 
+    //                                  b_slice_pitch, h_row_pitch, h_slice_pitch, buffer); 
+    //} catch (cl::Error err) {
+    //    reportError(err, "writeCommunicationBuffer enqueueWriteBufferRect");
+    //}
 }
 
 void CloverCL::readAllCommunicationBuffers(
@@ -2524,108 +2382,124 @@ void CloverCL::readAllCommunicationBuffers(
 {
 
     cl::Event event1;
+    cl_int err; 
 
     try {
-        queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
-                                (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
+        //                        (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density0, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() density0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density1, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() density1");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() energy0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy1, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() energy1");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), pressure, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() pressure");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() viscosity");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::soundspeed_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() soundspeed");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() xvel0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() xvel1");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() yvel0");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() yvel1");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::mass_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() mass_flux_x");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
-                                 (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
+        //                         (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vol_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() vol_flux_x");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::mass_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() mass_flux_y");
     }
 
     try {
-        queue.enqueueReadBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
+        //queue.enqueueReadBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
+        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vol_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, 0, NULL, NULL); 
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() vol_flux_y");
     }
@@ -2652,108 +2526,124 @@ void CloverCL::writeAllCommunicationBuffers(
 {
 
     cl::Event event1;
+    cl_int err; 
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density0, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() density0");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::density1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density1, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() density1");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
-                                 (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
+        //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy0, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() energy0");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::energy1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy1, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() energy1");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), pressure, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() pressure");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() viscosity");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::soundspeed_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() soundspeed");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() xvel0");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() xvel1");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() yvel0");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() yvel1");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::mass_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() mass_flux_x");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
-                                  (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
+        //                          (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::vol_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() vol_flux_x");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::mass_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() mass_flux_y");
     }
 
     try {
-        queue.enqueueWriteBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
-                                  (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
+        //queue.enqueueWriteBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
+        //                          (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
+        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::vol_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, 0, NULL, NULL);  
     } catch (cl::Error err) {
         reportError(err, "readAllCommunicationBuffers() vol_flux_y");
     }
@@ -2990,31 +2880,74 @@ void CloverCL::read_back_all_ocl_buffers(double* density0, double* density1, dou
                                          double* vol_flux_y, double* mass_flux_y,
                                          double* celldx, double* celldy, double* volume)
 {
+    cl_int err;
 
-    CloverCL::queue.finish();
-    CloverCL::outoforder_queue.finish(); 
+    //CloverCL::queue.finish();
+    //CloverCL::outoforder_queue.finish(); 
+    err = clFinish(CloverCL::queue_c);
+    err = clFinish(CloverCL::outoforder_queue_c);
+    
 
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::density0_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::density1_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::energy0_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::energy1_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::pressure_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::viscosity_buffer,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::soundspeed_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::xvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::xvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::yvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::yvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::vol_flux_x_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::vol_flux_y_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::mass_flux_x_buffer, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::mass_flux_y_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::density0_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::density1_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::energy0_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::energy1_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::pressure_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::viscosity_buffer,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::soundspeed_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::xvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::xvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::yvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::yvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::vol_flux_x_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::vol_flux_y_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::mass_flux_x_buffer, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::mass_flux_y_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, NULL, NULL);
 
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::celldx_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*sizeof(double), celldx, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::celldy_buffer, CL_FALSE, 0, (CloverCL::ymax_c+4)*sizeof(double), celldy, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::volume_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::density1_buffer_c,    CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::energy0_buffer_c,     CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::energy1_buffer_c,     CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::soundspeed_buffer_c,  CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::vol_flux_x_buffer_c,  CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::vol_flux_y_buffer_c,  CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::mass_flux_x_buffer_c, CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::mass_flux_y_buffer_c, CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, 0, NULL, NULL);
 
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::celldx_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*sizeof(double), celldx, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::celldy_buffer, CL_FALSE, 0, (CloverCL::ymax_c+4)*sizeof(double), celldy, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueReadBuffer(CloverCL::volume_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, NULL, NULL);
+
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::celldx_buffer_c, CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*sizeof(double), celldx, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::celldy_buffer_c, CL_FALSE, 0, 
+                              (CloverCL::ymax_c+4)*sizeof(double), celldy, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, 
+                              (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
+
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c);
 }
 
 
@@ -3025,31 +2958,73 @@ void CloverCL::write_back_all_ocl_buffers(double* density0, double* density1, do
                                          double* vol_flux_y, double* mass_flux_y,
                                          double* celldx, double* celldy, double* volume )
 {
+    cl_int err; 
 
-    CloverCL::queue.finish();
-    CloverCL::outoforder_queue.finish(); 
+    //CloverCL::queue.finish();
+    //CloverCL::outoforder_queue.finish(); 
+    err = clFinish(CloverCL::queue_c);
+    err = clFinish(CloverCL::outoforder_queue_c);
 
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::density0_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::density1_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::energy0_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::energy1_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::pressure_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::viscosity_buffer,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::soundspeed_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::xvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::xvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::yvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::yvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::vol_flux_x_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::vol_flux_y_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::mass_flux_x_buffer, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::mass_flux_y_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::density0_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::density1_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::energy0_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::energy1_buffer,     CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::pressure_buffer,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::viscosity_buffer,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::soundspeed_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::xvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::xvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::yvel0_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::yvel1_buffer,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::vol_flux_x_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::vol_flux_y_buffer,  CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::mass_flux_x_buffer, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::mass_flux_y_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, NULL, NULL);
 
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::celldx_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*sizeof(double), celldx, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::celldy_buffer, CL_FALSE, 0, (CloverCL::ymax_c+4)*sizeof(double), celldy, NULL, NULL);
-    CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::volume_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::density1_buffer_c,    CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::energy0_buffer_c,     CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::energy1_buffer_c,     CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), energy1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::soundspeed_buffer_c,  CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), soundspeed, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::vol_flux_x_buffer_c,  CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), vol_flux_x, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::vol_flux_y_buffer_c,  CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), vol_flux_y, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::mass_flux_x_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), mass_flux_x, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::mass_flux_y_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), mass_flux_y, 0, NULL, NULL);
 
-    CloverCL::outoforder_queue.finish();
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::celldx_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*sizeof(double), celldx, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::celldy_buffer, CL_FALSE, 0, (CloverCL::ymax_c+4)*sizeof(double), celldy, NULL, NULL);
+    //CloverCL::outoforder_queue.enqueueWriteBuffer(CloverCL::volume_buffer, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, NULL, NULL);
+
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::celldx_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*sizeof(double), celldx, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::celldy_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::ymax_c+4)*sizeof(double), celldy, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
+
+    //CloverCL::outoforder_queue.finish();
+    err = clFinish(CloverCL::outoforder_queue_c);
 }
 
 
@@ -3135,17 +3110,22 @@ void CloverCL::dumpBinary() {
 
     printf("Dumping binary to %s:\n", binary_name.c_str());
     try {
-        unsigned int ndevices;
-        program.getInfo(CL_PROGRAM_NUM_DEVICES, &ndevices);
+        cl_uint ndevices;
+        //program.getInfo(CL_PROGRAM_NUM_DEVICES, &ndevices);
+        err = clGetProgramInfo(CloverCL::program_c, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &ndevices, NULL);
         //printf(" ndevices in dumpBinary = %d\n", ndevices);
         
-        std::vector<size_t> sizes = std::vector<size_t>(ndevices);
-        program.getInfo(CL_PROGRAM_BINARY_SIZES, &sizes);
+        //std::vector<size_t> sizes = std::vector<size_t>(ndevices);
+        size_t sizes [ndevices];
+        //program.getInfo(CL_PROGRAM_BINARY_SIZES, &sizes);
+        err = clGetProgramInfo(CloverCL::program_c, CL_PROGRAM_BINARY_SIZES, sizeof(sizes), &sizes, NULL);
         //printf("DumpBinary sizes.size() = %d, sizes[0] = %d\n", sizes.size(), sizes[0]);
         
-        std::vector<char*> binaries = std::vector<char*>(ndevices);
+        //std::vector<char*> binaries = std::vector<char*>(ndevices);
+        char* binaries [ndevices];
         binaries[0] = new char[sizes[0]];
-        program.getInfo(CL_PROGRAM_BINARIES, &binaries);
+        //program.getInfo(CL_PROGRAM_BINARIES, &binaries);
+        err = clGetProgramInfo(CloverCL::program_c, CL_PROGRAM_BINARIES, sizeof(binaries), &binaries, NULL);
         
         //printf("Binary:\n%s\n", binaries[0]);
         FILE* file = fopen(binary_name.c_str(), "wb");

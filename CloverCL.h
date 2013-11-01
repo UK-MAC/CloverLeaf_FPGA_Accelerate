@@ -57,13 +57,6 @@ class CloverCL {
         static cl_command_queue outoforder_queue_c;
         static cl_program program_c;
 
-        static cl::Platform platform;
-        static cl::Context context;
-        static cl::Device device;
-        static cl::CommandQueue queue;
-        static cl::CommandQueue outoforder_queue;
-        static cl::Program program;
-
         static int const chunk_left   = 1;
         static int const chunk_right  = 2;
         static int const chunk_bottom = 3;
@@ -364,91 +357,6 @@ class CloverCL {
         static cl_mem cpu_ke_red_buffer_c;
         static cl_mem cpu_press_red_buffer_c;
 
-        static cl::Buffer density0_buffer;
-        static cl::Buffer density1_buffer;
-        static cl::Buffer energy0_buffer;
-        static cl::Buffer energy1_buffer;
-        static cl::Buffer pressure_buffer;
-        static cl::Buffer soundspeed_buffer;
-        static cl::Buffer celldx_buffer;
-        static cl::Buffer celldy_buffer;
-        static cl::Buffer viscosity_buffer;
-        static cl::Buffer xvel0_buffer;
-        static cl::Buffer yvel0_buffer;
-        static cl::Buffer xvel1_buffer;
-        static cl::Buffer yvel1_buffer;
-        static cl::Buffer xarea_buffer;
-        static cl::Buffer yarea_buffer;
-        static cl::Buffer vol_flux_x_buffer;
-        static cl::Buffer vol_flux_y_buffer;
-        static cl::Buffer mass_flux_x_buffer;
-        static cl::Buffer mass_flux_y_buffer;
-        static cl::Buffer stepbymass_buffer;
-        static cl::Buffer volume_buffer;
-
-        static cl::Buffer vol_tmp_buffer;
-        static cl::Buffer mass_tmp_buffer;
-        static cl::Buffer ie_tmp_buffer;
-        static cl::Buffer ke_tmp_buffer;
-        static cl::Buffer press_tmp_buffer;
-
-        static cl::Buffer node_flux_buffer;
-        static cl::Buffer node_mass_post_buffer;
-        static cl::Buffer node_mass_pre_buffer;
-        static cl::Buffer advec_vel_buffer;
-        static cl::Buffer mom_flux_buffer;
-        static cl::Buffer pre_vol_buffer;
-        static cl::Buffer post_vol_buffer;
-
-        static cl::Buffer vertexdx_buffer;
-        static cl::Buffer vertexx_buffer;
-        static cl::Buffer vertexdy_buffer;
-        static cl::Buffer vertexy_buffer;
-        static cl::Buffer cellx_buffer;
-        static cl::Buffer celly_buffer;
-
-        static cl::Buffer dt_min_val_array_buffer;
-        static cl::Buffer dt_min_val_buffer;
-
-        static cl::Buffer vol_sum_val_buffer;
-        static cl::Buffer mass_sum_val_buffer;
-        static cl::Buffer ie_sum_val_buffer;
-        static cl::Buffer ke_sum_val_buffer;
-        static cl::Buffer press_sum_val_buffer;
-
-        static cl::Buffer pre_mass_buffer;
-        static cl::Buffer post_mass_buffer;
-        static cl::Buffer advec_vol_buffer;
-        static cl::Buffer post_ener_buffer;
-        static cl::Buffer ener_flux_buffer;
-
-        static cl::Buffer state_density_buffer;
-        static cl::Buffer state_energy_buffer;
-        static cl::Buffer state_xvel_buffer;
-        static cl::Buffer state_yvel_buffer;
-        static cl::Buffer state_xmin_buffer;
-        static cl::Buffer state_xmax_buffer;
-        static cl::Buffer state_ymin_buffer;
-        static cl::Buffer state_ymax_buffer;
-        static cl::Buffer state_radius_buffer;
-        static cl::Buffer state_geometry_buffer;
-
-        static cl::Buffer top_send_buffer;
-        static cl::Buffer top_recv_buffer;
-        static cl::Buffer bottom_send_buffer;
-        static cl::Buffer bottom_recv_buffer;
-        static cl::Buffer left_send_buffer;
-        static cl::Buffer left_recv_buffer;
-        static cl::Buffer right_send_buffer;
-        static cl::Buffer right_recv_buffer;
-
-        static cl::Buffer cpu_min_red_buffer;
-        static cl::Buffer cpu_vol_red_buffer;
-        static cl::Buffer cpu_mass_red_buffer;
-        static cl::Buffer cpu_ie_red_buffer;
-        static cl::Buffer cpu_ke_red_buffer;
-        static cl::Buffer cpu_press_red_buffer;
-
         static cl_kernel ideal_gas_predict_knl_c;
         static cl_kernel ideal_gas_NO_predict_knl_c;
         static cl_kernel viscosity_knl_c;
@@ -511,96 +419,6 @@ class CloverCL {
         static cl_kernel write_bottom_buffer_knl_c;
         static cl_kernel write_left_buffer_knl_c;
 
-        static cl::Kernel ideal_gas_predict_knl;
-        static cl::Kernel ideal_gas_NO_predict_knl;
-        static cl::Kernel viscosity_knl;
-        static cl::Kernel flux_calc_knl;
-        static cl::Kernel accelerate_knl;
-
-        static cl::Kernel advec_cell_xdir_sec1_s1_knl;
-        static cl::Kernel advec_cell_xdir_sec1_s2_knl;
-        static cl::Kernel advec_cell_xdir_sec2_knl;
-        static cl::Kernel advec_cell_xdir_sec3_knl;
-        static cl::Kernel advec_cell_ydir_sec1_s1_knl;
-        static cl::Kernel advec_cell_ydir_sec1_s2_knl;
-        static cl::Kernel advec_cell_ydir_sec2_knl;
-        static cl::Kernel advec_cell_ydir_sec3_knl;
-
-        static cl::Kernel advec_mom_vol_knl;
-        static cl::Kernel advec_mom_node_mass_pre_x_knl;
-        static cl::Kernel advec_mom_node_x_knl;
-        static cl::Kernel advec_mom_flux_x_vec1_knl;
-        static cl::Kernel advec_mom_flux_x_vecnot1_knl;
-        static cl::Kernel advec_mom_vel_x_knl;
-        static cl::Kernel advec_mom_node_y_knl;
-        static cl::Kernel advec_mom_node_mass_pre_y_knl;
-        static cl::Kernel advec_mom_flux_y_vec1_knl;
-        static cl::Kernel advec_mom_flux_y_vecnot1_knl;
-        static cl::Kernel advec_mom_vel_y_knl;
-
-        static cl::Kernel dt_calc_knl;
-
-        static cl::Kernel minimum_red_knl;
-        static cl::Kernel vol_sum_red_knl;
-        static cl::Kernel mass_sum_red_knl;
-        static cl::Kernel ie_sum_red_knl;
-        static cl::Kernel ke_sum_red_knl;
-        static cl::Kernel press_sum_red_knl;
-
-        static cl::Kernel minimum_red_last_knl;
-        static cl::Kernel vol_sum_red_last_knl;
-        static cl::Kernel mass_sum_red_last_knl;
-        static cl::Kernel ie_sum_red_last_knl;
-        static cl::Kernel ke_sum_red_last_knl;
-        static cl::Kernel press_sum_red_last_knl;
-
-        static cl::Kernel pdv_correct_knl;
-        static cl::Kernel pdv_predict_knl;
-        static cl::Kernel reset_field_knl;
-        static cl::Kernel revert_knl;
-
-        static cl::Kernel generate_chunk_knl;
-        static cl::Kernel initialise_chunk_cell_x_knl;
-        static cl::Kernel initialise_chunk_cell_y_knl;
-        static cl::Kernel initialise_chunk_vertex_x_knl;
-        static cl::Kernel initialise_chunk_vertex_y_knl;
-        static cl::Kernel initialise_chunk_volume_area_knl;
-        static cl::Kernel field_summary_knl;
-
-        static cl::Kernel update_halo_left_cell_knl;
-        static cl::Kernel update_halo_right_cell_knl;
-        static cl::Kernel update_halo_top_cell_knl;
-        static cl::Kernel update_halo_bottom_cell_knl;
-        static cl::Kernel update_halo_left_vel_knl;
-        static cl::Kernel update_halo_right_vel_knl;
-        static cl::Kernel update_halo_top_vel_knl;
-        static cl::Kernel update_halo_bottom_vel_knl;
-        static cl::Kernel update_halo_left_flux_x_knl;
-        static cl::Kernel update_halo_right_flux_x_knl;
-        static cl::Kernel update_halo_top_flux_x_knl;
-        static cl::Kernel update_halo_bottom_flux_x_knl;
-        static cl::Kernel update_halo_left_flux_y_knl;
-        static cl::Kernel update_halo_right_flux_y_knl;
-        static cl::Kernel update_halo_top_flux_y_knl;
-        static cl::Kernel update_halo_bottom_flux_y_knl;
-
-        static cl::Kernel read_top_buffer_knl;
-        static cl::Kernel read_right_buffer_knl;
-        static cl::Kernel read_bottom_buffer_knl;
-        static cl::Kernel read_left_buffer_knl;
-
-        static cl::Kernel write_top_buffer_knl;
-        static cl::Kernel write_right_buffer_knl;
-        static cl::Kernel write_bottom_buffer_knl;
-        static cl::Kernel write_left_buffer_knl;
-
-        static cl::Kernel minimum_red_cpu_knl;
-        static cl::Kernel vol_sum_red_cpu_knl; 
-        static cl::Kernel mass_sum_red_cpu_knl; 
-        static cl::Kernel ie_sum_red_cpu_knl; 
-        static cl::Kernel ke_sum_red_cpu_knl; 
-        static cl::Kernel press_sum_red_cpu_knl; 
-
         static std::vector<cl_kernel> min_reduction_kernels;
         static std::vector<cl_kernel> vol_sum_reduction_kernels;
         static std::vector<cl_kernel> mass_sum_reduction_kernels;
@@ -608,8 +426,8 @@ class CloverCL {
         static std::vector<cl_kernel> ke_sum_reduction_kernels;
         static std::vector<cl_kernel> press_sum_reduction_kernels;
 
-        static std::vector<int> num_workitems_tolaunch;
-        static std::vector<int> num_workitems_per_wg;
+        static std::vector<size_t> num_workitems_tolaunch;
+        static std::vector<size_t> num_workitems_per_wg;
         static std::vector<int> local_mem_size;
         static std::vector<int> size_limits;
         static std::vector<int> buffer_sizes;
@@ -631,7 +449,7 @@ class CloverCL {
         static std::vector<int> press_local_memory_objects;
 
     private:
-        static std::vector<cl::Event> global_events;
+        //static std::vector<cl::Event> global_events;
 };
 
 #endif
