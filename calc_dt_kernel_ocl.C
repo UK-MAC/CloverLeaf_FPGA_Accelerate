@@ -105,47 +105,41 @@ void calc_dt_kernel_ocl_(
 
 
     // Run the reduction kernels 
-    try {
-    
-        for (int i=1; i<=CloverCL::number_of_red_levels; i++) {
+    for (int i=1; i<=CloverCL::number_of_red_levels; i++) {
 
 #ifdef OCL_VERBOSE
-            std::cout << "Entering DT calc reduction level: " << i << std::endl; 
+        std::cout << "Entering DT calc reduction level: " << i << std::endl; 
 #endif
 
-            //err = CloverCL::queue.enqueueNDRangeKernel(CloverCL::min_reduction_kernels[i-1], cl::NullRange, 
-            //                                           cl::NDRange(CloverCL::num_workitems_tolaunch[i-1]),
-        	//			                               cl::NDRange(CloverCL::num_workitems_per_wg[i-1]), 
-        	//			                               NULL, NULL); 
+        //err = CloverCL::queue.enqueueNDRangeKernel(CloverCL::min_reduction_kernels[i-1], cl::NullRange, 
+        //                                           cl::NDRange(CloverCL::num_workitems_tolaunch[i-1]),
+        //			                               cl::NDRange(CloverCL::num_workitems_per_wg[i-1]), 
+        //			                               NULL, NULL); 
 
-            err = clEnqueueNDRangeKernel(CloverCL::queue_c, CloverCL::min_reduction_kernels[i-1], 1, NULL, 
-                                         &CloverCL::num_workitems_tolaunch[i-1], &CloverCL::num_workitems_per_wg[i-1], 
-                                         0, NULL, NULL); 
-        } 
+        err = clEnqueueNDRangeKernel(CloverCL::queue_c, CloverCL::min_reduction_kernels[i-1], 1, NULL, 
+                                     &CloverCL::num_workitems_tolaunch[i-1], &CloverCL::num_workitems_per_wg[i-1], 
+                                     0, NULL, NULL); 
+        CloverCL::checkErr(err, "Calc dt OCL kernel Reduction launch");
+    } 
         
-        //clfinish required to force execution of the above reduction kernels 
-        //as without this experience a large slowdown at least on Nvidia    
-        //CloverCL::queue.finish();
-        err = clFinish(CloverCL::queue_c); 
+    //clfinish required to force execution of the above reduction kernels 
+    //as without this experience a large slowdown at least on Nvidia    
+    //CloverCL::queue.finish();
+    err = clFinish(CloverCL::queue_c); 
+
+    CloverCL::checkErr(err, "clFinish in calc dt reduction");
     
-    } catch(cl::Error err) {
-        CloverCL::reportError(err, "[CloverCL] ERROR: at min reduction kernel launch in loop");
-    }
 
     /*
      * Read data back with a blocking read
      */
-    try { 
+    //err = CloverCL::queue.enqueueReadBuffer(CloverCL::dt_min_val_buffer, CL_TRUE, 0, 
+    //                                        sizeof(double), dt_min_val, NULL, NULL);
 
-        //err = CloverCL::queue.enqueueReadBuffer(CloverCL::dt_min_val_buffer, CL_TRUE, 0, 
-        //                                        sizeof(double), dt_min_val, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::dt_min_val_buffer_c, CL_TRUE, 0, 
+                              sizeof(double), dt_min_val, 0, NULL, NULL); 
 
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::dt_min_val_buffer_c, CL_TRUE, 0, 
-                                  sizeof(double), dt_min_val, 0, NULL, NULL); 
-
-    } catch(cl::Error err) {
-        CloverCL::reportError(err, "[CloverCL] ERROR: at dt_calc_knl read data back stage");
-    }
+    CloverCL::checkErr(err, "Calc dt OCL kernel read buffer back");
 
 
     // Extract the mimimum timestep information

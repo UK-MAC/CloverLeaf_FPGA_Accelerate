@@ -70,131 +70,128 @@ void generate_chunk_kernel_ocl_(
     gettimeofday(&t_start, NULL);
 #endif
 
-    cl::Event event1, event2, event3, event4, event5, event6, event7, event8, event9, event10;
-    std::vector<cl::Event> events;
+    //cl::Event event1, event2, event3, event4, event5, event6, event7, event8, event9, event10;
+    //std::vector<cl::Event> events;
     cl_int err; 
 
 #ifdef OCL_VERBOSE
     std::cout << "Num states = " << *nm_stes << std::endl;
 #endif
 
-    try {
-        //CloverCL::generate_chunk_knl.setArg(8, *nm_stes);
-        //CloverCL::generate_chunk_knl.setArg(19, *g_rect);
-        //CloverCL::generate_chunk_knl.setArg(20, *g_circ);
+    //CloverCL::generate_chunk_knl.setArg(8, *nm_stes);
+    //CloverCL::generate_chunk_knl.setArg(19, *g_rect);
+    //CloverCL::generate_chunk_knl.setArg(20, *g_circ);
 
-        err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 8, sizeof(int), nm_stes);
-        err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 19, sizeof(int), g_rect);
-        err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 20, sizeof(int), g_circ);
-    } catch (cl::Error err) {
-        CloverCL::reportError(err, " generate_chunk_knl setting arguments");
-    }
+    err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 8, sizeof(int), nm_stes);
+    err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 19, sizeof(int), g_rect);
+    err = clSetKernelArg(CloverCL::generate_chunk_knl_c, 20, sizeof(int), g_circ);
 
-    try {
+    CloverCL::checkErr(err, "Generate Chunk OCL kernel arg setting");
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_density_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_density, 0, NULL, NULL); 
 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_density_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_density,
-        //        NULL,
-        //        &event1);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_density_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_density, 0, NULL, NULL); 
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_energy_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_energy, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_energy_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_energy,
-        //        NULL,
-        //        &event2);
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_density_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_density,
+    //        NULL,
+    //        &event1);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xvel_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xvel, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_xvel_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_xvel,
-        //        NULL,
-        //        &event3);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_energy_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_energy, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_energy_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_energy,
+    //        NULL,
+    //        &event2);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_yvel_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_yvel, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_yvel_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_yvel,
-        //        NULL,
-        //        &event4);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xvel_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xvel, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_xvel_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_xvel,
+    //        NULL,
+    //        &event3);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xmin_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xmin, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_xmin_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_xmin,
-        //        NULL,
-        //        &event5);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_yvel_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_yvel, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_yvel_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_yvel,
+    //        NULL,
+    //        &event4);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xmax_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xmax, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_xmax_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_xmax,
-        //        NULL,
-        //        &event6);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xmin_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xmin, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_xmin_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_xmin,
+    //        NULL,
+    //        &event5);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_ymin_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_ymin, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_ymin_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_ymin,
-        //        NULL,
-        //        &event7);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_xmax_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_xmax, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_xmax_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_xmax,
+    //        NULL,
+    //        &event6);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_ymax_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_ymax, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_ymax_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_ymax,
-        //        NULL,
-        //        &event8);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_ymin_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_ymin, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_ymin_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_ymin,
+    //        NULL,
+    //        &event7);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_radius_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_radius, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_radius_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(double),
-        //        state_radius,
-        //        NULL,
-        //        &event9);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_ymax_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_ymax, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_ymax_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_ymax,
+    //        NULL,
+    //        &event8);
 
-        err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_geometry_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_geometry, 0, NULL, NULL); 
-        //CloverCL::queue.enqueueWriteBuffer(
-        //        CloverCL::state_geometry_buffer,
-        //        CL_FALSE,
-        //        0,
-        //        *nm_stes*sizeof(int),
-        //        state_geometry,
-        //        NULL,
-        //        &event10);
-    } catch (cl::Error err) {
-        CloverCL::reportError(err, "generate_chunk_knl filling buffers");
-    }
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_radius_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_radius, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_radius_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(double),
+    //        state_radius,
+    //        NULL,
+    //        &event9);
+
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_geometry_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_geometry, 0, NULL, NULL); 
+    //CloverCL::queue.enqueueWriteBuffer(
+    //        CloverCL::state_geometry_buffer,
+    //        CL_FALSE,
+    //        0,
+    //        *nm_stes*sizeof(int),
+    //        state_geometry,
+    //        NULL,
+    //        &event10);
+
+    CloverCL::checkErr(err, "Generate Chunk OCL Kerenl Buffer writes"); 
+
 
     //events.push_back(event1);
     //events.push_back(event2);
@@ -211,6 +208,8 @@ void generate_chunk_kernel_ocl_(
     //events.clear();
 
     err = clEnqueueBarrier(CloverCL::queue_c);
+
+    CloverCL::checkErr(err, "Generate Chunk OCL Kernel enqueue barrier");
 
     CloverCL::enqueueKernel( CloverCL::generate_chunk_knl_c, *xmin, *xmax+4, *ymin, *ymax+4);
 

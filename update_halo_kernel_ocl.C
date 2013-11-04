@@ -103,23 +103,20 @@ void update_halo_kernel_ocl_(
 
     if ( fields[ARRAY1D(CloverCL::field_density0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
-                //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
-                //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density0_buffer);
-                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
-                err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
+            //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
+            //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density0_buffer);
+            err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
+            err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
-                                               CloverCL::xmax_plusfour_rounded,*depth,
-                                               CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
+            err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                                           CloverCL::xmax_plusfour_rounded,*depth,
+                                           CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
 
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density0 running bottom knl");
-            }
+            CloverCL::checkErr(err, "update halo density0 running bottom knl");
+
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density0_buffer);
@@ -129,15 +126,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density0 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo density0 running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_density1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::density1_buffer);
@@ -147,12 +141,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density1 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo density1 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::density1_buffer);
@@ -162,16 +153,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density1 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo density1 running top knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_energy0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy0_buffer);
@@ -181,12 +169,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy0 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo energy0 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy0_buffer);
@@ -196,16 +181,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy0 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo energy0 running top knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_energy1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::energy1_buffer);
@@ -215,12 +197,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy1 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo energy1 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::energy1_buffer);
@@ -230,16 +209,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy1 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo energy1 running top knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_pressure,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::pressure_buffer);
@@ -249,12 +225,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo pressure running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo pressure running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::pressure_buffer);
@@ -264,15 +237,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo pressure running top knl");
-            }
+                CloverCL::checkErr(err, "update halo pressure running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_viscosity,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::viscosity_buffer);
@@ -282,12 +252,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo viscosity running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo viscosity running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::viscosity_buffer);
@@ -297,15 +264,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo viscosity running top knl");
-            }
+                CloverCL::checkErr(err, "update halo viscosity running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_soundspeed,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
@@ -315,12 +279,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo soundspeed running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo soundspeed running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
@@ -330,15 +291,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo soundspeed running top knl");
-            }
+                CloverCL::checkErr(err, "update halo soundspeed running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_xvel0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel0_buffer);
@@ -350,12 +308,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo xvel0 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel0 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel0_buffer);
@@ -367,15 +322,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo xvel0 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel0 running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_xvel1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::xvel1_buffer);
@@ -387,12 +339,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo ? running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel1 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::xvel1_buffer);
@@ -404,15 +353,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo ? running top knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel1 running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_yvel0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel0_buffer);
@@ -424,12 +370,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel0 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel0 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel0_buffer);
@@ -441,15 +384,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel0 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel0 running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_yvel1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_vel_knl.setArg(1, CloverCL::yvel1_buffer);
@@ -461,12 +401,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel1 running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel1 running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_vel_knl.setArg(1, CloverCL::yvel1_buffer);
@@ -478,15 +415,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel1 running top knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel1 running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_vol_flux_x,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
@@ -496,12 +430,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_x running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_x running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
@@ -511,15 +442,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_x running top knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_x running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_vol_flux_y,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
@@ -529,12 +457,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_y running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_y running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
@@ -544,15 +469,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_y running top knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_y running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_mass_flux_x,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
@@ -562,12 +484,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_x running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_x running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
@@ -577,15 +496,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_x running top knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_x running top knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_mass_flux_y,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_bottom,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_bottom_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_bottom_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
@@ -595,12 +511,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_y running bottom knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_y running bottom knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_top,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_top_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_top_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
@@ -610,9 +523,7 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_y running top knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_y running top knl");
         }
     }
 
@@ -621,12 +532,13 @@ void update_halo_kernel_ocl_(
     //CloverCL::outoforder_queue.enqueueBarrier();
     err = clEnqueueBarrier(CloverCL::outoforder_queue_c);
 
+    CloverCL::checkErr(err, "Update Halo OCL kernel Barrier");
+
 
     /* Perform left and right halo updates in parallel  */
 
     if ( fields[ARRAY1D(CloverCL::field_density0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density0_buffer);
@@ -636,12 +548,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density0 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo density0 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density0_buffer);
@@ -651,16 +560,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density0 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo density0 running right knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_density1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::density1_buffer);
@@ -670,12 +576,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density1 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo density1 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::density1_buffer);
@@ -685,16 +588,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo density1 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo density1 running right knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_energy0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy0_buffer);
@@ -704,12 +604,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy0 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo energy0 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy0_buffer);
@@ -719,16 +616,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy0 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo energy0 running right knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_energy1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::energy1_buffer);
@@ -738,12 +632,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy1 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo energy1 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::energy1_buffer);
@@ -753,16 +644,13 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo energy1 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo energy1 running right knl");
         }
     }
 
 
     if ( fields[ARRAY1D(CloverCL::field_pressure,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::pressure_buffer);
@@ -772,12 +660,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo pressure running left knl");
-            }
+                CloverCL::checkErr(err, "update halo pressure running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::pressure_buffer);
@@ -787,15 +672,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo pressure running right knl");
-            }
+                CloverCL::checkErr(err, "update halo pressure running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_viscosity,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::viscosity_buffer);
@@ -805,12 +687,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo viscosity running left knl");
-            }
+                CloverCL::checkErr(err, "update halo viscosity running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::viscosity_buffer);
@@ -820,15 +699,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo viscosity running right knl");
-            }
+                CloverCL::checkErr(err, "update halo viscosity running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_soundspeed,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
@@ -838,12 +714,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo soundspeed running left knl");
-            }
+                CloverCL::checkErr(err, "update halo soundspeed running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_cell_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_cell_knl.setArg(1, CloverCL::soundspeed_buffer);
@@ -853,15 +726,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo soundspeed running right knl");
-            }
+                CloverCL::checkErr(err, "update halo soundspeed running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_xvel0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel0_buffer);
@@ -873,12 +743,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo xvel0 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel0 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel0_buffer);
@@ -890,15 +757,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo xvel0 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel0 running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_xvel1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::xvel1_buffer);
@@ -910,12 +774,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo ? running left knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel1 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::xvel1_buffer);
@@ -927,15 +788,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo ? running right knl");
-            }
+                CloverCL::checkErr(err, "update halo xvel1 running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_yvel0,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel0_buffer);
@@ -947,12 +805,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel0 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel0 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel0_buffer);
@@ -964,15 +819,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel0 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel0 running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_yvel1,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_vel_knl.setArg(1, CloverCL::yvel1_buffer);
@@ -985,12 +837,9 @@ void update_halo_kernel_ocl_(
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
 
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel1 running left knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel1 running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_vel_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_vel_knl.setArg(1, CloverCL::yvel1_buffer);
@@ -1002,15 +851,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo yvel1 running right knl");
-            }
+                CloverCL::checkErr(err, "update halo yvel1 running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_vol_flux_x,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
@@ -1020,12 +866,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_x running left knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_x running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::vol_flux_x_buffer);
@@ -1035,15 +878,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_x running right knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_x running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_vol_flux_y,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
@@ -1053,12 +893,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_y running left knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_y running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::vol_flux_y_buffer);
@@ -1068,15 +905,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo vol_flux_y running right knl");
-            }
+                CloverCL::checkErr(err, "update halo vol_flux_y running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_mass_flux_x,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
@@ -1086,12 +920,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_x running left knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_x running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_flux_x_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_flux_x_knl.setArg(1, CloverCL::mass_flux_x_buffer);
@@ -1101,15 +932,12 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_x running right knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_x running right knl");
         }
     }
 
     if ( fields[ARRAY1D(CloverCL::field_mass_flux_y,1)] == 1 ) {
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_left,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_left_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_left_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
@@ -1119,12 +947,9 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_y running left knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_y running left knl");
         }
         if (chunk_neighbours[ARRAY1D(CloverCL::chunk_right,1)] == CloverCL::external_face) {
-            try {
 
                 //CloverCL::update_halo_right_flux_y_knl.setArg(0, *depth);
                 //CloverCL::update_halo_right_flux_y_knl.setArg(1, CloverCL::mass_flux_y_buffer);
@@ -1134,9 +959,7 @@ void update_halo_kernel_ocl_(
                 err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
-            } catch(cl::Error err) {
-                CloverCL::reportError(err, "update halo mass_flux_y running right knl");
-            }
+                CloverCL::checkErr(err, "update halo mass_flux_y running right knl");
         }
     }
 
@@ -1146,6 +969,8 @@ void update_halo_kernel_ocl_(
      */
     //CloverCL::outoforder_queue.finish();
     err = clFinish(CloverCL::outoforder_queue_c); 
+
+    CloverCL::checkErr(err, "update halo OCL kernel clfinish at end of kernel");
 
 
 

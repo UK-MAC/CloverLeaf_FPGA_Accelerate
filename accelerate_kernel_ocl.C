@@ -54,14 +54,10 @@ extern "C" void accelerate_kernel_ocl_(
 #endif
     cl_int err; 
 
-    try {
-        //CloverCL::accelerate_knl.setArg(0, *dbyt);
+    //CloverCL::accelerate_knl.setArg(0, *dbyt);
+    err = clSetKernelArg(CloverCL::accelerate_knl_c, 0, sizeof(double), dbyt);
 
-        err = clSetKernelArg(CloverCL::accelerate_knl_c, 0, sizeof(double), dbyt);
-
-    } catch(cl::Error err) {
-        CloverCL::reportError(err, "accelerate_knl setting arguments");
-    }
+    CloverCL::checkErr(err, "accelerate OCL Kernel arg setting");
 
     CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl_c, *xmax+3, *ymax+3);
 

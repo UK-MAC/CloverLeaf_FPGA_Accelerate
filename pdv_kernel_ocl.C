@@ -54,21 +54,21 @@ extern "C" void pdv_kernel_ocl_(
     gettimeofday(&t_start, NULL);
 #endif
 
-    try {
-        if( *prdct == 0) {
-            //CloverCL::pdv_correct_knl.setArg(0, *dtbyt);
-            clSetKernelArg(CloverCL::pdv_correct_knl_c, 0, sizeof(double), dtbyt);
-    
-            CloverCL::enqueueKernel_nooffsets( CloverCL::pdv_correct_knl_c, *xmax+2, *ymax+2);
-        } else {
-            //CloverCL::pdv_predict_knl.setArg(0, *dtbyt);
-            clSetKernelArg(CloverCL::pdv_predict_knl_c, 0, sizeof(double), dtbyt);
+    cl_int err;
 
-            CloverCL::enqueueKernel_nooffsets( CloverCL::pdv_predict_knl_c, *xmax+2, *ymax+2);
-        }
-    } catch(cl::Error err) {
-        CloverCL::reportError(err, "pdv_knl setting arguments");
+    if( *prdct == 0) {
+        //CloverCL::pdv_correct_knl.setArg(0, *dtbyt);
+        err = clSetKernelArg(CloverCL::pdv_correct_knl_c, 0, sizeof(double), dtbyt);
+    
+        CloverCL::enqueueKernel_nooffsets( CloverCL::pdv_correct_knl_c, *xmax+2, *ymax+2);
+    } else {
+        //CloverCL::pdv_predict_knl.setArg(0, *dtbyt);
+        err = clSetKernelArg(CloverCL::pdv_predict_knl_c, 0, sizeof(double), dtbyt);
+
+        CloverCL::enqueueKernel_nooffsets( CloverCL::pdv_predict_knl_c, *xmax+2, *ymax+2);
     }
+
+    CloverCL::checkErr(err, "PDV OCL Kernel setting args"); 
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;

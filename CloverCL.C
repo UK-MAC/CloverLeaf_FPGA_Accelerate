@@ -2067,65 +2067,41 @@ void CloverCL::readVisualisationBuffers(
                 double* yvel0)
 {
 
-    cl::Event event1, event2, event3, event4, event5, event6, event7, event8;
-    std::vector<cl::Event> events;
+    //cl::Event event1, event2, event3, event4, event5, event6, event7, event8;
+    //std::vector<cl::Event> events;
     cl_int err; 
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::vertexx_buffer, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, NULL, &event1);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexx_buffer_c, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() vertexx");
-    }
+    //queue.enqueueReadBuffer( CloverCL::vertexx_buffer, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, NULL, &event1);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexx_buffer_c, CL_FALSE, 0, (x_max+5)*sizeof(double), vertexx, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() vertexx");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::vertexy_buffer, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, NULL, &event2);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexy_buffer_c, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() vertexy");
-    }
+    //queue.enqueueReadBuffer( CloverCL::vertexy_buffer, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, NULL, &event2);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vertexy_buffer_c, CL_FALSE, 0, (y_max+5)*sizeof(double), vertexy, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() vertexy");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, NULL, &event3);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, 0, NULL, NULL ); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() density0");
-    }
+    //queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, NULL, &event3);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), density0, 0, NULL, NULL ); 
+    checkErr(err, "readVisualisationBuffers() density0");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, NULL, &event4);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() energy0");
-    }
+    //queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, NULL, &event4);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), energy0, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() energy0");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, NULL, &event5);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() pressure");
-    }
+    //queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, NULL, &event5);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), pressure, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() pressure");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, NULL, &event6);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() viscosity");
-    }
+    //queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, NULL, &event6);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_FALSE, 0, (x_max+4)*(y_max+4)*sizeof(double), viscosity, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() viscosity");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, NULL, &event7);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() xvel0");
-    }
+    //queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, NULL, &event7);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), xvel0, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() xvel0");
 
-    try {
-        //queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, NULL, &event8);
-        err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readVisualisationBuffers() yvel0");
-    }
+    //queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, NULL, &event8);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_FALSE, 0, (x_max+5)*(y_max+5)*sizeof(double), yvel0, 0, NULL, NULL); 
+    checkErr(err, "readVisualisationBuffers() yvel0");
 
     //events.push_back(event1);
     //events.push_back(event2);
@@ -2381,128 +2357,83 @@ void CloverCL::readAllCommunicationBuffers(
         double* mass_flux_y)
 {
 
-    cl::Event event1;
+    //cl::Event event1;
     cl_int err; 
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
         //                        (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density0, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() density0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() density0");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::density1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density1, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() density1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() density1");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() energy0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() energy0");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::energy1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy1, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() energy1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() energy1");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), pressure, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() pressure");
-    }
+        checkErr(err, "readAllCommunicationBuffers() pressure");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() viscosity");
-    }
+        checkErr(err, "readAllCommunicationBuffers() viscosity");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::soundspeed_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() soundspeed");
-    }
+        checkErr(err, "readAllCommunicationBuffers() soundspeed");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() xvel0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() xvel0");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() xvel1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() xvel1");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() yvel0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() yvel0");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() yvel1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() yvel1");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::mass_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() mass_flux_x");
-    }
+        checkErr(err, "readAllCommunicationBuffers() mass_flux_x");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
         //                         (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vol_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() vol_flux_x");
-    }
+        checkErr(err, "readAllCommunicationBuffers() vol_flux_x");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::mass_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() mass_flux_y");
-    }
+        checkErr(err, "readAllCommunicationBuffers() mass_flux_y");
 
-    try {
         //queue.enqueueReadBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
         err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::vol_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, 0, NULL, NULL); 
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() vol_flux_y");
-    }
+        checkErr(err, "readAllCommunicationBuffers() vol_flux_y");
 }
 
 void CloverCL::writeAllCommunicationBuffers(
@@ -2525,128 +2456,83 @@ void CloverCL::writeAllCommunicationBuffers(
         double* mass_flux_y)
 {
 
-    cl::Event event1;
+    //cl::Event event1;
     cl_int err; 
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::density0_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+4)*sizeof(double), density0, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density0, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() density0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() density0");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::density1_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), density1, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::density1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), density1, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() density1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() density1");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::energy0_buffer, CL_TRUE, 0, 
         //                         (*x_max+4)*(*y_max+4)*sizeof(double), energy0, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::energy0_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy0, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() energy0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() energy0");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::energy1_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+4)*sizeof(double), energy1, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::energy1_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), energy1, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() energy1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() energy1");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::pressure_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+4)*sizeof(double), pressure, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), pressure, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() pressure");
-    }
+        checkErr(err, "readAllCommunicationBuffers() pressure");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::viscosity_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), viscosity, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() viscosity");
-    }
+        checkErr(err, "readAllCommunicationBuffers() viscosity");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::soundspeed_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::soundspeed_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+4)*sizeof(double), soundspeed, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() soundspeed");
-    }
+        checkErr(err, "readAllCommunicationBuffers() soundspeed");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::xvel0_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel0, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() xvel0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() xvel0");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::xvel1_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), xvel1, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() xvel1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() xvel1");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::yvel0_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel0, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() yvel0");
-    }
+        checkErr(err, "readAllCommunicationBuffers() yvel0");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::yvel1_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+5)*sizeof(double), yvel1, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() yvel1");
-    }
+        checkErr(err, "readAllCommunicationBuffers() yvel1");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::mass_flux_x_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::mass_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), mass_flux_x, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() mass_flux_x");
-    }
+        checkErr(err, "readAllCommunicationBuffers() mass_flux_x");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::vol_flux_x_buffer, CL_TRUE, 0, 
         //                          (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::vol_flux_x_buffer_c, CL_TRUE, 0, (*x_max+5)*(*y_max+4)*sizeof(double), vol_flux_x, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() vol_flux_x");
-    }
+        checkErr(err, "readAllCommunicationBuffers() vol_flux_x");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::mass_flux_y_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::mass_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), mass_flux_y, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() mass_flux_y");
-    }
+        checkErr(err, "readAllCommunicationBuffers() mass_flux_y");
 
-    try {
         //queue.enqueueWriteBuffer( CloverCL::vol_flux_y_buffer, CL_TRUE, 0, 
         //                          (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, NULL, &event1);
         err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::vol_flux_y_buffer_c, CL_TRUE, 0, (*x_max+4)*(*y_max+5)*sizeof(double), vol_flux_y, 0, NULL, NULL);  
-    } catch (cl::Error err) {
-        reportError(err, "readAllCommunicationBuffers() vol_flux_y");
-    }
+        checkErr(err, "readAllCommunicationBuffers() vol_flux_y");
 }
 
 void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
@@ -2672,7 +2558,6 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
         y_rnd = y_rnd + fixed_wg_min_size_small_dim; 
     }
 
-    try {
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
@@ -2680,7 +2565,8 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
         //queue.enqueueNDRangeKernel( kernel, cl::NullRange, cl::NDRange(x_rnd, y_rnd), 
         //                            cl::NDRange(fixed_wg_min_size_large_dim,fixed_wg_min_size_small_dim), 
         //                            NULL, &last_event); 
-    } catch(cl::Error err) {
+
+    if ( err != CL_SUCCESS) {
 
         size_t kernel_name_size;
         char *kernel_name;
@@ -2751,13 +2637,14 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, 
     size_t offsets [2] = {x_min, y_min};
     size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
 
-    try {
         //queue.enqueueNDRangeKernel( kernel, cl::NDRange(x_min, y_min), cl::NDRange(x_max_opt, y_max), 
         //                            cl::NDRange(fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim), 
         //                            NULL, &last_event);
 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, offsets, global_wi, local_wi, 0, NULL, &last_event); 
-    } catch(cl::Error err) {
+
+    if (err != CL_SUCCESS) {
+
 
         char * kernel_name;
         size_t kernel_name_size; 
@@ -2825,12 +2712,11 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int min, int max)
     size_t offsets [1] = {min_opt};
     size_t global_wi [1] = {max_opt}; 
 
-    try {
         //queue.enqueueNDRangeKernel( kernel, cl::NDRange(min_opt), cl::NDRange(max_opt), cl::NullRange, NULL, &last_event);
 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 1, offsets, global_wi, NULL, 0, NULL, &last_event);
 
-    } catch(cl::Error err) {
+    if (err != CL_SUCCESS) {
 
         char* kernel_name;
         size_t kernel_name_size;
@@ -3031,8 +2917,7 @@ void CloverCL::write_back_all_ocl_buffers(double* density0, double* density1, do
 inline void CloverCL::checkErr(cl_int err, std::string name)
 {
     if (err != CL_SUCCESS) {
-        std::cerr << "ERROR: " << name
-            << " (" << errToString(err) << ")" << std::endl;
+        std::cerr << "ERROR: " << name << " (" << errToString(err) << ")" << std::endl;
         exit(EXIT_FAILURE);
     } else {
 #ifdef OCL_VERBOSE
@@ -3041,10 +2926,10 @@ inline void CloverCL::checkErr(cl_int err, std::string name)
     }
 }
 
-void CloverCL::reportError( cl::Error err, std::string message)
+void CloverCL::reportError( cl_int err, std::string message)
 {
-    std::cerr << "[CloverCL] ERROR: " << message << " " << err.what() << "(" 
-              << CloverCL::errToString(err.err()) << ")" << std::endl;
+    std::cerr << "[CloverCL] ERROR: " << message << " " << "(" 
+              << CloverCL::errToString(err) << ")" << std::endl;
     exit(EXIT_FAILURE);
 }
 
@@ -3109,7 +2994,7 @@ void CloverCL::dumpBinary() {
     const std::string binary_name = "cloverleaf_ocl_binary";
 
     printf("Dumping binary to %s:\n", binary_name.c_str());
-    try {
+
         cl_uint ndevices;
         //program.getInfo(CL_PROGRAM_NUM_DEVICES, &ndevices);
         err = clGetProgramInfo(CloverCL::program_c, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &ndevices, NULL);
@@ -3146,7 +3031,8 @@ void CloverCL::dumpBinary() {
             printf("%c", binaries[0][i]);
         }
         #endif
-    } catch (cl::Error err) {
+
+    if (err != CL_SUCCESS) {
         reportError(err, "Dumping Binary");
     }
     

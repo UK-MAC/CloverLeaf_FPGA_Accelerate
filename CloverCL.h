@@ -26,9 +26,9 @@
 
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.h>
-#include <CL/cl.hpp>
 
 #include <string>
+#include <vector>
 
 /** 
  * @class CloverCL
@@ -159,7 +159,7 @@ class CloverCL {
 
         static void checkErr( cl_int err, std::string name);
 
-        static void reportError( cl::Error err, std::string message);
+        static void reportError( cl_int err, std::string message);
 
         static void readVisualisationBuffers(
                 int x_max,

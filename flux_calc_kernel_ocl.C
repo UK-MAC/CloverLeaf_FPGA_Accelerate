@@ -58,14 +58,10 @@ void flux_calc_kernel_ocl_(
 
     cl_int err; 
 
-    try {
-        //CloverCL::flux_calc_knl.setArg(0, *dt_dum);
+    //CloverCL::flux_calc_knl.setArg(0, *dt_dum);
+    err = clSetKernelArg( CloverCL::flux_calc_knl_c, 0, sizeof(double), dt_dum);
 
-        err = clSetKernelArg( CloverCL::flux_calc_knl_c, 0, sizeof(double), dt_dum);
-
-    } catch(cl::Error err) {
-        CloverCL::reportError(err, "flux_calc setting args");
-    }
+    CloverCL::checkErr(err, "flux_calc OCL Kernel arg settings");
 
     CloverCL::enqueueKernel_nooffsets( CloverCL::flux_calc_knl_c, *xmax+3, *ymax+3);
 
