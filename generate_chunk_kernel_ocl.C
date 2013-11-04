@@ -180,7 +180,7 @@ void generate_chunk_kernel_ocl_(
     //        NULL,
     //        &event9);
 
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_geometry_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(double), state_geometry, 0, NULL, NULL); 
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::state_geometry_buffer_c, CL_FALSE, 0, *nm_stes*sizeof(int), state_geometry, 0, NULL, NULL); 
     //CloverCL::queue.enqueueWriteBuffer(
     //        CloverCL::state_geometry_buffer,
     //        CL_FALSE,

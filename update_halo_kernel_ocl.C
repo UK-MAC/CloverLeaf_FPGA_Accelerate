@@ -109,7 +109,7 @@ void update_halo_kernel_ocl_(
             err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
             err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-            err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+            ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                            CloverCL::xmax_plusfour_rounded,*depth,
                                            CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
 
@@ -123,7 +123,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo density0 running top knl");
@@ -138,7 +138,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo density1 running bottom knl");
@@ -150,7 +150,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo density1 running top knl");
@@ -166,7 +166,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo energy0 running bottom knl");
@@ -178,7 +178,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo energy0 running top knl");
@@ -194,7 +194,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo energy1 running bottom knl");
@@ -206,7 +206,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo energy1 running top knl");
@@ -222,7 +222,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo pressure running bottom knl");
@@ -234,7 +234,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo pressure running top knl");
@@ -249,7 +249,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo viscosity running bottom knl");
@@ -261,7 +261,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo viscosity running top knl");
@@ -276,7 +276,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo soundspeed running bottom knl");
@@ -288,7 +288,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_cell_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo soundspeed running top knl");
@@ -305,7 +305,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo xvel0 running bottom knl");
@@ -319,7 +319,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo xvel0 running top knl");
@@ -336,7 +336,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo xvel1 running bottom knl");
@@ -350,7 +350,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo xvel1 running top knl");
@@ -367,7 +367,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo yvel0 running bottom knl");
@@ -381,7 +381,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo yvel0 running top knl");
@@ -398,7 +398,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_bottom_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo yvel1 running bottom knl");
@@ -412,7 +412,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_top_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_vel_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo yvel1 running top knl");
@@ -427,7 +427,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_x running bottom knl");
@@ -439,7 +439,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_x running top knl");
@@ -454,7 +454,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_y running bottom knl");
@@ -466,7 +466,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_y running top knl");
@@ -481,7 +481,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_x running bottom knl");
@@ -493,7 +493,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_x_knl_c,
                                          CloverCL::xmax_plusfive_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_x running top knl");
@@ -508,7 +508,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_bottom_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_bottom_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_y running bottom knl");
@@ -520,7 +520,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_top_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_top_flux_y_knl_c,
                                          CloverCL::xmax_plusfour_rounded,*depth,
                                          CloverCL::fixed_wg_min_size_large_dim,uh_knl_launch_small_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_y running top knl");
@@ -545,7 +545,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo density0 running left knl");
@@ -557,7 +557,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo density0 running right knl");
@@ -573,7 +573,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo density1 running left knl");
@@ -585,7 +585,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::density1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo density1 running right knl");
@@ -601,7 +601,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo energy0 running left knl");
@@ -613,7 +613,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy0_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo energy0 running right knl");
@@ -629,7 +629,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo energy1 running left knl");
@@ -641,7 +641,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::energy1_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo energy1 running right knl");
@@ -657,7 +657,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo pressure running left knl");
@@ -669,7 +669,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::pressure_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo pressure running right knl");
@@ -684,7 +684,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo viscosity running left knl");
@@ -696,7 +696,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::viscosity_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo viscosity running right knl");
@@ -711,7 +711,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo soundspeed running left knl");
@@ -723,7 +723,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_cell_knl_c, 1, sizeof(cl_mem), &CloverCL::soundspeed_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_cell_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo soundspeed running right knl");
@@ -740,7 +740,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo xvel0 running left knl");
@@ -754,7 +754,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo xvel0 running right knl");
@@ -771,7 +771,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo xvel1 running left knl");
@@ -785,7 +785,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::xvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &minusone);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo xvel1 running right knl");
@@ -802,7 +802,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo yvel0 running left knl");
@@ -816,7 +816,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel0_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo yvel0 running right knl");
@@ -833,7 +833,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_left_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
 
@@ -848,7 +848,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 1, sizeof(cl_mem), &CloverCL::yvel1_buffer_c);
                 err = clSetKernelArg(CloverCL::update_halo_right_vel_knl_c, 2, sizeof(int), &one);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_vel_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo yvel1 running right knl");
@@ -863,7 +863,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_x running left knl");
@@ -875,7 +875,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_x running right knl");
@@ -890,7 +890,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_y running left knl");
@@ -902,7 +902,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::vol_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo vol_flux_y running right knl");
@@ -917,7 +917,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_x running left knl");
@@ -929,7 +929,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_x_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_x_knl_c,
                                          *depth,CloverCL::ymax_plusfour_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_x running right knl");
@@ -944,7 +944,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_left_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_left_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_y running left knl");
@@ -956,7 +956,7 @@ void update_halo_kernel_ocl_(
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 0, sizeof(int), depth); 
                 err = clSetKernelArg(CloverCL::update_halo_right_flux_y_knl_c, 1, sizeof(cl_mem), &CloverCL::mass_flux_y_buffer_c);
 
-                err = ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
+                ENQUEUE_KERNEL_OOO_MACRO(CloverCL::update_halo_right_flux_y_knl_c,
                                          *depth,CloverCL::ymax_plusfive_rounded,
                                          uh_knl_launch_small_dim,CloverCL::fixed_wg_min_size_large_dim);
                 CloverCL::checkErr(err, "update halo mass_flux_y running right knl");

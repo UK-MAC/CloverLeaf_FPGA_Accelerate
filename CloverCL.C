@@ -882,8 +882,9 @@ void CloverCL::calculateReductionStructure(int xmax, int ymax) {
             std::cerr << "Error: reduction local workgroup size is NOT a power of 2" << std::endl; 
             exit(EXIT_FAILURE);
         }
-        if ( normal_wg_size > device_max_wg_size ) {
-            std::cerr << "Error: reduction local workgroup size is greater than device maximum" << std::endl; 
+        if ( normal_wg_size > max_reduction_wg_size ) {
+            std::cerr << "Error: reduction local workgroup size is greater than device maximum. Normal WGsize: " 
+                      << normal_wg_size << " Device maxWG: " << device_max_wg_size << std::endl; 
             exit(EXIT_FAILURE);
         }
 
@@ -1798,7 +1799,6 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
     err = clSetKernelArg(advec_mom_vel_y_knl_c,           1, sizeof(cl_mem), &node_mass_pre_buffer_c);
     err = clSetKernelArg(advec_mom_vel_y_knl_c,           2, sizeof(cl_mem), &mom_flux_buffer_c);
 
-    exit(21); 
 }
 
 void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
@@ -1871,7 +1871,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
         sprintf(buildOptions, 
                 "-DXMIN=%u -DXMINPLUSONE=%u -DXMAX=%u -DYMIN=%u -DYMINPLUSONE=%u -DYMINPLUSTWO=%u "
                 "-DYMAX=%u -DXMAXPLUSONE=%u -DXMAXPLUSTWO=%u -DXMAXPLUSTHREE=%u -DXMAXPLUSFOUR=%u " 
-                "-DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u" 
+                "-DXMAXPLUSFIVE=%u -DYMAXPLUSONE=%u -DYMAXPLUSTWO=%u -DYMAXPLUSTHREE=%u -DWORKGROUP_SIZE=%u " 
                 "-DWORKGROUP_SIZE_DIVTWO=%u -DGPU_REDUCTION -cl-strict-aliasing", 
                 xmin, xmin+1, xmax, ymin, ymin+1, ymin+2, ymax, xmax+1, xmax+2, xmax+3, xmax+4, xmax+5, 
                 ymax+1, ymax+2, ymax+3, CloverCL::fixed_wg_min_size_large_dim*CloverCL::fixed_wg_min_size_small_dim, 
@@ -1899,8 +1899,8 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     prog_err = clBuildProgram(program_c, 0, NULL, buildOptions, NULL, NULL); 
 
     if (prog_err != CL_SUCCESS) {
-        reportError(prog_err, "Building the program");
         BUILD_LOG();
+        reportError(prog_err, "Building the program");
     }
 
 
@@ -2538,8 +2538,6 @@ void CloverCL::writeAllCommunicationBuffers(
 void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
 {
     cl_int err; 
-    size_t global_wi [2] = {num_x, num_y}; 
-    size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
 
 #if PROFILE_OCL_KERNELS
     long knl_start; 
@@ -2558,6 +2556,8 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
         y_rnd = y_rnd + fixed_wg_min_size_small_dim; 
     }
 
+    size_t global_wi [2] = {x_rnd, y_rnd}; 
+    size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
@@ -2645,7 +2645,6 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, 
 
     if (err != CL_SUCCESS) {
 
-
         char * kernel_name;
         size_t kernel_name_size; 
 
@@ -2657,7 +2656,7 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, 
         std::string kernel_name_str = std::string(kernel_name); 
         std::cout << "launching kernel: " << kernel_name_str << " xmin: " << x_min << " xmax: " << x_max_opt 
                                           << " ymin: " << y_min << " ymax: " << y_max << std::endl;
-        reportError(err, kernel_name);
+        reportError(err, kernel_name_str);
     }
 
 #if PROFILE_OCL_KERNELS
@@ -2917,18 +2916,18 @@ void CloverCL::write_back_all_ocl_buffers(double* density0, double* density1, do
 inline void CloverCL::checkErr(cl_int err, std::string name)
 {
     if (err != CL_SUCCESS) {
-        std::cerr << "ERROR: " << name << " (" << errToString(err) << ")" << std::endl;
+        std::cout << "ERROR: " << name << " (" << errToString(err) << ")" << std::endl;
         exit(EXIT_FAILURE);
     } else {
 #ifdef OCL_VERBOSE
-        std::cerr << "SUCCESS: " << name << std::endl;
+        std::cout << "SUCCESS: " << name << std::endl;
 #endif
     }
 }
 
 void CloverCL::reportError( cl_int err, std::string message)
 {
-    std::cerr << "[CloverCL] ERROR: " << message << " " << "(" 
+    std::cout << "[CloverCL] ERROR: " << message << " " << "(" 
               << CloverCL::errToString(err) << ")" << std::endl;
     exit(EXIT_FAILURE);
 }
