@@ -33,7 +33,7 @@ MODULE clover_module
 
   USE data_module
   USE definitions_module
-  USE MPI
+  !USE MPI
 
   IMPLICIT NONE
 
@@ -43,7 +43,7 @@ SUBROUTINE clover_barrier
 
   INTEGER :: err
 
-  CALL MPI_BARRIER(MPI_COMM_WORLD,err)
+  !CALL MPI_BARRIER(MPI_COMM_WORLD,err)
 
 END SUBROUTINE clover_barrier
 
@@ -51,7 +51,7 @@ SUBROUTINE clover_abort
 
   INTEGER :: ierr,err
 
-  CALL MPI_ABORT(MPI_COMM_WORLD,ierr,err)
+  !CALL MPI_ABORT(MPI_COMM_WORLD,ierr,err)
 
 END SUBROUTINE clover_abort
 
@@ -63,7 +63,7 @@ SUBROUTINE clover_finalize
   CALL FLUSH(0)
   CALL FLUSH(6)
   CALL FLUSH(g_out)
-  CALL MPI_FINALIZE(err)
+  !CALL MPI_FINALIZE(err)
 
 END SUBROUTINE clover_finalize
 
@@ -76,12 +76,12 @@ SUBROUTINE clover_init_comms
   rank=0
   size=1
 
-  CALL MPI_INIT(err) 
+  !CALL MPI_INIT(err) 
 
-  CALL MPI_COMM_RANK(MPI_COMM_WORLD,rank,err) 
-  CALL MPI_COMM_SIZE(MPI_COMM_WORLD,size,err) 
+  !CALL MPI_COMM_RANK(MPI_COMM_WORLD,rank,err) 
+  !CALL MPI_COMM_SIZE(MPI_COMM_WORLD,size,err) 
 
-  parallel%parallel=.TRUE.
+  parallel%parallel=.FALSE.
   parallel%task=rank
 
   IF(rank.EQ.0) THEN
@@ -456,7 +456,7 @@ SUBROUTINE clover_exchange_message(chunk,field,                            &
   INTEGER      :: chunk,depth,field_type,field_name
 
   INTEGER      :: size,err,request(8),tag,message_count,j,k,x_inc,y_inc,index
-  INTEGER      :: status(MPI_STATUS_SIZE,8)
+  !INTEGER      :: status(MPI_STATUS_SIZE,8)
   INTEGER      :: receiver,sender
 
   ! Field type will either be cell, vertex, x_face or y_face to get the message limits correct
@@ -530,33 +530,33 @@ SUBROUTINE clover_exchange_message(chunk,field,                            &
 #endif 
     ENDIF
 
-    IF(chunks(chunk)%chunk_neighbours(chunk_left).NE.external_face) THEN
-      tag=4*(chunk)+1 ! 4 because we have 4 faces, 1 because it is leaving the left face
-      receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_left))%task
-      CALL MPI_ISEND(left_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
-                    ,MPI_COMM_WORLD,request(message_count+1),err)
-      tag=4*(chunks(chunk)%chunk_neighbours(chunk_left))+2 ! 4 because we have 4 faces, 1 because it is coming from the right face of the left neighbour
-      sender=chunks(chunks(chunk)%chunk_neighbours(chunk_left))%task
-      CALL MPI_IRECV(left_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag &
-                    ,MPI_COMM_WORLD,request(message_count+2),err)
-      message_count=message_count+2
-    ENDIF
+    !IF(chunks(chunk)%chunk_neighbours(chunk_left).NE.external_face) THEN
+    !  tag=4*(chunk)+1 ! 4 because we have 4 faces, 1 because it is leaving the left face
+    !  receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_left))%task
+    !  CALL MPI_ISEND(left_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+1),err)
+    !  tag=4*(chunks(chunk)%chunk_neighbours(chunk_left))+2 ! 4 because we have 4 faces, 1 because it is coming from the right face of the left neighbour
+    !  sender=chunks(chunks(chunk)%chunk_neighbours(chunk_left))%task
+    !  CALL MPI_IRECV(left_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+2),err)
+    !  message_count=message_count+2
+    !ENDIF
 
-    IF(chunks(chunk)%chunk_neighbours(chunk_right).NE.external_face) THEN
-      tag=4*chunk+2 ! 4 because we have 4 faces, 2 because it is leaving the right face
-      receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_right))%task
-      CALL MPI_ISEND(right_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
-                    ,MPI_COMM_WORLD,request(message_count+1),err)
-      tag=4*(chunks(chunk)%chunk_neighbours(chunk_right))+1 ! 4 because we have 4 faces, 1 because it is coming from the left face of the right neighbour
-      sender=chunks(chunks(chunk)%chunk_neighbours(chunk_right))%task
-      CALL MPI_IRECV(right_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag, &
-                     MPI_COMM_WORLD,request(message_count+2),err)
-      message_count=message_count+2
-    ENDIF
+    !IF(chunks(chunk)%chunk_neighbours(chunk_right).NE.external_face) THEN
+    !  tag=4*chunk+2 ! 4 because we have 4 faces, 2 because it is leaving the right face
+    !  receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_right))%task
+    !  CALL MPI_ISEND(right_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+1),err)
+    !  tag=4*(chunks(chunk)%chunk_neighbours(chunk_right))+1 ! 4 because we have 4 faces, 1 because it is coming from the left face of the right neighbour
+    !  sender=chunks(chunks(chunk)%chunk_neighbours(chunk_right))%task
+    !  CALL MPI_IRECV(right_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag, &
+    !                 MPI_COMM_WORLD,request(message_count+2),err)
+    !  message_count=message_count+2
+    !ENDIF
   ENDIF
 
   ! Wait for the messages
-  CALL MPI_WAITALL(message_count,request,status,err)
+  !CALL MPI_WAITALL(message_count,request,status,err)
 
   ! Unpack buffers in halo cells
   IF(parallel%task.EQ.chunks(chunk)%task) THEN
@@ -619,33 +619,33 @@ SUBROUTINE clover_exchange_message(chunk,field,                            &
 #endif
     ENDIF
 
-    IF(chunks(chunk)%chunk_neighbours(chunk_bottom).NE.external_face) THEN
-      tag=4*(chunk)+3 ! 4 because we have 4 faces, 3 because it is leaving the bottom face
-      receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_bottom))%task
-      CALL MPI_ISEND(bottom_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
-                    ,MPI_COMM_WORLD,request(message_count+1),err)
-      tag=4*(chunks(chunk)%chunk_neighbours(chunk_bottom))+4 ! 4 because we have 4 faces, 1 because it is coming from the top face of the bottom neighbour
-      sender=chunks(chunks(chunk)%chunk_neighbours(chunk_bottom))%task
-      CALL MPI_IRECV(bottom_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag &
-                    ,MPI_COMM_WORLD,request(message_count+2),err)
-      message_count=message_count+2
-    ENDIF
+    !IF(chunks(chunk)%chunk_neighbours(chunk_bottom).NE.external_face) THEN
+    !  tag=4*(chunk)+3 ! 4 because we have 4 faces, 3 because it is leaving the bottom face
+    !  receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_bottom))%task
+    !  CALL MPI_ISEND(bottom_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+1),err)
+    !  tag=4*(chunks(chunk)%chunk_neighbours(chunk_bottom))+4 ! 4 because we have 4 faces, 1 because it is coming from the top face of the bottom neighbour
+    !  sender=chunks(chunks(chunk)%chunk_neighbours(chunk_bottom))%task
+    !  CALL MPI_IRECV(bottom_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+2),err)
+    !  message_count=message_count+2
+    !ENDIF
 
-    IF(chunks(chunk)%chunk_neighbours(chunk_top).NE.external_face) THEN
-      tag=4*(chunk)+4 ! 4 because we have 4 faces, 4 because it is leaving the top face
-      receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_top))%task
-      CALL MPI_ISEND(top_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
-                    ,MPI_COMM_WORLD,request(message_count+1),err)
-      tag=4*(chunks(chunk)%chunk_neighbours(chunk_top))+3 ! 4 because we have 4 faces, 4 because it is coming from the left face of the top neighbour
-      sender=chunks(chunks(chunk)%chunk_neighbours(chunk_top))%task
-      CALL MPI_IRECV(top_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag, &
-                     MPI_COMM_WORLD,request(message_count+2),err)
-      message_count=message_count+2
-    ENDIF
+    !IF(chunks(chunk)%chunk_neighbours(chunk_top).NE.external_face) THEN
+    !  tag=4*(chunk)+4 ! 4 because we have 4 faces, 4 because it is leaving the top face
+    !  receiver=chunks(chunks(chunk)%chunk_neighbours(chunk_top))%task
+    !  CALL MPI_ISEND(top_snd_buffer,size,MPI_DOUBLE_PRECISION,receiver,tag &
+    !                ,MPI_COMM_WORLD,request(message_count+1),err)
+    !  tag=4*(chunks(chunk)%chunk_neighbours(chunk_top))+3 ! 4 because we have 4 faces, 4 because it is coming from the left face of the top neighbour
+    !  sender=chunks(chunks(chunk)%chunk_neighbours(chunk_top))%task
+    !  CALL MPI_IRECV(top_rcv_buffer,size,MPI_DOUBLE_PRECISION,sender,tag, &
+    !                 MPI_COMM_WORLD,request(message_count+2),err)
+    !  message_count=message_count+2
+    !ENDIF
   ENDIF
 
   ! Wait for the messages
-  CALL MPI_WAITALL(message_count,request,status,err)
+  !CALL MPI_WAITALL(message_count,request,status,err)
 
   ! Unpack buffers in halo cells
   IF(parallel%task.EQ.chunks(chunk)%task) THEN
@@ -695,7 +695,7 @@ SUBROUTINE clover_sum(value)
 
   total=value
 
-  CALL MPI_REDUCE(value,total,1,MPI_DOUBLE_PRECISION,MPI_SUM,0,MPI_COMM_WORLD,err)
+  !CALL MPI_REDUCE(value,total,1,MPI_DOUBLE_PRECISION,MPI_SUM,0,MPI_COMM_WORLD,err)
 
   value=total
 
@@ -713,7 +713,7 @@ SUBROUTINE clover_min(value)
 
   minimum=value
 
-  CALL MPI_ALLREDUCE(value,minimum,1,MPI_DOUBLE_PRECISION,MPI_MIN,MPI_COMM_WORLD,err)
+  !CALL MPI_ALLREDUCE(value,minimum,1,MPI_DOUBLE_PRECISION,MPI_MIN,MPI_COMM_WORLD,err)
 
   value=minimum
 
@@ -731,7 +731,7 @@ SUBROUTINE clover_check_error(error)
 
   maximum=error
 
-  CALL MPI_ALLREDUCE(error,maximum,1,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD,err)
+  !CALL MPI_ALLREDUCE(error,maximum,1,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD,err)
 
   error=maximum
 
