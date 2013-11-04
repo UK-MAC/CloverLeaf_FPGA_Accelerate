@@ -25,7 +25,7 @@
 #define CLOVER_CL_H_
 
 #define __CL_ENABLE_EXCEPTIONS
-#include <CL/cl.h>
+#include <CL/opencl.h>
 
 #include <string>
 #include <vector>
