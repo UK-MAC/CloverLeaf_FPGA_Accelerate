@@ -1993,123 +1993,123 @@ void CloverCL::createKernelObjects() {
     }
 
 
-    ideal_gas_NO_predict_knl_c = clCreateKernel(ideal_gas_prog, "ideal_gas_ocl_kernel", &err);
+    ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_gas_prog, "ideal_gas_ocl_kernel", &err);
 
-    //viscosity_knl_c = clCreateKernel(program_c, "viscosity_ocl_kernel", &err);
+    viscosity_knl_c                     = clCreateKernel(viscosity_prog, "viscosity_ocl_kernel", &err);
 
-    //flux_calc_knl_c = clCreateKernel(program_c, "flux_calc_ocl_kernel", &err);
+    flux_calc_knl_c                     = clCreateKernel(flux_calc_prog, "flux_calc_ocl_kernel", &err);
 
-    //accelerate_knl_c = clCreateKernel(program_c, "accelerate_ocl_kernel", &err);
+    accelerate_knl_c                    = clCreateKernel(accelerate_prog, "accelerate_ocl_kernel", &err);
 
-    //advec_cell_xdir_sec1_s1_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section1_sweep1_kernel", &err);
-    //
-    //advec_cell_xdir_sec1_s2_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section1_sweep2_kernel", &err);
+    advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sec1_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    
+    advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sec1_sweep2_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
 
-    //advec_cell_xdir_sec2_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section2_kernel", &err);
-    //
-    //advec_cell_xdir_sec3_knl_c = clCreateKernel(program_c, "advec_cell_xdir_section3_kernel", &err);
-    //
-    //advec_cell_ydir_sec1_s1_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    advec_cell_xdir_sec2_knl_c          = clCreateKernel(advec_cell_knl_xdir_sec2_prog, "advec_cell_xdir_section2_kernel", &err);
+    
+    advec_cell_xdir_sec3_knl_c          = clCreateKernel(advec_cell_knl_xdir_sec3_prog, "advec_cell_xdir_section3_kernel", &err);
+    
+    advec_cell_ydir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_y_sec1_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
 
-    //advec_cell_ydir_sec1_s2_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section1_sweep2_kernel", &err);
-    //
-    //advec_cell_ydir_sec2_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section2_kernel", &err);
+    advec_cell_ydir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_y_sec1_sweep2_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    
+    advec_cell_ydir_sec2_knl_c          = clCreateKernel(advec_cell_knl_y_sec2_prog, "advec_cell_ydir_section2_kernel", &err);
 
-    //advec_cell_ydir_sec3_knl_c = clCreateKernel(program_c, "advec_cell_ydir_section3_kernel", &err);
+    advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_y_sec3_prog, "advec_cell_ydir_section3_kernel", &err);
 
-    //advec_mom_vol_knl_c = clCreateKernel(program_c, "advec_mom_vol_ocl_kernel", &err);
+    advec_mom_vol_knl_c                 = clCreateKernel(advec_mom_knl_vol_prog, "advec_mom_vol_ocl_kernel", &err);
 
-    //advec_mom_node_x_knl_c = clCreateKernel(program_c, "advec_mom_node_ocl_kernel_x", &err);
+    advec_mom_node_x_knl_c              = clCreateKernel(advec_mom_knl_node_x_prog, "advec_mom_node_ocl_kernel_x", &err);
 
-    //advec_mom_node_mass_pre_x_knl_c = clCreateKernel(program_c, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
+    advec_mom_node_mass_pre_x_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_x_prog, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
 
-    //advec_mom_flux_x_vec1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_x_vec1", &err);
+    advec_mom_flux_x_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_x_vec1_prog, "advec_mom_flux_ocl_kernel_x_vec1", &err);
 
-    //advec_mom_flux_x_vecnot1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
+    advec_mom_flux_x_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_x_notvec1_prog, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
 
-    //advec_mom_vel_x_knl_c = clCreateKernel(program_c, "advec_mom_vel_ocl_kernel_x", &err);
+    advec_mom_vel_x_knl_c               = clCreateKernel(advec_mom_knl_vel_x_prog, "advec_mom_vel_ocl_kernel_x", &err);
 
-    //advec_mom_node_y_knl_c = clCreateKernel(program_c, "advec_mom_node_ocl_kernel_y", &err);
+    advec_mom_node_y_knl_c              = clCreateKernel(advec_mom_knl_node_y_prog, "advec_mom_node_ocl_kernel_y", &err);
 
-    //advec_mom_node_mass_pre_y_knl_c = clCreateKernel(program_c, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
+    advec_mom_node_mass_pre_y_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_y_prog, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
 
-    //advec_mom_flux_y_vec1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_y_vec1", &err);
-    //
-    //advec_mom_flux_y_vecnot1_knl_c = clCreateKernel(program_c, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
+    advec_mom_flux_y_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_y_vec1_prog, "advec_mom_flux_ocl_kernel_y_vec1", &err);
+    
+    advec_mom_flux_y_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_y_notvec1_prog, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
 
-    //advec_mom_vel_y_knl_c = clCreateKernel(program_c, "advec_mom_vel_ocl_kernel_y", &err);       
+    advec_mom_vel_y_knl_c               = clCreateKernel(advec_mom_knl_vel_y_prog, "advec_mom_vel_ocl_kernel_y", &err);       
 
-    //pdv_correct_knl_c = clCreateKernel(program_c, "pdv_correct_ocl_kernel", &err);
+    pdv_correct_knl_c                   = clCreateKernel(pdv_prog, "pdv_correct_ocl_kernel", &err);
 
-    //pdv_predict_knl_c = clCreateKernel(program_c, "pdv_predict_ocl_kernel", &err);
+    pdv_predict_knl_c                   = clCreateKernel(pdv_prog, "pdv_predict_ocl_kernel", &err);
 
-    //dt_calc_knl_c = clCreateKernel(program_c, "calc_dt_ocl_kernel", &err);
+    dt_calc_knl_c                       = clCreateKernel(calc_dt_prog, "calc_dt_ocl_kernel", &err);
 
-    //revert_knl_c = clCreateKernel(program_c, "revert_ocl_kernel", &err);
+    revert_knl_c                        = clCreateKernel(revert_prog, "revert_ocl_kernel", &err);
 
-    //reset_field_knl_c = clCreateKernel(program_c, "reset_field_ocl_kernel", &err);
+    reset_field_knl_c                   = clCreateKernel(reset_field_prog, "reset_field_ocl_kernel", &err);
 
-    //generate_chunk_knl_c =  clCreateKernel(program_c, "generate_chunk_ocl_kernel", &err);
+    generate_chunk_knl_c                = clCreateKernel(generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
 
-    //initialise_chunk_cell_x_knl_c = clCreateKernel(program_c, "initialise_chunk_cell_x_ocl_kernel", &err);
+    initialise_chunk_cell_x_knl_c       = clCreateKernel(initialise_chunk_prog, "initialise_chunk_cell_x_ocl_kernel", &err);
 
-    //initialise_chunk_cell_y_knl_c = clCreateKernel(program_c, "initialise_chunk_cell_y_ocl_kernel", &err);
+    initialise_chunk_cell_y_knl_c       = clCreateKernel(initialise_chunk_prog, "initialise_chunk_cell_y_ocl_kernel", &err);
 
-    //initialise_chunk_vertex_x_knl_c = clCreateKernel(program_c, "initialise_chunk_vertex_x_ocl_kernel", &err);
+    initialise_chunk_vertex_x_knl_c     = clCreateKernel(initialise_chunk_prog, "initialise_chunk_vertex_x_ocl_kernel", &err);
 
-    //initialise_chunk_vertex_y_knl_c = clCreateKernel(program_c, "initialise_chunk_vertex_y_ocl_kernel", &err);
+    initialise_chunk_vertex_y_knl_c     = clCreateKernel(initialise_chunk_prog, "initialise_chunk_vertex_y_ocl_kernel", &err);
 
-    //initialise_chunk_volume_area_knl_c = clCreateKernel(program_c, "initialise_chunk_volume_area_ocl_kernel", &err);
+    initialise_chunk_volume_area_knl_c  = clCreateKernel(initialise_chunk_prog, "initialise_chunk_volume_area_ocl_kernel", &err);
 
-    //field_summary_knl_c = clCreateKernel(program_c, "field_summary_ocl_kernel", &err);
+    field_summary_knl_c                 = clCreateKernel(field_summary_prog, "field_summary_ocl_kernel", &err);
 
-    //update_halo_bottom_cell_knl_c = clCreateKernel(program_c, "update_halo_bottom_cell_ocl_kernel", &err);
+    update_halo_bottom_cell_knl_c       = clCreateKernel(update_halo_prog, "update_halo_bottom_cell_ocl_kernel", &err);
 
-    //update_halo_bottom_vel_knl_c = clCreateKernel(program_c, "update_halo_bottom_vel_ocl_kernel", &err);
+    update_halo_bottom_vel_knl_c        = clCreateKernel(update_halo_prog, "update_halo_bottom_vel_ocl_kernel", &err);
 
-    //update_halo_bottom_flux_x_knl_c = clCreateKernel(program_c, "update_halo_bottom_flux_x_ocl_kernel", &err);
+    update_halo_bottom_flux_x_knl_c     = clCreateKernel(update_halo_prog, "update_halo_bottom_flux_x_ocl_kernel", &err);
 
-    //update_halo_bottom_flux_y_knl_c = clCreateKernel(program_c, "update_halo_bottom_flux_y_ocl_kernel", &err);
+    update_halo_bottom_flux_y_knl_c     = clCreateKernel(update_halo_prog, "update_halo_bottom_flux_y_ocl_kernel", &err);
 
-    //update_halo_top_cell_knl_c = clCreateKernel(program_c, "update_halo_top_cell_ocl_kernel", &err);
+    update_halo_top_cell_knl_c          = clCreateKernel(update_halo_prog, "update_halo_top_cell_ocl_kernel", &err);
 
-    //update_halo_top_vel_knl_c = clCreateKernel(program_c, "update_halo_top_vel_ocl_kernel", &err); 
+    update_halo_top_vel_knl_c           = clCreateKernel(update_halo_prog, "update_halo_top_vel_ocl_kernel", &err); 
 
-    //update_halo_top_flux_x_knl_c = clCreateKernel(program_c, "update_halo_top_flux_x_ocl_kernel", &err);
+    update_halo_top_flux_x_knl_c        = clCreateKernel(update_halo_prog, "update_halo_top_flux_x_ocl_kernel", &err);
 
-    //update_halo_top_flux_y_knl_c = clCreateKernel(program_c, "update_halo_top_flux_y_ocl_kernel", &err);
+    update_halo_top_flux_y_knl_c        = clCreateKernel(update_halo_prog, "update_halo_top_flux_y_ocl_kernel", &err);
 
-    //update_halo_right_cell_knl_c = clCreateKernel(program_c, "update_halo_right_cell_ocl_kernel", &err);
+    update_halo_right_cell_knl_c        = clCreateKernel(update_halo_prog, "update_halo_right_cell_ocl_kernel", &err);
 
-    //update_halo_right_vel_knl_c = clCreateKernel(program_c, "update_halo_right_vel_ocl_kernel", &err);
+    update_halo_right_vel_knl_c         = clCreateKernel(update_halo_prog, "update_halo_right_vel_ocl_kernel", &err);
 
-    //update_halo_right_flux_x_knl_c = clCreateKernel(program_c, "update_halo_right_flux_x_ocl_kernel", &err);
+    update_halo_right_flux_x_knl_c      = clCreateKernel(update_halo_prog, "update_halo_right_flux_x_ocl_kernel", &err);
 
-    //update_halo_right_flux_y_knl_c = clCreateKernel(program_c, "update_halo_right_flux_y_ocl_kernel", &err);
+    update_halo_right_flux_y_knl_c      = clCreateKernel(update_halo_prog, "update_halo_right_flux_y_ocl_kernel", &err);
 
-    //update_halo_left_cell_knl_c = clCreateKernel(program_c, "update_halo_left_cell_ocl_kernel", &err);
+    update_halo_left_cell_knl_c         = clCreateKernel(update_halo_prog, "update_halo_left_cell_ocl_kernel", &err);
 
-    //update_halo_left_vel_knl_c = clCreateKernel(program_c, "update_halo_left_vel_ocl_kernel", &err);
+    update_halo_left_vel_knl_c          = clCreateKernel(update_halo_prog, "update_halo_left_vel_ocl_kernel", &err);
 
-    //update_halo_left_flux_x_knl_c = clCreateKernel(program_c, "update_halo_left_flux_x_ocl_kernel", &err);
+    update_halo_left_flux_x_knl_c       = clCreateKernel(update_halo_prog, "update_halo_left_flux_x_ocl_kernel", &err);
 
-    //update_halo_left_flux_y_knl_c = clCreateKernel(program_c, "update_halo_left_flux_y_ocl_kernel", &err);
+    update_halo_left_flux_y_knl_c       = clCreateKernel(update_halo_prog, "update_halo_left_flux_y_ocl_kernel", &err);
 
-    //read_top_buffer_knl_c = clCreateKernel(program_c, "top_comm_buffer_pack", &err);
+    read_top_buffer_knl_c               = clCreateKernel(pack_comms_buffers_prog, "top_comm_buffer_pack", &err);
 
-    //read_bottom_buffer_knl_c = clCreateKernel(program_c, "bottom_comm_buffer_pack", &err);
+    read_bottom_buffer_knl_c            = clCreateKernel(pack_comms_buffers_prog, "bottom_comm_buffer_pack", &err);
 
-    //read_right_buffer_knl_c = clCreateKernel(program_c, "right_comm_buffer_pack", &err);
+    read_right_buffer_knl_c             = clCreateKernel(pack_comms_buffers_prog, "right_comm_buffer_pack", &err);
 
-    //read_left_buffer_knl_c = clCreateKernel(program_c, "left_comm_buffer_pack", &err);
+    read_left_buffer_knl_c              = clCreateKernel(pack_comms_buffers_prog, "left_comm_buffer_pack", &err);
 
-    //write_top_buffer_knl_c = clCreateKernel(program_c, "top_comm_buffer_unpack", &err);
+    write_top_buffer_knl_c              = clCreateKernel(unpack_comms_buffers_prog, "top_comm_buffer_unpack", &err);
 
-    //write_bottom_buffer_knl_c = clCreateKernel(program_c, "bottom_comm_buffer_unpack", &err);
+    write_bottom_buffer_knl_c           = clCreateKernel(unpack_comms_buffers_prog, "bottom_comm_buffer_unpack", &err);
 
-    //write_right_buffer_knl_c = clCreateKernel(program_c, "right_comm_buffer_unpack", &err);
+    write_right_buffer_knl_c            = clCreateKernel(unpack_comms_buffers_prog, "right_comm_buffer_unpack", &err);
 
-    //write_left_buffer_knl_c = clCreateKernel(program_c, "left_comm_buffer_unpack", &err);
+    write_left_buffer_knl_c             = clCreateKernel(unpack_comms_buffers_prog, "left_comm_buffer_unpack", &err);
 
 }
 
