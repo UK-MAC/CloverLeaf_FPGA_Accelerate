@@ -303,6 +303,7 @@ void CloverCL::init(
 
     printDeviceInformation();
 #endif
+
     initPlatform(platform_name);
     initContext(platform_type);
     initDevice(0);
@@ -310,6 +311,7 @@ void CloverCL::init(
     loadProgram(x_min, x_max, y_min, y_max);
     createKernelObjects();
 
+    exit(21);
     determineWorkGroupSizeInfo();
 
     calculateKernelLaunchParams(x_max, y_max);
@@ -1241,6 +1243,17 @@ void CloverCL::printDeviceInformation() {
             clGetDeviceInfo(devices[j], CL_DEVICE_MAX_CLOCK_FREQUENCY,
                     sizeof(cl_uint), &clock_speed, NULL);
             printf(" %d.%d Clock speed: %u\n", j+1, 7, clock_speed);
+
+            //print device type
+            cl_device_type typeofdevice;
+            clGetDeviceInfo(devices[j], CL_DEVICE_TYPE, sizeof(cl_device_type), &typeofdevice, NULL);
+            switch (typeofdevice) {
+                case CL_DEVICE_TYPE_CPU         : std::cout << "Device is a CPU" << std::endl; break;
+                case CL_DEVICE_TYPE_GPU         : std::cout << "Device is a GPU" << std::endl; break;
+                case CL_DEVICE_TYPE_ACCELERATOR : std::cout << "Device is a ACCEL" << std::endl; break;
+                case CL_DEVICE_TYPE_DEFAULT     : std::cout << "Device is a Default" << std::endl; break;
+                default: std::cout << "Device is something else" << std::endl; 
+            }
         }
     }
 }
@@ -1281,7 +1294,10 @@ void CloverCL::initPlatform(std::string name)
         }
 
         platformVendor_str = std::string(platformVendor);
-        
+
+#ifdef OCL_VERBOSE
+        std::cout << "Platform vendor " << i << " found: " << platformVendor_str << std::endl; 
+#endif
         std::transform(platformVendor_str.begin(), platformVendor_str.end(), platformVendor_str.begin(), ::tolower);
         if(platformVendor_str.find(name) != std::string::npos) {
             platform_c = platforms[i];
@@ -1319,6 +1335,8 @@ void CloverCL::initContext(std::string preferred_type)
         device_type = CL_DEVICE_TYPE_CPU;
     } else if(preferred_type == "phi") {
         device_type = CL_DEVICE_TYPE_ACCELERATOR;
+    } else if (preferred_type == "fpga") {
+        device_type = CL_DEVICE_TYPE_ACCELERATOR;
     }
 
 #ifdef OCL_VERBOSE
@@ -1328,6 +1346,8 @@ void CloverCL::initContext(std::string preferred_type)
         std::cout << "Device Type selected: CPU" << std::endl;
     } else if(preferred_type == "phi") {
         std::cout << "Device Type selected: PHI Accelerator" << std::endl;
+    } else if(preferred_type == "fpga") {
+        std::cout << "Device Type selected: Altera FPGA" << std::endl;
     } else {
         std::cout << "Device Type selected: something else" << std::endl; 
     }
