@@ -1845,27 +1845,45 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 {
 
     build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "viscosity_knl.aocx", &viscosity_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "pdv_knl.aocx", &pdv_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "field_summary_knl.aocx", &field_summary_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "reset_field_knl.aocx", &reset_field_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "update_halo_knl.aocx", &update_halo_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "initialise_chunk_knl.aocx", &initialise_chunk_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "generate_chunk_knl.aocx", &generate_chunk_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
 
-    //ADD_SOURCE("./viscosity_knl.cl");
-    //ADD_SOURCE("./ideal_gas_knl.cl");
-    //ADD_SOURCE("./flux_calc_knl.cl");
-    //ADD_SOURCE("./accelerate_knl.cl");
-    //ADD_SOURCE("./advec_cell_knl.cl");
-    //ADD_SOURCE("./advec_mom_knl.cl");
-    //ADD_SOURCE("./calc_dt_knl.cl");
-    //ADD_SOURCE("./pdv_knl.cl");
-    //ADD_SOURCE("./reset_field_knl.cl");
-    //ADD_SOURCE("./revert_knl.cl");
-    //ADD_SOURCE("./generate_chunk_knl.cl");
-    //ADD_SOURCE("./initialise_chunk_knl.cl");
-    //ADD_SOURCE("./field_summary_knl.cl");
-    //ADD_SOURCE("./update_halo_knl.cl");
-    ////ADD_SOURCE("./read_comm_buffers_knl.cl");
-    ////ADD_SOURCE("./write_comm_buffers_knl.cl");
-    //ADD_SOURCE("./min_reduction_knl.cl");
-    //ADD_SOURCE("./sum_reduction_knl.cl");
-    //ADD_SOURCE("./pack_comms_buffers_knl.cl");
-    //ADD_SOURCE("./unpack_comms_buffers_knl.cl");
+    build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "", &read_comm_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "", &write_comm_buffers_prog);
+
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx", &advec_cell_knl_xdir_sec1_sweep1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1_sweep2.aocx", &advec_cell_knl_xdir_sec1_sweep2_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec2.aocx", &advec_cell_knl_xdir_sec2_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec3.aocx", &advec_cell_knl_xdir_sec3_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep1.aocx", &advec_cell_knl_y_sec1_sweep1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep2.aocx", &advec_cell_knl_y_sec1_sweep2_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec2.aocx", &advec_cell_knl_y_sec2_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec3.aocx", &advec_cell_knl_y_sec3_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx", &advec_mom_knl_vol_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx", &advec_mom_knl_node_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx", &advec_mom_knl_node_y_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx", &advec_mom_knl_node_mass_pre_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx", &advec_mom_knl_node_mass_pre_y_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_vec1.aocx", &advec_mom_knl_mom_flux_x_vec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx", &advec_mom_knl_mom_flux_x_notvec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_vec1.aocx", &advec_mom_knl_mom_flux_y_vec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx", &advec_mom_knl_mom_flux_y_notvec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx", &advec_mom_knl_vel_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx", &advec_mom_knl_vel_y_prog);
+    
 }
 
 void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog)
@@ -1932,7 +1950,7 @@ void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::st
     }
 
 
-    prog_err = clBuildProgram(*prog, 0, NULL, buildOptions, NULL, NULL); 
+    prog_err = clBuildProgram(*prog, 1, CloverCL::devices_list, buildOptions, NULL, NULL); 
 
     if (prog_err != CL_SUCCESS) {
         BUILD_LOG();
