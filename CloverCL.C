@@ -1328,6 +1328,8 @@ void CloverCL::initContext(std::string preferred_type)
         std::cout << "Device Type selected: CPU" << std::endl;
     } else if(preferred_type == "phi") {
         std::cout << "Device Type selected: PHI Accelerator" << std::endl;
+    } else {
+        std::cout << "Device Type selected: something else" << std::endl; 
     }
 #endif
 
