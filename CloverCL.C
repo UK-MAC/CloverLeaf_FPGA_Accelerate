@@ -1881,8 +1881,6 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
     build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "", &read_comm_buffers_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "", &write_comm_buffers_prog);
 
@@ -1906,6 +1904,8 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx", &advec_mom_knl_vel_x_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx", &advec_mom_knl_vel_y_prog);
     
+    build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
 }
 
 void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog)
@@ -1917,16 +1917,12 @@ void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::st
     cl_int prog_err;
     char buildOptions [350];
 
-    std::stringstream ss;
-    std::string sourceCode;
-    std::fstream sourceFile;
-    std::string line;
-    ss.str("");
 
+#ifdef OCL_VERBOSE
     std::cout << "Executing build one program for kernel: " << filename << std::endl; 
+#endif
 
 #define BUILD_LOG() \
-    std::cout << "Running build log" << std::endl; \
     size_t build_log_size; \
     clGetProgramBuildInfo(*prog, device_c, CL_PROGRAM_BUILD_LOG, 0, NULL, &build_log_size); \
     char *buildlog = new char[build_log_size]; \
@@ -1934,40 +1930,18 @@ void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::st
     std::string buildlog_str = std::string(buildlog); \
     std::cout << "Build log: " << buildlog_str << std::endl; 
     
-#define ADD_SOURCE(file) \
-    sourceFile.open(file, std::ifstream::in); \
-    while ( sourceFile.good() ) \
-    { \
-        getline (sourceFile, line); \
-        ss << line << std::endl; \
-    } \
-    sourceFile.close();
-
     const char* filename_c = filename.c_str(); 
 
     FILE* fp = fopen(filename_c, "rb"); 
     fseek(fp, 0, SEEK_END);
     lengths[0] = ftell(fp); 
-
-    std::cout << "Binary length: " << lengths[0] << std::endl;
-
     binaries[0] = (unsigned char*)malloc(sizeof(unsigned char)*lengths[0]);
     rewind(fp);
     fread(binaries[0], lengths[0], 1, fp);
     fclose(fp);
 
-    //std::cout << "Binary content: " << std::string(binaries[0]) << std::endl;
-    std::cout << "Binary array size: " << sizeof(binaries) << std::endl; 
-    std::cout << "Binary 0 size: " << sizeof(binaries[0]) << std::endl;
-
-    ADD_SOURCE(filename.c_str());
-    sourceCode = ss.str(); 
-    const char* c_sourceCode = sourceCode.c_str();
-
     *prog = clCreateProgramWithBinary(context_c, 1, devices_list, lengths, 
                                               (const unsigned char **)binaries, status, &prog_err);
-    //*prog = clCreateProgramWithBinary(context_c, 1, devices_list, lengths, 
-    //                                          (const unsigned char **)&c_sourceCode, status, &prog_err);
 
     if (prog_err != CL_SUCCESS) {
         reportError(prog_err, "Creating program with Binary");
@@ -2006,9 +1980,7 @@ void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::st
                );
     }
 
-    std::cout << "start of program build" << std::endl;
     prog_err = clBuildProgram(*prog, 1, CloverCL::devices_list, buildOptions, NULL, NULL); 
-    std::cout << "end of program build" << std::endl;
 
     if (prog_err != CL_SUCCESS) {
         BUILD_LOG();
