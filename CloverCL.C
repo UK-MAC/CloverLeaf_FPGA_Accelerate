@@ -1866,7 +1866,7 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
 void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 {
 
-    //build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
     build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
     build_one_program(xmin, xmax, ymin, ymax, "viscosity_knl.aocx", &viscosity_prog);
     build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
