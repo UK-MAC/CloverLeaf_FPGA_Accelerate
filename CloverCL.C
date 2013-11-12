@@ -1881,9 +1881,6 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
     build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
 
-    //build_one_program(xmin, xmax, ymin, ymax, "", &read_comm_buffers_prog);
-    //build_one_program(xmin, xmax, ymin, ymax, "", &write_comm_buffers_prog);
-
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx", &advec_cell_knl_xdir_sec1_sweep1_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1_sweep2.aocx", &advec_cell_knl_xdir_sec1_sweep2_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec2.aocx", &advec_cell_knl_xdir_sec2_prog);
@@ -1892,20 +1889,23 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep2.aocx", &advec_cell_knl_y_sec1_sweep2_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec2.aocx", &advec_cell_knl_y_sec2_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec3.aocx", &advec_cell_knl_y_sec3_prog);
+
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx", &advec_mom_knl_vol_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx", &advec_mom_knl_node_x_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx", &advec_mom_knl_node_y_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx", &advec_mom_knl_node_mass_pre_x_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx", &advec_mom_knl_node_mass_pre_y_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_vec1.aocx", &advec_mom_knl_mom_flux_x_vec1_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx", &advec_mom_knl_mom_flux_x_notvec1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_vec1.aocx", &advec_mom_knl_mom_flux_y_vec1_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx", &advec_mom_knl_mom_flux_y_notvec1_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx", &advec_mom_knl_vel_x_prog);
     build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx", &advec_mom_knl_vel_y_prog);
     
-    build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_vec1.aocx", &advec_mom_knl_mom_flux_x_vec1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_vec1.aocx", &advec_mom_knl_mom_flux_y_vec1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "", &read_comm_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "", &write_comm_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
 }
 
 void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog)

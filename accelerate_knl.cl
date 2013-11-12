@@ -81,3 +81,4 @@ __kernel void accelerate_ocl_kernel(
                                                    *(viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
     }
 }
+
