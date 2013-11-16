@@ -44,7 +44,8 @@ cl_command_queue CloverCL::queue_c;
 cl_command_queue CloverCL::outoforder_queue_c;
 
 //cl_program CloverCL::program_c;
-cl_program CloverCL::ideal_gas_prog;
+cl_program CloverCL::ideal_vis_uh_prog
+//cl_program CloverCL::ideal_gas_prog;
 cl_program CloverCL::accelerate_prog;                  
 cl_program CloverCL::field_summary_prog;      
 cl_program CloverCL::flux_calc_prog;          
@@ -1866,19 +1867,23 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
 void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 {
 
-    build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "viscosity_knl.aocx", &viscosity_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "viscosity_knl.aocx", &viscosity_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "update_halo_knl.aocx", &update_halo_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_viscosity_updatehalo_knl.aocx", &ideal_vis_uh_prog);
+
     build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
+
+    build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
+
+    build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
     build_one_program(xmin, xmax, ymin, ymax, "pdv_knl.aocx", &pdv_prog);
     build_one_program(xmin, xmax, ymin, ymax, "field_summary_knl.aocx", &field_summary_prog);
     build_one_program(xmin, xmax, ymin, ymax, "reset_field_knl.aocx", &reset_field_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "update_halo_knl.aocx", &update_halo_prog);
     build_one_program(xmin, xmax, ymin, ymax, "initialise_chunk_knl.aocx", &initialise_chunk_prog);
     build_one_program(xmin, xmax, ymin, ymax, "generate_chunk_knl.aocx", &generate_chunk_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
     build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
 
     build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx", &advec_cell_knl_xdir_sec1_sweep1_prog);
