@@ -44,30 +44,42 @@ cl_command_queue CloverCL::queue_c;
 cl_command_queue CloverCL::outoforder_queue_c;
 
 //cl_program CloverCL::program_c;
-cl_program CloverCL::ideal_vis_uh_prog
 //cl_program CloverCL::ideal_gas_prog;
-cl_program CloverCL::accelerate_prog;                  
-cl_program CloverCL::field_summary_prog;      
-cl_program CloverCL::flux_calc_prog;          
-cl_program CloverCL::reset_field_prog;
-cl_program CloverCL::revert_prog;
-cl_program CloverCL::viscosity_prog;
-cl_program CloverCL::calc_dt_prog;                   
-cl_program CloverCL::pdv_prog;                
-cl_program CloverCL::initialise_chunk_prog;   
-cl_program CloverCL::min_reduction_prog;      
-cl_program CloverCL::sum_reduction_prog;
-cl_program CloverCL::update_halo_prog;
-cl_program CloverCL::generate_chunk_prog;     
+cl_program CloverCL::ideal_vis_uh_prog;
+cl_program CloverCL::calcdt_minred_prog;
+cl_program CloverCL::accel_revert_prog;
+cl_program CloverCL::pdv_fluxcalc_prog;
+cl_program CloverCL::field_sumred_reset_prog;
+cl_program CloverCL::initialise_generate_chunk_prog;
 
-cl_program CloverCL::advec_cell_knl_xdir_sec1_sweep1_prog; 
-cl_program CloverCL::advec_cell_knl_xdir_sec1_sweep2_prog; 
-cl_program CloverCL::advec_cell_knl_xdir_sec2_prog;        
-cl_program CloverCL::advec_cell_knl_xdir_sec3_prog;        
-cl_program CloverCL::advec_cell_knl_y_sec1_sweep1_prog;    
-cl_program CloverCL::advec_cell_knl_y_sec1_sweep2_prog;     
-cl_program CloverCL::advec_cell_knl_y_sec2_prog;            
-cl_program CloverCL::advec_cell_knl_y_sec3_prog;            
+cl_program CloverCL::advec_cell_knl_xdir_sweep1_prog;
+cl_program CloverCL::advec_cell_knl_xdir_sweep2_prog;
+cl_program CloverCL::advec_cell_knl_ydir_sweep1_prog;
+cl_program CloverCL::advec_cell_knl_ydir_sweep2_prog;
+
+
+//cl_program CloverCL::accelerate_prog;                  
+//cl_program CloverCL::field_summary_prog;      
+//cl_program CloverCL::flux_calc_prog;          
+//cl_program CloverCL::reset_field_prog;
+//cl_program CloverCL::revert_prog;
+//cl_program CloverCL::viscosity_prog;
+//cl_program CloverCL::calc_dt_prog;                   
+//cl_program CloverCL::pdv_prog;                
+//cl_program CloverCL::initialise_chunk_prog;   
+//cl_program CloverCL::min_reduction_prog;      
+//cl_program CloverCL::sum_reduction_prog;
+//cl_program CloverCL::update_halo_prog;
+//cl_program CloverCL::generate_chunk_prog;     
+
+//cl_program CloverCL::advec_cell_knl_xdir_sec1_sweep1_prog; 
+//cl_program CloverCL::advec_cell_knl_xdir_sec1_sweep2_prog; 
+//cl_program CloverCL::advec_cell_knl_xdir_sec2_prog;        
+//cl_program CloverCL::advec_cell_knl_xdir_sec3_prog;        
+//cl_program CloverCL::advec_cell_knl_y_sec1_sweep1_prog;    
+//cl_program CloverCL::advec_cell_knl_y_sec1_sweep2_prog;     
+//cl_program CloverCL::advec_cell_knl_y_sec2_prog;            
+//cl_program CloverCL::advec_cell_knl_y_sec3_prog;            
 cl_program CloverCL::advec_mom_knl_vol_prog;             
 cl_program CloverCL::advec_mom_knl_node_x_prog;          
 cl_program CloverCL::advec_mom_knl_node_y_prog;          
@@ -80,10 +92,10 @@ cl_program CloverCL::advec_mom_knl_mom_flux_y_notvec1_prog;
 cl_program CloverCL::advec_mom_knl_vel_x_prog;           
 cl_program CloverCL::advec_mom_knl_vel_y_prog;           
 
-cl_program CloverCL::pack_comms_buffers_prog; 
-cl_program CloverCL::unpack_comms_buffers_prog;
-cl_program CloverCL::read_comm_buffers_prog;
-cl_program CloverCL::write_comm_buffers_prog;
+//cl_program CloverCL::pack_comms_buffers_prog; 
+//cl_program CloverCL::unpack_comms_buffers_prog;
+//cl_program CloverCL::read_comm_buffers_prog;
+//cl_program CloverCL::write_comm_buffers_prog;
 
 cl_uint CloverCL::native_wg_multiple;
 size_t CloverCL::prefer_wg_multiple;
@@ -455,12 +467,12 @@ void CloverCL::build_reduction_kernel_objects() {
         if ( number_of_red_levels == 1 ) { 
 
             //build level 1 of CPU reduction 
-            min_reduction_kernels.push_back( clCreateKernel(min_reduction_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back( clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back( clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back( clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back( clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back( clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back( clCreateKernel(calcdt_minred_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back( clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back( clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back( clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back( clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back( clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
 
             err = clSetKernelArg(min_reduction_kernels[0],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
             err = clSetKernelArg(vol_sum_reduction_kernels[0],    0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
@@ -508,12 +520,12 @@ void CloverCL::build_reduction_kernel_objects() {
         else {
 
             //build level 1 of CPU reduction 
-            min_reduction_kernels.push_back(        clCreateKernel(min_reduction_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back(    clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back(   clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back(  clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back(        clCreateKernel(calcdt_minred_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
 
             err = clSetKernelArg(min_reduction_kernels[0],       0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
             err = clSetKernelArg(vol_sum_reduction_kernels[0],   0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
@@ -559,12 +571,12 @@ void CloverCL::build_reduction_kernel_objects() {
 
 
             //build level 2 of CPU reduction 
-            min_reduction_kernels.push_back(        clCreateKernel(min_reduction_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back(    clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back(   clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back(  clCreateKernel(sum_reduction_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            min_reduction_kernels.push_back(        clCreateKernel(calcdt_minred_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
+            vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
 
             err = clSetKernelArg(min_reduction_kernels[1],       0, sizeof(cl_mem), &CloverCL::cpu_min_red_buffer_c); 
             err = clSetKernelArg(vol_sum_reduction_kernels[1],   0, sizeof(cl_mem), &CloverCL::cpu_vol_red_buffer_c); 
@@ -620,12 +632,12 @@ void CloverCL::build_reduction_kernel_objects() {
             if (CloverCL::size_limits[i-1] == -1) { 
 
                 //build a normal GPU reduction kernel
-                min_reduction_kernels.push_back(        clCreateKernel(min_reduction_prog, "reduction_minimum_ocl_kernel", &err) );
-                vol_sum_reduction_kernels.push_back(    clCreateKernel(sum_reduction_prog, "reduction_sum_ocl_kernel", &err));
-                mass_sum_reduction_kernels.push_back(   clCreateKernel(sum_reduction_prog, "reduction_sum_ocl_kernel", &err));
-                ie_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_ocl_kernel", &err));
-                ke_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_ocl_kernel", &err));
-                press_sum_reduction_kernels.push_back(  clCreateKernel(sum_reduction_prog, "reduction_sum_ocl_kernel", &err));
+                min_reduction_kernels.push_back(        clCreateKernel(calcdt_minred_prog, "reduction_minimum_ocl_kernel", &err) );
+                vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_reset_prog, "reduction_sum_ocl_kernel", &err));
+                mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_reset_prog, "reduction_sum_ocl_kernel", &err));
+                ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_ocl_kernel", &err));
+                ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_ocl_kernel", &err));
+                press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_reset_prog, "reduction_sum_ocl_kernel", &err));
 
                 if (i==1) {
                     err = clSetKernelArg(min_reduction_kernels[i-1],        0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
@@ -706,12 +718,12 @@ void CloverCL::build_reduction_kernel_objects() {
             else {
 
                 //build a last level GPU reduction kernel
-                min_reduction_kernels.push_back(        clCreateKernel(min_reduction_prog, "reduction_minimum_last_ocl_kernel", &err)  );
-                vol_sum_reduction_kernels.push_back(    clCreateKernel(sum_reduction_prog, "reduction_sum_last_ocl_kernel", &err));
-                mass_sum_reduction_kernels.push_back(   clCreateKernel(sum_reduction_prog, "reduction_sum_last_ocl_kernel", &err));
-                ie_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_last_ocl_kernel", &err));
-                ke_sum_reduction_kernels.push_back(     clCreateKernel(sum_reduction_prog, "reduction_sum_last_ocl_kernel", &err));
-                press_sum_reduction_kernels.push_back(  clCreateKernel(sum_reduction_prog, "reduction_sum_last_ocl_kernel", &err));
+                min_reduction_kernels.push_back(        clCreateKernel(calcdt_minred_prog, "reduction_minimum_last_ocl_kernel", &err)  );
+                vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_reset_prog, "reduction_sum_last_ocl_kernel", &err));
+                mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_reset_prog, "reduction_sum_last_ocl_kernel", &err));
+                ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_last_ocl_kernel", &err));
+                ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_last_ocl_kernel", &err));
+                press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_reset_prog, "reduction_sum_last_ocl_kernel", &err));
 
                 if (i==1) {
                     //if on first level then set input to equal source buffer
@@ -1872,38 +1884,50 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "update_halo_knl.aocx", &update_halo_prog);
     build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_viscosity_updatehalo_knl.aocx", &ideal_vis_uh_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "calc_dt_min_reduction_knl.aocx", &calcdt_minred_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "pdv_knl.aocx", &pdv_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "field_summary_knl.aocx", &field_summary_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "reset_field_knl.aocx", &reset_field_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "initialise_chunk_knl.aocx", &initialise_chunk_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "generate_chunk_knl.aocx", &generate_chunk_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "pdv_knl.aocx", &pdv_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "pdv_fluxcalc_knl.aocx", &pdv_fluxcalc_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx", &advec_cell_knl_xdir_sec1_sweep1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1_sweep2.aocx", &advec_cell_knl_xdir_sec1_sweep2_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec2.aocx", &advec_cell_knl_xdir_sec2_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec3.aocx", &advec_cell_knl_xdir_sec3_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep1.aocx", &advec_cell_knl_y_sec1_sweep1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep2.aocx", &advec_cell_knl_y_sec1_sweep2_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec2.aocx", &advec_cell_knl_y_sec2_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec3.aocx", &advec_cell_knl_y_sec3_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "field_summary_knl.aocx", &field_summary_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "reset_field_knl.aocx", &reset_field_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "fieldsummary_sumreduction_reset_knl.aocx", &field_sumred_reset_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx", &advec_mom_knl_vol_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx", &advec_mom_knl_node_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx", &advec_mom_knl_node_y_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx", &advec_mom_knl_node_mass_pre_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx", &advec_mom_knl_node_mass_pre_y_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx", &advec_mom_knl_mom_flux_x_notvec1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx", &advec_mom_knl_mom_flux_y_notvec1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx", &advec_mom_knl_vel_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx", &advec_mom_knl_vel_y_prog);
+
+    //build_one_program(xmin, xmax, ymin, ymax, "initialise_chunk_knl.aocx", &initialise_chunk_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "generate_chunk_knl.aocx", &generate_chunk_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "initialise_generate_chunk_knl.aocx", &initialise_generate_chunk_prog);
+
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx",          &advec_cell_knl_xdir_sec1_sweep1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1_sweep2.aocx",   &advec_cell_knl_xdir_sec1_sweep2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec2.aocx",          &advec_cell_knl_xdir_sec2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec3.aocx",          &advec_cell_knl_xdir_sec3_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep1.aocx",      &advec_cell_knl_y_sec1_sweep1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep2.aocx",      &advec_cell_knl_y_sec1_sweep2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec2.aocx",             &advec_cell_knl_y_sec2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec3.aocx",             &advec_cell_knl_y_sec3_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep1_knls.aocx",          &advec_cell_knl_xdir_sweep1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep2_knls.aocx",          &advec_cell_knl_xdir_sweep2_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep1_knls.aocx",          &advec_cell_knl_ydir_sweep1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep2_knls.aocx",          &advec_cell_knl_ydir_sweep2_prog);
+
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx",                 &advec_mom_knl_vol_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx",              &advec_mom_knl_node_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx",              &advec_mom_knl_node_y_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx",     &advec_mom_knl_node_mass_pre_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx",     &advec_mom_knl_node_mass_pre_y_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx",  &advec_mom_knl_mom_flux_x_notvec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx",  &advec_mom_knl_mom_flux_y_notvec1_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx",               &advec_mom_knl_vel_x_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx",               &advec_mom_knl_vel_y_prog);
     
     //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_vec1.aocx", &advec_mom_knl_mom_flux_x_vec1_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_vec1.aocx", &advec_mom_knl_mom_flux_y_vec1_prog);
@@ -1911,6 +1935,9 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "", &write_comm_buffers_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "pack_comms_buffers_knl.aocx", &pack_comms_buffers_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
+
+    std::cout <<"at end of loadprogram" << std::endl;
+    exit(23);
 }
 
 void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog)
@@ -2022,35 +2049,35 @@ void CloverCL::createKernelObjects() {
     /*
      * Set up the kernels here!
      */
-    ideal_gas_predict_knl_c = clCreateKernel(ideal_gas_prog, "ideal_gas_ocl_kernel", &err);
+    ideal_gas_predict_knl_c = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
     if (err != CL_SUCCESS) {
         reportError(err, "ideal_gas_predict_kernel"); 
     }
 
 
-    ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_gas_prog, "ideal_gas_ocl_kernel", &err);
+    ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
 
-    viscosity_knl_c                     = clCreateKernel(viscosity_prog, "viscosity_ocl_kernel", &err);
+    viscosity_knl_c                     = clCreateKernel(deal_vis_uh_prog, "viscosity_ocl_kernel", &err);
 
-    flux_calc_knl_c                     = clCreateKernel(flux_calc_prog, "flux_calc_ocl_kernel", &err);
+    flux_calc_knl_c                     = clCreateKernel(pdv_fluxcalc_prog, "flux_calc_ocl_kernel", &err);
 
-    accelerate_knl_c                    = clCreateKernel(accelerate_prog, "accelerate_ocl_kernel", &err);
+    accelerate_knl_c                    = clCreateKernel(accel_revert_prog, "accelerate_ocl_kernel", &err);
 
-    advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sec1_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
     
-    advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sec1_sweep2_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
+    advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
 
-    advec_cell_xdir_sec2_knl_c          = clCreateKernel(advec_cell_knl_xdir_sec2_prog, "advec_cell_xdir_section2_kernel", &err);
+    advec_cell_xdir_sec2_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
     
-    advec_cell_xdir_sec3_knl_c          = clCreateKernel(advec_cell_knl_xdir_sec3_prog, "advec_cell_xdir_section3_kernel", &err);
+    advec_cell_xdir_sec3_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
     
-    advec_cell_ydir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_y_sec1_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    advec_cell_ydir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
 
-    advec_cell_ydir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_y_sec1_sweep2_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    advec_cell_ydir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
     
-    advec_cell_ydir_sec2_knl_c          = clCreateKernel(advec_cell_knl_y_sec2_prog, "advec_cell_ydir_section2_kernel", &err);
+    advec_cell_ydir_sec2_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
 
-    advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_y_sec3_prog, "advec_cell_ydir_section3_kernel", &err);
+    advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
 
     advec_mom_vol_knl_c                 = clCreateKernel(advec_mom_knl_vol_prog, "advec_mom_vol_ocl_kernel", &err);
 
@@ -2074,15 +2101,15 @@ void CloverCL::createKernelObjects() {
 
     advec_mom_vel_y_knl_c               = clCreateKernel(advec_mom_knl_vel_y_prog, "advec_mom_vel_ocl_kernel_y", &err);       
 
-    pdv_correct_knl_c                   = clCreateKernel(pdv_prog, "pdv_correct_ocl_kernel", &err);
+    pdv_correct_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_correct_ocl_kernel", &err);
 
-    pdv_predict_knl_c                   = clCreateKernel(pdv_prog, "pdv_predict_ocl_kernel", &err);
+    pdv_predict_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_predict_ocl_kernel", &err);
 
-    dt_calc_knl_c                       = clCreateKernel(calc_dt_prog, "calc_dt_ocl_kernel", &err);
+    dt_calc_knl_c                       = clCreateKernel(calcdt_minred_prog, "calc_dt_ocl_kernel", &err);
 
-    revert_knl_c                        = clCreateKernel(revert_prog, "revert_ocl_kernel", &err);
+    revert_knl_c                        = clCreateKernel(accel_revert_prog, "revert_ocl_kernel", &err);
 
-    reset_field_knl_c                   = clCreateKernel(reset_field_prog, "reset_field_ocl_kernel", &err);
+    reset_field_knl_c                   = clCreateKernel(, "reset_field_ocl_kernel", &err);
 
     generate_chunk_knl_c                = clCreateKernel(generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
 

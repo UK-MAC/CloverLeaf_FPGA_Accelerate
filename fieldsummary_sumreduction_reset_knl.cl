@@ -207,20 +207,29 @@ __kernel void reduction_sum_last_ocl_kernel(
 }
 
 
-__kernel void revert_ocl_kernel(
-    __global const double * restrict density0,
-    __global double * restrict density1,
-    __global const double * restrict energy0,
-    __global double * restrict energy1)
+__kernel void reset_field_ocl_kernel(
+    __global double * restrict density0,
+    __global const double * restrict density1,
+    __global double * restrict energy0,
+    __global const double * restrict energy1,
+    __global double * restrict xvel0,
+    __global const double * restrict xvel1,
+    __global double * restrict yvel0,
+    __global const double * restrict yvel1)
 {
-    int  k = get_global_id(1);
-    int  j = get_global_id(0);
 
-    if ((j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSONE)) {
+    int k = get_global_id(1);
+    int j = get_global_id(0);
 
-        density1[ARRAYXY(j,k,XMAXPLUSFOUR)] = density0[ARRAYXY(j,k,XMAXPLUSFOUR)];
-        energy1[ARRAYXY(j,k,XMAXPLUSFOUR)] = energy0[ARRAYXY(j,k,XMAXPLUSFOUR)];
+    if ((j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSONE))
+    {
+        density0[ARRAYXY(j,k,XMAXPLUSFOUR)] = density1[ARRAYXY(j,k,XMAXPLUSFOUR)];
+        energy0[ARRAYXY(j,k,XMAXPLUSFOUR)] = energy1[ARRAYXY(j,k,XMAXPLUSFOUR)];
+    }
 
+    if ((j>=2) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO))
+    {
+        xvel0[ARRAYXY(j,k,XMAXPLUSFIVE)] = xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
+        yvel0[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
     }
 }
-
