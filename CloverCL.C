@@ -211,14 +211,20 @@ cl_kernel CloverCL::advec_mom_flux_y_vec1_knl_c;
 cl_kernel CloverCL::advec_mom_flux_y_vecnot1_knl_c;
 cl_kernel CloverCL::advec_mom_vel_y_knl_c;
 cl_kernel CloverCL::dt_calc_knl_c;
-cl_kernel CloverCL::advec_cell_xdir_sec1_s1_knl_c;
-cl_kernel CloverCL::advec_cell_xdir_sec1_s2_knl_c;
-cl_kernel CloverCL::advec_cell_xdir_sec2_knl_c;
-cl_kernel CloverCL::advec_cell_xdir_sec3_knl_c;
-cl_kernel CloverCL::advec_cell_ydir_sec1_s1_knl_c;
-cl_kernel CloverCL::advec_cell_ydir_sec1_s2_knl_c;
-cl_kernel CloverCL::advec_cell_ydir_sec2_knl_c;
-cl_kernel CloverCL::advec_cell_ydir_sec3_knl_c;
+
+cl_kernel CloverCL::advec_cell_xdir_sweep1_sec1_knl_c; 
+cl_kernel CloverCL::advec_cell_xdir_sweep1_sec2_knl_c; 
+cl_kernel CloverCL::advec_cell_xdir_sweep1_sec3_knl_c; 
+cl_kernel CloverCL::advec_cell_xdir_sweep2_sec1_knl_c; 
+cl_kernel CloverCL::advec_cell_xdir_sweep2_sec2_knl_c; 
+cl_kernel CloverCL::advec_cell_xdir_sweep2_sec3_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep1_sec1_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep1_sec2_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep1_sec3_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep2_sec1_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep2_sec2_knl_c; 
+cl_kernel CloverCL::advec_cell_ydir_sweep2_sec3_knl_c; 
+
 cl_kernel CloverCL::pdv_correct_knl_c;
 cl_kernel CloverCL::pdv_predict_knl_c;
 cl_kernel CloverCL::reset_field_knl_c;
@@ -324,7 +330,6 @@ void CloverCL::init(
     loadProgram(x_min, x_max, y_min, y_max);
     createKernelObjects();
 
-    exit(21);
     determineWorkGroupSizeInfo();
 
     calculateKernelLaunchParams(x_max, y_max);
@@ -348,6 +353,9 @@ void CloverCL::init(
     //MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     xmax_c = x_max;
     ymax_c = y_max; 
+
+    std::cout << "at end of init section" << std::endl; 
+    exit(21);
 }
 
 
@@ -521,11 +529,11 @@ void CloverCL::build_reduction_kernel_objects() {
 
             //build level 1 of CPU reduction 
             min_reduction_kernels.push_back(        clCreateKernel(calcdt_minred_prog, "reduction_minimum_cpu_ocl_kernel", &err) );
-            vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
-            press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_revert_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            vol_sum_reduction_kernels.push_back(    clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            mass_sum_reduction_kernels.push_back(   clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ie_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            ke_sum_reduction_kernels.push_back(     clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
+            press_sum_reduction_kernels.push_back(  clCreateKernel(field_sumred_reset_prog, "reduction_sum_cpu_ocl_kernel", &err));
 
             err = clSetKernelArg(min_reduction_kernels[0],       0, sizeof(cl_mem), &CloverCL::dt_min_val_array_buffer_c);
             err = clSetKernelArg(vol_sum_reduction_kernels[0],   0, sizeof(cl_mem), &CloverCL::vol_tmp_buffer_c);
@@ -1751,65 +1759,108 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
     err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 2, sizeof(cl_mem), &pressure_buffer_c);
     err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 3, sizeof(cl_mem), &soundspeed_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sec1_s1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sec1_s2_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s2_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s2_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec1_s2_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sec1_s1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sec1_s2_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s2_knl_c, 1, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s2_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec1_s2_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+
+
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
+
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+
+
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
+
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+
 
     err = clSetKernelArg(advec_mom_vol_knl_c,             0, sizeof(cl_mem), &volume_buffer_c);
     err = clSetKernelArg(advec_mom_vol_knl_c,             1, sizeof(cl_mem), &vol_flux_x_buffer_c);
@@ -1937,7 +1988,6 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "unpack_comms_buffers_knl.aocx", &unpack_comms_buffers_prog);
 
     std::cout <<"at end of loadprogram" << std::endl;
-    exit(23);
 }
 
 void CloverCL::build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog)
@@ -2057,27 +2107,38 @@ void CloverCL::createKernelObjects() {
 
     ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
 
-    viscosity_knl_c                     = clCreateKernel(deal_vis_uh_prog, "viscosity_ocl_kernel", &err);
+    viscosity_knl_c                     = clCreateKernel(ideal_vis_uh_prog, "viscosity_ocl_kernel", &err);
 
     flux_calc_knl_c                     = clCreateKernel(pdv_fluxcalc_prog, "flux_calc_ocl_kernel", &err);
 
     accelerate_knl_c                    = clCreateKernel(accel_revert_prog, "accelerate_ocl_kernel", &err);
 
-    advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
-    
-    advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
 
-    advec_cell_xdir_sec2_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
-    
-    advec_cell_xdir_sec3_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
-    
-    advec_cell_ydir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    advec_cell_xdir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    advec_cell_xdir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
+    advec_cell_xdir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
 
-    advec_cell_ydir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
-    
-    advec_cell_ydir_sec2_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
+    advec_cell_xdir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
+    advec_cell_xdir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section2_kernel", &err);
+    advec_cell_xdir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section3_kernel", &err);
 
-    advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
+    advec_cell_ydir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    advec_cell_ydir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
+    advec_cell_ydir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
+
+    advec_cell_ydir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    advec_cell_ydir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section2_kernel", &err);
+    advec_cell_ydir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section3_kernel", &err);
+
+    //advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    //advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
+    //advec_cell_xdir_sec2_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
+    //advec_cell_xdir_sec3_knl_c          = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
+    //advec_cell_ydir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    //advec_cell_ydir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    //advec_cell_ydir_sec2_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
+    //advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
+
 
     advec_mom_vol_knl_c                 = clCreateKernel(advec_mom_knl_vol_prog, "advec_mom_vol_ocl_kernel", &err);
 
@@ -2109,69 +2170,71 @@ void CloverCL::createKernelObjects() {
 
     revert_knl_c                        = clCreateKernel(accel_revert_prog, "revert_ocl_kernel", &err);
 
-    reset_field_knl_c                   = clCreateKernel(, "reset_field_ocl_kernel", &err);
+    reset_field_knl_c                   = clCreateKernel(field_sumred_reset_prog, "reset_field_ocl_kernel", &err);
 
-    generate_chunk_knl_c                = clCreateKernel(generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
+    generate_chunk_knl_c                = clCreateKernel(initialise_generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
 
-    initialise_chunk_cell_x_knl_c       = clCreateKernel(initialise_chunk_prog, "initialise_chunk_cell_x_ocl_kernel", &err);
+    initialise_chunk_cell_x_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_x_ocl_kernel", &err);
 
-    initialise_chunk_cell_y_knl_c       = clCreateKernel(initialise_chunk_prog, "initialise_chunk_cell_y_ocl_kernel", &err);
+    initialise_chunk_cell_y_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_y_ocl_kernel", &err);
 
-    initialise_chunk_vertex_x_knl_c     = clCreateKernel(initialise_chunk_prog, "initialise_chunk_vertex_x_ocl_kernel", &err);
+    initialise_chunk_vertex_x_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_x_ocl_kernel", &err);
 
-    initialise_chunk_vertex_y_knl_c     = clCreateKernel(initialise_chunk_prog, "initialise_chunk_vertex_y_ocl_kernel", &err);
+    initialise_chunk_vertex_y_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_y_ocl_kernel", &err);
 
-    initialise_chunk_volume_area_knl_c  = clCreateKernel(initialise_chunk_prog, "initialise_chunk_volume_area_ocl_kernel", &err);
+    initialise_chunk_volume_area_knl_c  = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_volume_area_ocl_kernel", &err);
 
-    field_summary_knl_c                 = clCreateKernel(field_summary_prog, "field_summary_ocl_kernel", &err);
+    field_summary_knl_c                 = clCreateKernel(field_sumred_reset_prog, "field_summary_ocl_kernel", &err);
 
-    update_halo_bottom_cell_knl_c       = clCreateKernel(update_halo_prog, "update_halo_bottom_cell_ocl_kernel", &err);
+    update_halo_bottom_cell_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_cell_ocl_kernel", &err);
 
-    update_halo_bottom_vel_knl_c        = clCreateKernel(update_halo_prog, "update_halo_bottom_vel_ocl_kernel", &err);
+    update_halo_bottom_vel_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_vel_ocl_kernel", &err);
 
-    update_halo_bottom_flux_x_knl_c     = clCreateKernel(update_halo_prog, "update_halo_bottom_flux_x_ocl_kernel", &err);
+    update_halo_bottom_flux_x_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_x_ocl_kernel", &err);
 
-    update_halo_bottom_flux_y_knl_c     = clCreateKernel(update_halo_prog, "update_halo_bottom_flux_y_ocl_kernel", &err);
+    update_halo_bottom_flux_y_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_y_ocl_kernel", &err);
 
-    update_halo_top_cell_knl_c          = clCreateKernel(update_halo_prog, "update_halo_top_cell_ocl_kernel", &err);
+    update_halo_top_cell_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_cell_ocl_kernel", &err);
 
-    update_halo_top_vel_knl_c           = clCreateKernel(update_halo_prog, "update_halo_top_vel_ocl_kernel", &err); 
+    update_halo_top_vel_knl_c           = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_vel_ocl_kernel", &err); 
 
-    update_halo_top_flux_x_knl_c        = clCreateKernel(update_halo_prog, "update_halo_top_flux_x_ocl_kernel", &err);
+    update_halo_top_flux_x_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_x_ocl_kernel", &err);
 
-    update_halo_top_flux_y_knl_c        = clCreateKernel(update_halo_prog, "update_halo_top_flux_y_ocl_kernel", &err);
+    update_halo_top_flux_y_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_y_ocl_kernel", &err);
 
-    update_halo_right_cell_knl_c        = clCreateKernel(update_halo_prog, "update_halo_right_cell_ocl_kernel", &err);
+    update_halo_right_cell_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_cell_ocl_kernel", &err);
 
-    update_halo_right_vel_knl_c         = clCreateKernel(update_halo_prog, "update_halo_right_vel_ocl_kernel", &err);
+    update_halo_right_vel_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_vel_ocl_kernel", &err);
 
-    update_halo_right_flux_x_knl_c      = clCreateKernel(update_halo_prog, "update_halo_right_flux_x_ocl_kernel", &err);
+    update_halo_right_flux_x_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_x_ocl_kernel", &err);
 
-    update_halo_right_flux_y_knl_c      = clCreateKernel(update_halo_prog, "update_halo_right_flux_y_ocl_kernel", &err);
+    update_halo_right_flux_y_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_y_ocl_kernel", &err);
 
-    update_halo_left_cell_knl_c         = clCreateKernel(update_halo_prog, "update_halo_left_cell_ocl_kernel", &err);
+    update_halo_left_cell_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_cell_ocl_kernel", &err);
 
-    update_halo_left_vel_knl_c          = clCreateKernel(update_halo_prog, "update_halo_left_vel_ocl_kernel", &err);
+    update_halo_left_vel_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_vel_ocl_kernel", &err);
 
-    update_halo_left_flux_x_knl_c       = clCreateKernel(update_halo_prog, "update_halo_left_flux_x_ocl_kernel", &err);
+    update_halo_left_flux_x_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_x_ocl_kernel", &err);
 
-    update_halo_left_flux_y_knl_c       = clCreateKernel(update_halo_prog, "update_halo_left_flux_y_ocl_kernel", &err);
+    update_halo_left_flux_y_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_y_ocl_kernel", &err);
 
-    read_top_buffer_knl_c               = clCreateKernel(pack_comms_buffers_prog, "top_comm_buffer_pack", &err);
+    //read_top_buffer_knl_c               = clCreateKernel(pack_comms_buffers_prog, "top_comm_buffer_pack", &err);
 
-    read_bottom_buffer_knl_c            = clCreateKernel(pack_comms_buffers_prog, "bottom_comm_buffer_pack", &err);
+    //read_bottom_buffer_knl_c            = clCreateKernel(pack_comms_buffers_prog, "bottom_comm_buffer_pack", &err);
 
-    read_right_buffer_knl_c             = clCreateKernel(pack_comms_buffers_prog, "right_comm_buffer_pack", &err);
+    //read_right_buffer_knl_c             = clCreateKernel(pack_comms_buffers_prog, "right_comm_buffer_pack", &err);
 
-    read_left_buffer_knl_c              = clCreateKernel(pack_comms_buffers_prog, "left_comm_buffer_pack", &err);
+    //read_left_buffer_knl_c              = clCreateKernel(pack_comms_buffers_prog, "left_comm_buffer_pack", &err);
 
-    write_top_buffer_knl_c              = clCreateKernel(unpack_comms_buffers_prog, "top_comm_buffer_unpack", &err);
+    //write_top_buffer_knl_c              = clCreateKernel(unpack_comms_buffers_prog, "top_comm_buffer_unpack", &err);
 
-    write_bottom_buffer_knl_c           = clCreateKernel(unpack_comms_buffers_prog, "bottom_comm_buffer_unpack", &err);
+    //write_bottom_buffer_knl_c           = clCreateKernel(unpack_comms_buffers_prog, "bottom_comm_buffer_unpack", &err);
 
-    write_right_buffer_knl_c            = clCreateKernel(unpack_comms_buffers_prog, "right_comm_buffer_unpack", &err);
+    //write_right_buffer_knl_c            = clCreateKernel(unpack_comms_buffers_prog, "right_comm_buffer_unpack", &err);
 
-    write_left_buffer_knl_c             = clCreateKernel(unpack_comms_buffers_prog, "left_comm_buffer_unpack", &err);
+    //write_left_buffer_knl_c             = clCreateKernel(unpack_comms_buffers_prog, "left_comm_buffer_unpack", &err);
+
+    std::cout << "at end of the kernel creation" << std::endl; 
 
 }
 
@@ -3117,20 +3180,20 @@ void CloverCL::dumpBinary() {
 
         cl_uint ndevices;
         //program.getInfo(CL_PROGRAM_NUM_DEVICES, &ndevices);
-        err = clGetProgramInfo(CloverCL::ideal_gas_prog, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &ndevices, NULL);
+        err = clGetProgramInfo(CloverCL::ideal_vis_uh_prog, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &ndevices, NULL);
         //printf(" ndevices in dumpBinary = %d\n", ndevices);
         
         //std::vector<size_t> sizes = std::vector<size_t>(ndevices);
         size_t sizes [ndevices];
         //program.getInfo(CL_PROGRAM_BINARY_SIZES, &sizes);
-        err = clGetProgramInfo(CloverCL::ideal_gas_prog, CL_PROGRAM_BINARY_SIZES, sizeof(sizes), &sizes, NULL);
+        err = clGetProgramInfo(CloverCL::ideal_vis_uh_prog, CL_PROGRAM_BINARY_SIZES, sizeof(sizes), &sizes, NULL);
         //printf("DumpBinary sizes.size() = %d, sizes[0] = %d\n", sizes.size(), sizes[0]);
         
         //std::vector<char*> binaries = std::vector<char*>(ndevices);
         char* binaries [ndevices];
         binaries[0] = new char[sizes[0]];
         //program.getInfo(CL_PROGRAM_BINARIES, &binaries);
-        err = clGetProgramInfo(CloverCL::ideal_gas_prog, CL_PROGRAM_BINARIES, sizeof(binaries), &binaries, NULL);
+        err = clGetProgramInfo(CloverCL::ideal_vis_uh_prog, CL_PROGRAM_BINARIES, sizeof(binaries), &binaries, NULL);
         
         //printf("Binary:\n%s\n", binaries[0]);
         FILE* file = fopen(binary_name.c_str(), "wb");

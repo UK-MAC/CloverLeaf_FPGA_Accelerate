@@ -429,14 +429,20 @@ class CloverCL {
         static cl_kernel advec_mom_flux_y_vecnot1_knl_c;
         static cl_kernel advec_mom_vel_y_knl_c;
         static cl_kernel dt_calc_knl_c;
-        static cl_kernel advec_cell_xdir_sec1_s1_knl_c;
-        static cl_kernel advec_cell_xdir_sec1_s2_knl_c;
-        static cl_kernel advec_cell_xdir_sec2_knl_c;
-        static cl_kernel advec_cell_xdir_sec3_knl_c;
-        static cl_kernel advec_cell_ydir_sec1_s1_knl_c;
-        static cl_kernel advec_cell_ydir_sec1_s2_knl_c;
-        static cl_kernel advec_cell_ydir_sec2_knl_c;
-        static cl_kernel advec_cell_ydir_sec3_knl_c;
+
+        static cl_kernel advec_cell_xdir_sweep1_sec1_knl_c;
+        static cl_kernel advec_cell_xdir_sweep1_sec2_knl_c;
+        static cl_kernel advec_cell_xdir_sweep1_sec3_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec1_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec2_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec3_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec1_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec2_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec3_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec1_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec2_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec3_knl_c;
+
         static cl_kernel pdv_correct_knl_c;
         static cl_kernel pdv_predict_knl_c;
         static cl_kernel reset_field_knl_c;
