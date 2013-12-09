@@ -355,7 +355,6 @@ void CloverCL::init(
     ymax_c = y_max; 
 
     std::cout << "at end of init section" << std::endl; 
-    exit(21);
 }
 
 
@@ -469,7 +468,7 @@ void CloverCL::build_reduction_kernel_objects() {
     ke_sum_reduction_kernels.clear();
     press_sum_reduction_kernels.clear();
 
-    if ( (device_type == CL_DEVICE_TYPE_CPU) || (device_type == CL_DEVICE_TYPE_ACCELERATOR) ) {
+    if (device_type == CL_DEVICE_TYPE_CPU) {
         //build the CPU and Phi reduction objects 
 
         if ( number_of_red_levels == 1 ) { 
@@ -632,7 +631,7 @@ void CloverCL::build_reduction_kernel_objects() {
         }
         
     }
-    else if (CloverCL::device_type == CL_DEVICE_TYPE_GPU) {
+    else if ( (CloverCL::device_type == CL_DEVICE_TYPE_GPU) || (device_type == CL_DEVICE_TYPE_ACCELERATOR) ){
         //build the GPU reduction objects
 
         for (int i=1; i<=CloverCL::number_of_red_levels; i++) {
@@ -889,7 +888,7 @@ void CloverCL::calculateReductionStructure(int xmax, int ymax) {
     input_even.clear();
     num_elements_per_wi.clear();
 
-    if ( (device_type == CL_DEVICE_TYPE_CPU) || (device_type == CL_DEVICE_TYPE_ACCELERATOR) ) {
+    if (device_type == CL_DEVICE_TYPE_CPU) {
 
         if ( num_elements < device_procs*2) { 
             //just launch one level of reduction as not enough elements
@@ -934,7 +933,7 @@ void CloverCL::calculateReductionStructure(int xmax, int ymax) {
 #endif
 
     }
-    else if (device_type == CL_DEVICE_TYPE_GPU) {
+    else if ( (device_type == CL_DEVICE_TYPE_GPU) || (device_type == CL_DEVICE_TYPE_ACCELERATOR) ){
 
         int wg_ingest_value, temp_wg_ingest_size, remaining_wis;
         int normal_wg_size;
@@ -1070,12 +1069,12 @@ void CloverCL::allocateLocalMemoryObjects() {
         std::cout << "No local memory objects to create as device type is CPU" << std::endl;
 #endif
     }
-    else if (device_type == CL_DEVICE_TYPE_ACCELERATOR) {
-#ifdef OCL_VERBOSE
-        std::cout << "No local memory objects to create as device type is ACCELERATOR" << std::endl;
-#endif
-    }
-    else if (device_type == CL_DEVICE_TYPE_GPU) {
+    //else if (device_type == CL_DEVICE_TYPE_ACCELERATOR) {
+    //#ifdef OCL_VERBOSE
+    //    std::cout << "No local memory objects to create as device type is ACCELERATOR" << std::endl;
+    //#endif
+    //}
+    else if ( (device_type == CL_DEVICE_TYPE_GPU) || (device_type == CL_DEVICE_TYPE_ACCELERATOR) ) {
         for (int i=0; i<number_of_red_levels; i++) {
             
             min_local_memory_objects.push_back(   local_mem_size[i]*sizeof(cl_double)  );
@@ -1121,7 +1120,7 @@ void CloverCL::allocateReductionInterBuffers() {
 
     cl_int err;
 
-    if ( (device_type == CL_DEVICE_TYPE_CPU) || (device_type==CL_DEVICE_TYPE_ACCELERATOR) ) {
+    if (device_type == CL_DEVICE_TYPE_CPU) {
 
         if ( number_of_red_levels == 1 ) { 
 #ifdef OCL_VERBOSE
@@ -1142,7 +1141,7 @@ void CloverCL::allocateReductionInterBuffers() {
         }
 
     }
-    else if (device_type == CL_DEVICE_TYPE_GPU) {
+    else if ( (device_type == CL_DEVICE_TYPE_GPU) || (device_type==CL_DEVICE_TYPE_ACCELERATOR) ){
 
         for (int i=1; i<=number_of_red_levels-1; i++) {
 
