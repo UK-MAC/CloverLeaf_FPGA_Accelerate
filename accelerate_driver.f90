@@ -23,12 +23,15 @@
 PROGRAM accelerate_driver
 
   USE set_data_module
-  USE accelerate_kernel_module
+  !USE accelerate_kernel_module
 
   IMPLICIT NONE
 
   INTEGER :: numargs,iargc,i
   CHARACTER (LEN=20)  :: command_line,temp
+  CHARACTER(LEN=12) :: OpenCL_vendor
+  CHARACTER(LEN=12) :: OpenCL_type
+
 
   INTEGER :: x_size,y_size
 
@@ -43,28 +46,39 @@ PROGRAM accelerate_driver
 
   x_size=100
   y_size=100
+  OpenCL_vendor = "Nvidia"
+  OpenCL_type = "GPU"
 
   numargs = iargc()
 
   DO i=1,numargs,2
     CALL GETARG(i,command_line)
     SELECT CASE (command_line)
-      CASE("-nx")
-        CALL GETARG(i+1,temp)
-        READ(UNIT=temp,FMT="(I20)") x_size
-      CASE("-ny")
-        CALL GETARG(i+1,temp)
-        READ(UNIT=temp,FMT="(I20)") y_size
-      CASE("-kernel")
-        CALL GETARG(i+1,temp)
-        IF(temp.EQ."fortran") THEN
-          use_fortran_kernels=.TRUE.
-          use_C_kernels=.FALSE.
-        ENDIF
-        IF(temp.EQ."c") THEN
-          use_fortran_kernels=.FALSE.
-          use_C_kernels=.TRUE.
-        ENDIF
+        CASE("-nx")
+            CALL GETARG(i+1,temp)
+            READ(UNIT=temp,FMT="(I20)") x_size
+        CASE("-ny")
+            CALL GETARG(i+1,temp)
+            READ(UNIT=temp,FMT="(I20)") y_size
+        CASE("-kernel")
+            CALL GETARG(i+1,temp)
+            IF(temp.EQ."fortran") THEN
+              use_fortran_kernels=.TRUE.
+              use_C_kernels=.FALSE.
+            ENDIF
+            IF(temp.EQ."c") THEN
+              use_fortran_kernels=.FALSE.
+              use_C_kernels=.TRUE.
+            ENDIF
+
+        CASE("-ocltype")
+            CALL GETARG(i+1,temp)
+            OpenCL_type = temp
+
+        CASE("-oclvendor")
+            CALL GETARG(i+1,temp)
+            OpenCL_vendor = temp
+
     END SELECT
   ENDDO
 
@@ -75,6 +89,7 @@ PROGRAM accelerate_driver
 
   WRITE(*,*) "Accelerate Kernel"
   WRITE(*,*) "Mesh size ",x_size,y_size
+  WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
 
   CALL set_data(x_min,x_max,y_min,y_max, &
                 xarea=xarea,             &
@@ -92,6 +107,20 @@ PROGRAM accelerate_driver
 
   WRITE(*,*) "Data set"
 
+  CALL setup_opencl(TRIM(OpenCL_vendor)//char(0), TRIM(OpenCL_type)//char(0),&
+                    x_min, x_max, y_min, y_max, &
+                    !number_of_states, &
+                    2, &
+                    1, 1, 1, 1, 1, 1, 1)
+                    !g_small, g_big, dtmin, dtc_safe, dtu_safe, dtv_safe, dtdiv_safe)
+
+
+    !CALL method to write contents of arrays to teh buffers
+
+  CALL accelerate_ocl_writebuffers(density0, pressure, viscosity, xvel0, xvel1, yvel0, yvel1, volume, xarea, yarea)
+
+
+
   IF(use_fortran_kernels) THEN
     WRITE(*,*) "Running Fortran kernel"
   ENDIF
@@ -103,44 +132,21 @@ PROGRAM accelerate_driver
   acceleration_time=0.0_8
   kernel_time=timer()
 
-  IF(use_fortran_kernels) THEN
-    CALL accelerate_kernel(x_min,                  &
-                           x_max,                  &
-                           y_min,                  &
-                           y_max,                  &
-                           dt,                     &
-                           xarea,                  &
-                           yarea,                  &
-                           volume,                 &
-                           density0,               &
-                           pressure,               &
-                           viscosity,              &
-                           xvel0,                  &
-                           yvel0,                  &
-                           xvel1,                  &
-                           yvel1,                  &
-                           work_array1             )
-  ELSEIF(use_C_kernels)THEN
-    CALL accelerate_kernel_c(x_min,                &
-                           x_max,                  &
-                           y_min,                  &
-                           y_max,                  &
-                           dt,                     &
-                           xarea,                  &
-                           yarea,                  &
-                           volume,                 &
-                           density0,               &
-                           pressure,               &
-                           viscosity,              &
-                           xvel0,                  &
-                           yvel0,                  &
-                           xvel1,                  &
-                           yvel1,                  &
-                           work_array1             )
 
-  ENDIF
+  CALL accelerate_kernel_ocl(x_min,            &
+                             x_max,                  &
+                             y_min,                  &
+                             y_max,                  &
+                             dt )
+
+
 
   acceleration_time=acceleration_time+(timer()-kernel_time)
+
+
+  CALL accelerate_ocl_readbuffers(xvel1, yvel1);
+
+
 
   WRITE(*,*) "Accelerate time ",acceleration_time 
   WRITE(*,*) "X vel ",SUM(xvel1)

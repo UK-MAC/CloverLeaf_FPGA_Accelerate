@@ -277,6 +277,7 @@ void CloverCL::init(
     allocateReductionInterBuffers();
     allocateLocalMemoryObjects();
     build_reduction_kernel_objects(); 
+    std::cout << "after build reduction kernel objects " << std::endl;
 
 #ifdef DUMP_BINARY
     dumpBinary();
@@ -287,9 +288,12 @@ void CloverCL::init(
                          dtu_safe, dtv_safe, dtdiv_safe);
     initialised = true;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "after initialise kernel args" << std::endl;
+
+    //MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     xmax_c = x_max;
     ymax_c = y_max; 
+    std::cout << "after mpi comm rank" << std::endl;
 }
 
 
@@ -2912,6 +2916,60 @@ void CloverCL::write_back_all_ocl_buffers(double* density0, double* density1, do
     err = clFinish(CloverCL::outoforder_queue_c);
 }
 
+void CloverCL::write_accelerate_buffers_tocard(double* density0, double* pressure, double* viscosity, 
+                                               double* xvel0, double* xvel1, double* yvel0, double* yvel1,
+                                               double* volume , double* xarea, double* yarea)
+{
+    cl_int err; 
+
+    err = clFinish(CloverCL::queue_c);
+    err = clFinish(CloverCL::outoforder_queue_c);
+
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
+
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+
+
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
+
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yarea_buffer_c, CL_FALSE, 0, 
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea, 0, NULL, NULL);
+
+    err = clFinish(CloverCL::outoforder_queue_c);
+}
+
+void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1)
+{
+    cl_int err;
+
+    err = clFinish(CloverCL::queue_c);
+    err = clFinish(CloverCL::outoforder_queue_c);
+    
+
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+
+    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+
+
+    err = clFinish(CloverCL::outoforder_queue_c);
+}
 
 inline void CloverCL::checkErr(cl_int err, std::string name)
 {

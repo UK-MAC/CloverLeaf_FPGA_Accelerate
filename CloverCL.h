@@ -272,6 +272,13 @@ class CloverCL {
 
         static void dumpBinary();
 
+
+        static void write_accelerate_buffers_tocard(double* density0, double* pressure, double* viscosity,
+                                               double* xvel0, double* xvel1, double* yvel0, double* yvel1,
+                                               double* volume , double* xarea, double* yarea);
+
+        static void read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1);
+
         static cl_mem density0_buffer_c;
         static cl_mem density1_buffer_c;
         static cl_mem energy0_buffer_c;
