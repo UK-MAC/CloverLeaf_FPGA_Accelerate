@@ -115,29 +115,19 @@ PROGRAM accelerate_driver
                     !g_small, g_big, dtmin, dtc_safe, dtu_safe, dtv_safe, dtdiv_safe)
 
 
-    !CALL method to write contents of arrays to teh buffers
 
   CALL accelerate_ocl_writebuffers(density0, pressure, viscosity, xvel0, xvel1, yvel0, yvel1, volume, xarea, yarea)
 
 
 
-  IF(use_fortran_kernels) THEN
-    WRITE(*,*) "Running Fortran kernel"
-  ENDIF
+  WRITE(*,*) "Running OpenCL kernel"
 
-  IF(use_C_kernels) THEN
-    WRITE(*,*) "Running C kernel"
-  ENDIF
 
   acceleration_time=0.0_8
   kernel_time=timer()
 
 
-  CALL accelerate_kernel_ocl(x_min,            &
-                             x_max,                  &
-                             y_min,                  &
-                             y_max,                  &
-                             dt )
+  CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt )
 
 
 
