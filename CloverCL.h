@@ -60,7 +60,7 @@ class CloverCL {
         //static cl_program program_c;
 
         //static cl_program ideal_gas_prog;
-        //static cl_program accelerate_prog;                  
+        static cl_program accelerate_prog;                  
         //static cl_program field_summary_prog;      
         //static cl_program flux_calc_prog;          
         //static cl_program reset_field_prog;

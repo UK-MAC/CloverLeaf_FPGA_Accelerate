@@ -58,7 +58,7 @@ cl_program CloverCL::advec_cell_knl_ydir_sweep1_prog;
 cl_program CloverCL::advec_cell_knl_ydir_sweep2_prog;
 
 
-//cl_program CloverCL::accelerate_prog;                  
+cl_program CloverCL::accelerate_prog;                  
 //cl_program CloverCL::field_summary_prog;      
 //cl_program CloverCL::flux_calc_prog;          
 //cl_program CloverCL::reset_field_prog;
@@ -1942,7 +1942,9 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
+
+    //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_knl.aocx", &accelerate_prog);
 
@@ -2114,7 +2116,8 @@ void CloverCL::createKernelObjects() {
 
     flux_calc_knl_c                     = clCreateKernel(pdv_fluxcalc_prog, "flux_calc_ocl_kernel", &err);
 
-    accelerate_knl_c                    = clCreateKernel(accel_revert_prog, "accelerate_ocl_kernel", &err);
+    //accelerate_knl_c                    = clCreateKernel(accel_revert_prog, "accelerate_ocl_kernel", &err);
+    accelerate_knl_c                    = clCreateKernel(accelerate_prog, "accelerate_ocl_kernel", &err);
 
 
     advec_cell_xdir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
