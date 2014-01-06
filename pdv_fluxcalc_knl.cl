@@ -168,3 +168,37 @@ __kernel void pdv_predict_ocl_kernel(
 
   }
 }
+
+
+__kernel void flux_calc_ocl_kernel(
+    const double dt,
+    __global const double * restrict xarea,
+    __global const double * restrict xvel0,
+    __global const double * restrict xvel1,
+    __global double * restrict vol_flux_x,
+    __global const double * restrict yarea,
+    __global const double * restrict yvel0,
+    __global const double * restrict yvel1,
+    __global double * restrict vol_flux_y)
+{
+    int k = get_global_id(1);
+    int j = get_global_id(0);
+
+    if ((j>=2) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSONE) ) {
+
+	    vol_flux_x[ARRAYXY(j, k, XMAXPLUSFIVE)] = 0.25*dt*xarea[ARRAYXY(j, k, XMAXPLUSFIVE)]
+	                                                           *( xvel0[ARRAYXY(j, k  , XMAXPLUSFIVE)]
+				                                                 +xvel0[ARRAYXY(j, k+1, XMAXPLUSFIVE)]
+				                                                 +xvel1[ARRAYXY(j, k  , XMAXPLUSFIVE)]
+				                                                 +xvel1[ARRAYXY(j, k+1, XMAXPLUSFIVE)]);
+    }
+
+    if ( (j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSTWO) ) {
+
+	   vol_flux_y[ARRAYXY(j, k, XMAXPLUSFOUR)] = 0.25*dt*yarea[ARRAYXY(j, k, XMAXPLUSFOUR)]
+	                                                          *( yvel0[ARRAYXY(j,   k, XMAXPLUSFIVE)]
+			                                                    +yvel0[ARRAYXY(j+1, k, XMAXPLUSFIVE)]
+			                                                    +yvel1[ARRAYXY(j,   k, XMAXPLUSFIVE)]
+			                                                    +yvel1[ARRAYXY(j+1, k, XMAXPLUSFIVE)]);
+    }
+}

@@ -94,15 +94,23 @@ void initialise_chunk_kernel_ocl_(
     CloverCL::checkErr(err, "initialise chunk setting arguments volume area kernel");
 
 
+    std::cout << "before initialise chunk kernel 1" << std::endl; 
     CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_x_knl_c, *x_min, *x_max+5);
+    std::cout << "after initialise chunk kernel 1" << std::endl; 
 
     CloverCL::enqueueKernel( CloverCL::initialise_chunk_vertex_y_knl_c, *y_min, *y_max+5);
+    std::cout << "after initialise chunk kernel 2" << std::endl; 
 
     CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_x_knl_c, *x_min, *x_max+4);
+    std::cout << "after initialise chunk kernel 3" << std::endl; 
 
     CloverCL::enqueueKernel( CloverCL::initialise_chunk_cell_y_knl_c, *y_min, *y_max+4);
+    std::cout << "after initialise chunk kernel 4" << std::endl; 
 
     CloverCL::enqueueKernel_nooffsets( CloverCL::initialise_chunk_volume_area_knl_c, *x_max+4, *y_max+4);
+    std::cout << "after initialise chunk kernel 5" << std::endl; 
+
+    std::cout << " at end of initialise chunks kernel" << std::endl; 
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;

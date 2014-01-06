@@ -124,3 +124,112 @@ __kernel void field_summary_ocl_kernel(
     }
 
 }
+
+
+__kernel void reduction_sum_ocl_kernel(
+	__global const double * restrict sum_val_input,
+	__local double * restrict sum_val_local,
+	__global double * restrict sum_val_output)
+{
+    uint lj = get_local_id(0);
+    uint wg_size_x = get_local_size(0);
+    uint wg_id_x = get_group_id(0);
+
+    uint j = wg_id_x * (wg_size_x * 2) + lj;
+
+    sum_val_local[lj] = sum_val_input[j] + sum_val_input[j+wg_size_x]; 
+
+    barrier(CLK_LOCAL_MEM_FENCE); 
+
+    for (uint s=wg_size_x >> 1; s > 32; s >>= 1) {
+        if (lj < s) {
+            sum_val_local[lj] += sum_val_local[lj+s];
+	}
+
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    if (lj < 32) sum_val_local[lj] += sum_val_local[lj+32];
+    if (lj < 16) sum_val_local[lj] += sum_val_local[lj+16];
+    if (lj < 8) sum_val_local[lj] += sum_val_local[lj+8];
+    if (lj < 4) sum_val_local[lj] += sum_val_local[lj+4];
+    if (lj < 2) sum_val_local[lj] += sum_val_local[lj+2];
+    if (lj < 1) sum_val_local[lj] += sum_val_local[lj+1];
+
+    if (lj==0) sum_val_output[wg_id_x] = sum_val_local[0];
+}
+
+
+__kernel void reduction_sum_last_ocl_kernel(
+	__global const double * restrict sum_val_input,
+	__local double * restrict sum_val_local,
+	__global double * restrict sum_val_output,
+	const int limit,
+	const int even)
+{
+    uint lj = get_local_id(0);
+    uint wg_size_x = get_local_size(0);
+    uint wg_id_x = get_group_id(0);
+
+    uint j = wg_id_x * (wg_size_x * 2) + lj;
+
+    if ( wg_id_x != get_num_groups(0)-1 ) {
+        sum_val_local[lj] = sum_val_input[j] + sum_val_input[j+wg_size_x]; 
+    }
+    else if (lj < limit) {
+        sum_val_local[lj] = sum_val_input[j] + sum_val_input[j+limit]; 
+    }
+    else if ( (lj==limit) && (even==0) ) { //even is false
+        sum_val_local[lj] = sum_val_input[j+limit];
+    }
+    else {
+        sum_val_local[lj] = 0; 
+    }
+
+    barrier(CLK_LOCAL_MEM_FENCE); 
+
+    for (uint s = wg_size_x >> 1; s > 16; s >>= 1) {
+        if (lj < s) {
+            sum_val_local[lj] += sum_val_local[lj+s];
+        }
+
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+
+    if (lj < 16) sum_val_local[lj] += sum_val_local[lj+16];
+    if (lj < 8) sum_val_local[lj] += sum_val_local[lj+8];
+    if (lj < 4) sum_val_local[lj] += sum_val_local[lj+4];
+    if (lj < 2) sum_val_local[lj] += sum_val_local[lj+2];
+    if (lj < 1) sum_val_local[lj] += sum_val_local[lj+1];  
+
+    if (lj==0) sum_val_output[wg_id_x] = sum_val_local[0];
+}
+
+
+__kernel void reset_field_ocl_kernel(
+    __global double * restrict density0,
+    __global const double * restrict density1,
+    __global double * restrict energy0,
+    __global const double * restrict energy1,
+    __global double * restrict xvel0,
+    __global const double * restrict xvel1,
+    __global double * restrict yvel0,
+    __global const double * restrict yvel1)
+{
+
+    int k = get_global_id(1);
+    int j = get_global_id(0);
+
+    if ((j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSONE))
+    {
+        density0[ARRAYXY(j,k,XMAXPLUSFOUR)] = density1[ARRAYXY(j,k,XMAXPLUSFOUR)];
+        energy0[ARRAYXY(j,k,XMAXPLUSFOUR)] = energy1[ARRAYXY(j,k,XMAXPLUSFOUR)];
+    }
+
+    if ((j>=2) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO))
+    {
+        xvel0[ARRAYXY(j,k,XMAXPLUSFIVE)] = xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
+        yvel0[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
+    }
+}

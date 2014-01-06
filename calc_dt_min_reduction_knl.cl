@@ -144,3 +144,81 @@ __kernel void calc_dt_ocl_kernel(
 }
 
 
+__kernel void reduction_minimum_ocl_kernel(
+	__global const double * restrict min_val_input,
+	__local double * restrict min_val_local,
+	__global double * restrict min_val_output)
+{
+    uint lj = get_local_id(0);
+    uint wg_size_x = get_local_size(0);
+    uint wg_id_x = get_group_id(0);
+
+    uint j = wg_id_x * (wg_size_x * 2) + lj; 
+
+    min_val_local[lj] = fmin( min_val_input[j], min_val_input[j+wg_size_x] ); 
+
+    barrier(CLK_LOCAL_MEM_FENCE); 
+
+    for (uint s=wg_size_x >> 1; s > 32; s >>= 1) {
+        if (lj < s) {
+             min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+s] );
+        }
+
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    if (lj < 32) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+32] );
+    if (lj < 16) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+16] );
+    if (lj < 8) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+8] );
+    if (lj < 4) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+4] );
+    if (lj < 2) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+2] );
+    if (lj < 1) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+1] );
+
+    if (lj==0) min_val_output[wg_id_x] = min_val_local[0];
+
+}
+
+__kernel void reduction_minimum_last_ocl_kernel(
+	__global const double * restrict min_val_input,
+	__local double * restrict min_val_local,
+	__global double * restrict min_val_output,
+	const int limit,
+	const int even)
+{
+    uint lj = get_local_id(0);
+    uint wg_size_x = get_local_size(0);
+    uint wg_id_x = get_group_id(0);
+
+    uint j = wg_id_x * (wg_size_x * 2) + lj; 
+
+    if ( wg_id_x != get_num_groups(0)-1 ) {
+        min_val_local[lj] = fmin( min_val_input[j], min_val_input[j+wg_size_x] ); 
+    }
+    else if (lj < limit) {
+        min_val_local[lj] = fmin( min_val_input[j], min_val_input[j+limit] ); 
+    } 
+    else if ( (lj==limit) && (even==0) ) { //even is false
+        min_val_local[lj] = min_val_input[j+limit]; 
+    }
+    else {
+        min_val_local[lj] = 100000; 
+    }
+
+    barrier(CLK_LOCAL_MEM_FENCE); 
+
+    for (uint s=wg_size_x >> 1; s > 16; s >>= 1) {
+        if (lj < s) {
+             min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+s] );
+        }
+
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    if (lj < 16) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+16] );
+    if (lj < 8) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+8] );
+    if (lj < 4) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+4] );
+    if (lj < 2) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+2] );
+    if (lj < 1) min_val_local[lj] = fmin( min_val_local[lj], min_val_local[lj+1] );
+
+    if (lj==0) min_val_output[wg_id_x] = min_val_local[0];
+}

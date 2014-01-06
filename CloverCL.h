@@ -25,7 +25,7 @@
 #define CLOVER_CL_H_
 
 #define __CL_ENABLE_EXCEPTIONS
-#include <CL/cl.h>
+#include <CL/opencl.h>
 
 #include <string>
 #include <vector>
@@ -53,9 +53,62 @@ class CloverCL {
         static cl_platform_id platform_c;
         static cl_context context_c;
         static cl_device_id device_c;
+        static cl_device_id* devices_list;
         static cl_command_queue queue_c;
         static cl_command_queue outoforder_queue_c;
-        static cl_program program_c;
+
+        //static cl_program program_c;
+
+        //static cl_program ideal_gas_prog;
+        //static cl_program accelerate_prog;                  
+        //static cl_program field_summary_prog;      
+        //static cl_program flux_calc_prog;          
+        //static cl_program reset_field_prog;
+        //static cl_program revert_prog;  
+        //static cl_program viscosity_prog;
+        //static cl_program calc_dt_prog;                   
+        //static cl_program pdv_prog;                
+        //static cl_program initialise_chunk_prog;   
+        //static cl_program min_reduction_prog;      
+        //static cl_program sum_reduction_prog;
+        //static cl_program update_halo_prog; 
+        //static cl_program generate_chunk_prog;     
+
+        static cl_program ideal_vis_uh_prog;
+        static cl_program calcdt_minred_prog;
+        static cl_program accel_revert_prog;
+        static cl_program pdv_fluxcalc_prog;
+        static cl_program field_sumred_reset_prog;
+        static cl_program initialise_generate_chunk_prog;
+        static cl_program advec_cell_knl_xdir_sweep1_prog;
+        static cl_program advec_cell_knl_xdir_sweep2_prog;
+        static cl_program advec_cell_knl_ydir_sweep1_prog;
+        static cl_program advec_cell_knl_ydir_sweep2_prog;
+       
+        //static cl_program advec_cell_knl_xdir_sec1_sweep1_prog; 
+        //static cl_program advec_cell_knl_xdir_sec1_sweep2_prog; 
+        //static cl_program advec_cell_knl_xdir_sec2_prog;        
+        //static cl_program advec_cell_knl_xdir_sec3_prog;        
+        //static cl_program advec_cell_knl_y_sec1_sweep1_prog;    
+        //static cl_program advec_cell_knl_y_sec1_sweep2_prog;     
+        //static cl_program advec_cell_knl_y_sec2_prog;            
+        //static cl_program advec_cell_knl_y_sec3_prog;            
+        static cl_program advec_mom_knl_vol_prog;             
+        static cl_program advec_mom_knl_node_x_prog;          
+        static cl_program advec_mom_knl_node_y_prog;          
+        static cl_program advec_mom_knl_node_mass_pre_x_prog; 
+        static cl_program advec_mom_knl_node_mass_pre_y_prog; 
+        static cl_program advec_mom_knl_mom_flux_x_vec1_prog;    
+        static cl_program advec_mom_knl_mom_flux_x_notvec1_prog; 
+        static cl_program advec_mom_knl_mom_flux_y_vec1_prog;    
+        static cl_program advec_mom_knl_mom_flux_y_notvec1_prog; 
+        static cl_program advec_mom_knl_vel_x_prog;           
+        static cl_program advec_mom_knl_vel_y_prog;           
+        
+        //static cl_program pack_comms_buffers_prog; 
+        //static cl_program unpack_comms_buffers_prog;
+        //static cl_program read_comm_buffers_prog; 
+        //static cl_program write_comm_buffers_prog;
 
         static int const chunk_left   = 1;
         static int const chunk_right  = 2;
@@ -152,8 +205,10 @@ class CloverCL {
 
         static void initCommandQueue();
 
-        static void loadProgram(int xmin, int xmax,
-                                int ymin, int ymax);
+        static void loadProgram(int xmin, int xmax, int ymin, int ymax);
+        static void build_one_program(int xmin, int xmax, int ymin, int ymax, std::string filename, cl_program* prog);
+
+        static void createKernelObjects(); 
 
         static void createBuffers( int x_max, int y_max, int num_states);
 
@@ -381,14 +436,20 @@ class CloverCL {
         static cl_kernel advec_mom_flux_y_vecnot1_knl_c;
         static cl_kernel advec_mom_vel_y_knl_c;
         static cl_kernel dt_calc_knl_c;
-        static cl_kernel advec_cell_xdir_sec1_s1_knl_c;
-        static cl_kernel advec_cell_xdir_sec1_s2_knl_c;
-        static cl_kernel advec_cell_xdir_sec2_knl_c;
-        static cl_kernel advec_cell_xdir_sec3_knl_c;
-        static cl_kernel advec_cell_ydir_sec1_s1_knl_c;
-        static cl_kernel advec_cell_ydir_sec1_s2_knl_c;
-        static cl_kernel advec_cell_ydir_sec2_knl_c;
-        static cl_kernel advec_cell_ydir_sec3_knl_c;
+
+        static cl_kernel advec_cell_xdir_sweep1_sec1_knl_c;
+        static cl_kernel advec_cell_xdir_sweep1_sec2_knl_c;
+        static cl_kernel advec_cell_xdir_sweep1_sec3_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec1_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec2_knl_c;
+        static cl_kernel advec_cell_xdir_sweep2_sec3_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec1_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec2_knl_c;
+        static cl_kernel advec_cell_ydir_sweep1_sec3_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec1_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec2_knl_c;
+        static cl_kernel advec_cell_ydir_sweep2_sec3_knl_c;
+
         static cl_kernel pdv_correct_knl_c;
         static cl_kernel pdv_predict_knl_c;
         static cl_kernel reset_field_knl_c;

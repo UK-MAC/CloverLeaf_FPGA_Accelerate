@@ -81,3 +81,20 @@ __kernel void accelerate_ocl_kernel(
                                                    *(viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
     }
 }
+
+__kernel void revert_ocl_kernel(
+    __global const double * restrict density0,
+    __global double * restrict density1,
+    __global const double * restrict energy0,
+    __global double * restrict energy1)
+{
+    int  k = get_global_id(1);
+    int  j = get_global_id(0);
+
+    if ((j>=2) && (j<=XMAXPLUSONE) && (k>=2) && (k<=YMAXPLUSONE)) {
+
+        density1[ARRAYXY(j,k,XMAXPLUSFOUR)] = density0[ARRAYXY(j,k,XMAXPLUSFOUR)];
+        energy1[ARRAYXY(j,k,XMAXPLUSFOUR)] = energy0[ARRAYXY(j,k,XMAXPLUSFOUR)];
+
+    }
+}
