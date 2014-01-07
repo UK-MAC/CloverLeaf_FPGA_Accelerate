@@ -24,6 +24,8 @@
 
 #include "ocl_knls.h"
 
+__attribute__((reqd_work_group_size(962,962,1)))
+__attribute__((max_work_group_size(962,962,1)))
 __kernel void accelerate_ocl_kernel(
     const double dt,
     __global const double * restrict xarea,
