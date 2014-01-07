@@ -105,6 +105,7 @@ size_t CloverCL::device_max_wg_size;
 cl_ulong CloverCL::device_local_mem_size;
 cl_device_type CloverCL::device_type; 
 size_t CloverCL::device_prefer_wg_multiple;
+size_t CloverCL::device_max_wi_dims;
 
 int CloverCL::number_of_red_levels;
 int CloverCL::xmax_plusfour_rounded;
@@ -424,6 +425,9 @@ void CloverCL::determineWorkGroupSizeInfo() {
     err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(cl_uint), &device_max_wg_size, NULL); 
     err = clGetDeviceInfo(device_c, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &device_local_mem_size, NULL); 
 
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(uint), &device_max_wi_dims, NULL); 
+    size_t* device_max_wi_sizes = new size_t[device_max_wi_dims];
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t[device_max_wi_dims]), device_max_wi_sizes, NULL); 
     //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, &prefer_wg_multiple);
     //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_WORK_GROUP_SIZE, &max_reduction_wg_size);
 
@@ -456,6 +460,11 @@ void CloverCL::determineWorkGroupSizeInfo() {
     }
     else {
         std::cout << "ERROR Device Type selected: NOT SUPPORTED" << std::endl;
+    }
+
+    std::cout << "Device Max WI Dimernsions: " << device_max_wi_dims << std::endl;
+    for (int i=0; i<device_max_wi_dims; i++) {
+        std::cout << "Device Max WI Dimernsions dim: " << i+1  << " max: " << device_max_wi_sizes[i] << std::endl;
     }
 #endif
 

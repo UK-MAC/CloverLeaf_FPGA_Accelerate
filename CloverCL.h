@@ -161,6 +161,8 @@ class CloverCL {
         static cl_ulong device_local_mem_size;
         static cl_device_type device_type;
 
+        static size_t device_max_wi_dims;
+
         static int number_of_red_levels;
         static cl_event last_event;
 
