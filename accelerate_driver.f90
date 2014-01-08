@@ -139,8 +139,8 @@ PROGRAM accelerate_driver
 
 
   WRITE(*,*) "Accelerate time ",acceleration_time 
-  WRITE(*,*) "X vel ",SUM(xvel1)
-  WRITE(*,*) "Y vel ",SUM(yvel1)
+  !WRITE(*,*) "X vel ",SUM(xvel1)
+  !WRITE(*,*) "Y vel ",SUM(yvel1)
 
   ! Answers need checking
   DEALLOCATE(xarea)

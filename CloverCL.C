@@ -33,6 +33,9 @@
 #include <algorithm>
 #include <sstream>
 #include <math.h>
+#include <stdlib.h>
+#include <iomanip>
+#define AOCL_ALIGNMENT 64
 
 bool CloverCL::initialised;
 
@@ -116,6 +119,18 @@ int CloverCL::ymax_plusfive_rounded;
 int CloverCL::mpi_rank; 
 int CloverCL::xmax_c;
 int CloverCL::ymax_c;
+
+void * CloverCL::density0_ptr;
+void * CloverCL::pressure_ptr;
+void * CloverCL::viscosity_ptr;
+void * CloverCL::xvel0_ptr;
+void * CloverCL::xvel1_ptr;
+void * CloverCL::yvel0_ptr;
+void * CloverCL::yvel1_ptr;
+void * CloverCL::volume_ptr;
+void * CloverCL::xarea_ptr;
+void * CloverCL::yarea_ptr;
+void * CloverCL::work_array1_ptr;
 
 cl_mem CloverCL::density0_buffer_c;
 cl_mem CloverCL::density1_buffer_c;
@@ -3116,34 +3131,99 @@ void CloverCL::write_accelerate_buffers_tocard(double* density0, double* pressur
                                                double* volume , double* xarea, double* yarea)
 {
     cl_int err; 
+    density0_ptr = NULL;
+    pressure_ptr = NULL;
+    viscosity_ptr = NULL;
+    xvel0_ptr = NULL;
+    xvel1_ptr = NULL;
+    yvel0_ptr = NULL;
+    yvel1_ptr = NULL;
+    volume_ptr = NULL;
+    xarea_ptr = NULL;
+    yarea_ptr = NULL;
+    work_array1_ptr = NULL;
 
     err = clFinish(CloverCL::queue_c);
     err = clFinish(CloverCL::outoforder_queue_c);
 
+    posix_memalign(&density0_ptr    , AOCL_ALIGNMENT, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double));
+    posix_memalign(&pressure_ptr    , AOCL_ALIGNMENT, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double));
+    posix_memalign(&viscosity_ptr   , AOCL_ALIGNMENT, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double));
+    posix_memalign(&xvel0_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double));
+    posix_memalign(&xvel1_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double));
+    posix_memalign(&yvel0_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double));
+    posix_memalign(&yvel1_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double));
+    posix_memalign(&volume_ptr      , AOCL_ALIGNMENT, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double));
+    posix_memalign(&xarea_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double));
+    posix_memalign(&yarea_ptr       , AOCL_ALIGNMENT, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double));
+    posix_memalign(&work_array1_ptr , AOCL_ALIGNMENT, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double));
+
+
+    for(int j=0; j<CloverCL::ymax_c+4; j++) {
+        for(int i=0; i<CloverCL::xmax_c+5; i++) {
+            ((double *)xarea_ptr)[j*CloverCL::xmax_c+5+i] = 1.0;
+        }
+    }
+
+    for(int j=0; j<CloverCL::ymax_c+5; j++) {
+        for(int i=0; i<CloverCL::xmax_c+4; i++) {
+            ((double *)yarea_ptr)[j*CloverCL::xmax_c+4+i] = 1.0;
+        }
+    }
+
+    for(int j=0; j<CloverCL::ymax_c+4; j++) {
+        for(int i=0; i<CloverCL::xmax_c+4; i++) {
+            ((double *)volume_ptr)[j*CloverCL::xmax_c+4+i] = 1.0;
+            ((double *)viscosity_ptr)[j*CloverCL::xmax_c+4+i] = 0.0;
+
+            if ( i <= CloverCL::xmax_c/2+1 ) {
+                ((double *)density0_ptr)[j*CloverCL::xmax_c+4+i] = 1.0;
+                ((double *)pressure_ptr)[j*CloverCL::xmax_c+4+i] = 1.0;
+            } else {
+                ((double *)density0_ptr)[j*CloverCL::xmax_c+4+i] = 2.0;
+                ((double *)pressure_ptr)[j*CloverCL::xmax_c+4+i] = 2.0;
+            }
+
+            if ( i == CloverCL::xmax_c/2+1) {
+                ((double *)viscosity_ptr)[j*CloverCL::xmax_c+4+i] = 0.1;
+            }
+        }
+    }
+
+    for(int j=0; j<CloverCL::ymax_c+5; j++) {
+        for(int i=0; i<CloverCL::xmax_c+5; i++) {
+            ((double *)xvel0_ptr)[j*CloverCL::xmax_c+5+i] = 1.0;
+            ((double *)xvel1_ptr)[j*CloverCL::xmax_c+5+i] = 1.0;
+            ((double *)yvel0_ptr)[j*CloverCL::xmax_c+5+i] = 1.0;
+            ((double *)yvel1_ptr)[j*CloverCL::xmax_c+5+i] = 1.0;
+        }
+    }
+
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0_ptr, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure_ptr, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity_ptr, 0, NULL, NULL);
 
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0_ptr, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1_ptr, 0, NULL, NULL);
+
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0_ptr, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1_ptr, 0, NULL, NULL);
 
 
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume_ptr, 0, NULL, NULL);
 
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea_ptr, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yarea_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea, 0, NULL, NULL);
+                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea_ptr, 0, NULL, NULL);
 
     err = clFinish(CloverCL::outoforder_queue_c);
 }
@@ -3157,13 +3237,39 @@ void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1
     
 
     err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
-                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1_ptr, 0, NULL, NULL);
 
     err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
-                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1_ptr, 0, NULL, NULL);
 
 
     err = clFinish(CloverCL::outoforder_queue_c);
+
+    double xvel1_sum,yvel1_sum;
+    xvel1_sum=0.0;
+    yvel1_sum=0.0;
+
+    for(int j=0; j<CloverCL::ymax_c+5; j++) {
+        for(int i=0; i<CloverCL::xmax_c+5; i++) {
+            xvel1_sum = xvel1_sum + ((double *)xvel1_ptr)[j*CloverCL::xmax_c+5+i];
+            yvel1_sum = yvel1_sum + ((double *)yvel1_ptr)[j*CloverCL::xmax_c+5+i];
+        }
+    }
+
+    std::cout << "Xvel1: " << std::setprecision(11) << xvel1_sum << std::endl;
+    std::cout << "Yvel1: " << std::setprecision(11) << yvel1_sum << std::endl;
+
+    free(density0_ptr);
+    free(pressure_ptr);
+    free(viscosity_ptr);
+    free(xvel0_ptr);
+    free(xvel1_ptr);
+    free(yvel0_ptr);
+    free(yvel1_ptr);
+    free(volume_ptr);
+    free(xarea_ptr);
+    free(yarea_ptr);
+    free(work_array1_ptr);
 }
 
 inline void CloverCL::checkErr(cl_int err, std::string name)
