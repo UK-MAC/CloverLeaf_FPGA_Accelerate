@@ -152,9 +152,9 @@ PROGRAM accelerate_driver
     xvel1=1.0
     yvel1=1.0
     dt=0.0001_8 ! Needs to be mesh specific
+    WRITE(*,*) "Data set"
 
 
-    WRITE(*,*) "after array init"
 
   !caLL set_data(x_min,x_max,y_min,y_max, &
   !              xarea=xarea,             &
@@ -171,7 +171,6 @@ PROGRAM accelerate_driver
   !              dt=dt                    )
 
 
-  WRITE(*,*) "Data set"
 
   CALL setup_opencl(TRIM(OpenCL_vendor)//char(0), TRIM(OpenCL_type)//char(0),&
                     x_min, x_max, y_min, y_max, &
@@ -209,17 +208,30 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Y vel ",SUM(yvel1)
 
   ! Answers need checking
-  DEALLOCATE(xarea)
-  DEALLOCATE(yarea)
-  DEALLOCATE(volume)
-  DEALLOCATE(density0)
-  DEALLOCATE(pressure)
-  DEALLOCATE(viscosity)
-  DEALLOCATE(xvel0)
-  DEALLOCATE(yvel0)
-  DEALLOCATE(xvel1)
-  DEALLOCATE(yvel1)
-  DEALLOCATE(work_array1)
+
+  !CALL free_aligned_array(density0_cptr)
+  !CALL free_aligned_array(pressure_cptr)
+  !CALL free_aligned_array(viscosity_cptr)
+  !CALL free_aligned_array(xarea_cptr)
+  !CALL free_aligned_array(yarea_cptr)
+  !CALL free_aligned_array(volume_cptr)
+  !CALL free_aligned_array(xvel0_cptr)
+  !CALL free_aligned_array(yvel0_cptr)
+  !CALL free_aligned_array(xvel1_cptr)
+  !CALL free_aligned_array(yvel1_cptr)
+  !CALL free_aligned_array(work_array_cptr)
+
+  !DEALLOCATE(xarea)
+  !DEALLOCATE(yarea)
+  !DEALLOCATE(volume)
+  !DEALLOCATE(density0)
+  !DEALLOCATE(pressure)
+  !DEALLOCATE(viscosity)
+  !DEALLOCATE(xvel0)
+  !DEALLOCATE(yvel0)
+  !DEALLOCATE(xvel1)
+  !DEALLOCATE(yvel1)
+  !DEALLOCATE(work_array1)
 
 END PROGRAM accelerate_driver
 

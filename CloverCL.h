@@ -170,18 +170,6 @@ class CloverCL {
         static int xmax_c;
         static int ymax_c;
 
-        static void * density0_ptr;
-        static void * pressure_ptr;
-        static void * viscosity_ptr;
-        static void * xvel0_ptr;
-        static void * xvel1_ptr;
-        static void * yvel0_ptr;
-        static void * yvel1_ptr;
-        static void * volume_ptr;
-        static void * xarea_ptr;
-        static void * yarea_ptr;
-        static void * work_array1_ptr;
-
         static void init(
                 std::string platform_name,
                 std::string platform_type,

@@ -45,6 +45,8 @@ extern "C" void accelerate_ocl_readbuffers_(double * xvel1, double * yvel1);
 
 extern "C" void allocate_aligned_array_(void** pointer, int* size);
 
+extern "C" void free_aligned_array_(void* pointer);
+
 void accelerate_ocl_writebuffers_(double * density0, double * pressure, double * viscosity, 
                                   double * xvel0, double * xvel1, double * yvel0, double * yvel1, 
                                   double * volume , double * xarea, double * yarea)
@@ -65,5 +67,10 @@ void allocate_aligned_array_(void** pointer, int* size)
 {
     std::cout << "Allocating: " << *size << " elements" << std::endl;
     posix_memalign(pointer, AOCL_ALIGNMENT, *size*sizeof(double));
+}
+
+void free_aligned_array_(void* pointer)
+{
+    free(pointer);
 }
 
