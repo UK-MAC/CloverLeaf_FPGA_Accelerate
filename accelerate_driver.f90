@@ -23,6 +23,7 @@
 PROGRAM accelerate_driver
 
   USE set_data_module
+  USE iso_c_binding
   !USE accelerate_kernel_module
 
   IMPLICIT NONE
@@ -40,9 +41,25 @@ PROGRAM accelerate_driver
   LOGICAL :: use_fortran_kernels,use_C_kernels
   INTEGER :: x_min,x_max,y_min,y_max
   REAL(KIND=8) :: dt
-  REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
-  REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
-  REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+  !REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
+  !REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
+  !REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+
+    REAL(C_DOUBLE), POINTER :: density0(:,:)
+    REAL(C_DOUBLE), POINTER :: pressure(:,:)
+    REAL(C_DOUBLE), POINTER :: viscosity(:,:)
+    REAL(C_DOUBLE), POINTER :: xarea(:,:)
+    REAL(C_DOUBLE), POINTER :: yarea(:,:)
+    REAL(C_DOUBLE), POINTER :: volume(:,:)
+    REAL(C_DOUBLE), POINTER :: xvel0(:,:)
+    REAL(C_DOUBLE), POINTER :: yvel0(:,:)
+    REAL(C_DOUBLE), POINTER :: xvel1(:,:)
+    REAL(C_DOUBLE), POINTER :: yvel1(:,:)
+    REAL(C_DOUBLE), POINTER :: work_array1(:,:)
+
+    TYPE(C_PTR) :: density0_cptr, pressure_cptr, viscosity_cptr, xarea_cptr, yarea_cptr, volume_cptr
+    TYPE(C_PTR) :: xvel0_cptr, yvel0_cptr, xvel1_cptr, yvel1_cptr, work_array_cptr
+
 
   x_size=100
   y_size=100
@@ -91,19 +108,68 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Mesh size ",x_size,y_size
   WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
 
-  CALL set_data(x_min,x_max,y_min,y_max, &
-                xarea=xarea,             &
-                yarea=yarea,             &
-                volume=volume,           &
-                density0=density0,       &
-                pressure=pressure,       &
-                viscosity=viscosity,     &
-                xvel0=xvel0,             &
-                xvel1=xvel1,             &
-                yvel0=yvel0,             &
-                yvel1=yvel1,             &
-                work_array1=work_array1, &
-                dt=dt                    )
+  CALL allocate_aligned_array(density0_cptr  , (x_max+4)*(y_max+4))
+  CALL allocate_aligned_array(pressure_cptr  , (x_max+4)*(y_max+4))
+  CALL allocate_aligned_array(viscosity_cptr , (x_max+4)*(y_max+4))
+  CALL allocate_aligned_array(xarea_cptr     , (x_max+5)*(y_max+4))
+  CALL allocate_aligned_array(yarea_cptr     , (x_max+4)*(y_max+5))
+  CALL allocate_aligned_array(volume_cptr    , (x_max+4)*(y_max+4))
+  CALL allocate_aligned_array(xvel0_cptr     , (x_max+5)*(y_max+5))
+  CALL allocate_aligned_array(yvel0_cptr     , (x_max+5)*(y_max+5))
+  CALL allocate_aligned_array(xvel1_cptr     , (x_max+5)*(y_max+5))
+  CALL allocate_aligned_array(yvel1_cptr     , (x_max+5)*(y_max+5))
+  CALL allocate_aligned_array(work_array_cptr, (x_max+5)*(y_max+5))
+
+    CALL C_F_POINTER(density0_cptr, density0     , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(pressure_cptr, pressure     , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(viscosity_cptr, viscosity   , [(x_max+4),(y_max+4)] )
+    CALL C_F_POINTER(xarea_cptr, xarea           , [(x_max+5),(y_max+4)])
+    CALL C_F_POINTER(yarea_cptr, yarea           , [(x_max+4),(y_max+5)]            )
+    CALL C_F_POINTER(volume_cptr, volume         , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(xvel0_cptr, xvel0           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(yvel0_cptr, yvel0           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(xvel1_cptr, xvel1           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(yvel1_cptr, yvel1           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(work_array_cptr, work_array1, [(x_max+5),(y_max+5)])
+
+    WRITE(*,*) "After c to f pointers "
+
+    !density0(1,1)=2.0_8
+    density0((x_max/2)+2:,:)=2.0_8
+    density0(:(x_max/2)+2,:)=1.0_8
+
+    pressure((x_max/2)+2:,:)=2.0_8
+    pressure(:(x_max/2)+2,:)=1.0_8
+
+    viscosity=0.0_8
+    viscosity((x_max/2)+2,:)=0.1_8
+
+    xarea=1.0_8
+    yarea=1.0_8
+    volume=1.0_8
+    xvel0=1.0
+    yvel0=1.0
+    xvel1=1.0
+    yvel1=1.0
+    dt=0.0001_8 ! Needs to be mesh specific
+
+
+    WRITE(*,*) "after array init"
+
+  !caLL set_data(x_min,x_max,y_min,y_max, &
+  !              xarea=xarea,             &
+  !              yarea=yarea,             &
+  !              volume=volume,           &
+  !              density0=density0,       &
+  !              pressure=pressure,       &
+  !              viscosity=viscosity,     &
+  !              xvel0=xvel0,             &
+  !              xvel1=xvel1,             &
+  !              yvel0=yvel0,             &
+  !              yvel1=yvel1,             &
+  !              work_array1=work_array1, &
+  !              dt=dt                    )
+
 
   WRITE(*,*) "Data set"
 
@@ -139,8 +205,8 @@ PROGRAM accelerate_driver
 
 
   WRITE(*,*) "Accelerate time ",acceleration_time 
-  !WRITE(*,*) "X vel ",SUM(xvel1)
-  !WRITE(*,*) "Y vel ",SUM(yvel1)
+  WRITE(*,*) "X vel ",SUM(xvel1)
+  WRITE(*,*) "Y vel ",SUM(yvel1)
 
   ! Answers need checking
   DEALLOCATE(xarea)

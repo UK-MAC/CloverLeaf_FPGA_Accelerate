@@ -33,6 +33,8 @@
 #include <cmath>
 
 #include <sys/time.h>
+#define AOCL_ALIGNMENT 64
+
 
 extern "C" void accelerate_ocl_writebuffers_(double * density0, double * pressure, double * viscosity, 
                                              double * xvel0, double * xvel1, double * yvel0, double * yvel1, 
@@ -41,6 +43,7 @@ extern "C" void accelerate_ocl_writebuffers_(double * density0, double * pressur
 
 extern "C" void accelerate_ocl_readbuffers_(double * xvel1, double * yvel1);
 
+extern "C" void allocate_aligned_array_(void** pointer, int* size);
 
 void accelerate_ocl_writebuffers_(double * density0, double * pressure, double * viscosity, 
                                   double * xvel0, double * xvel1, double * yvel0, double * yvel1, 
@@ -57,3 +60,10 @@ void accelerate_ocl_readbuffers_(double * xvel1, double * yvel1)
     CloverCL::read_accelerate_buffers_backfromcard(xvel1, yvel1);
 
 }
+
+void allocate_aligned_array_(void** pointer, int* size)
+{
+    std::cout << "Allocating: " << *size << " elements" << std::endl;
+    posix_memalign(pointer, AOCL_ALIGNMENT, *size*sizeof(double));
+}
+
