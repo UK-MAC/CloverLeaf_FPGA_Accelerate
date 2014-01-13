@@ -43,6 +43,7 @@ PROGRAM accelerate_driver
   REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
   REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
   REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+  REAL(KIND=8),ALLOCATABLE :: iter_timings(:)
 
   x_size=100
   y_size=100
@@ -94,6 +95,9 @@ PROGRAM accelerate_driver
   x_max=x_size
   y_max=y_size
 
+    ALLOCATE(iter_timings(its))
+
+
   WRITE(*,*) "Accelerate Kernel"
   WRITE(*,*) "Mesh size ",x_size,y_size
   WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
@@ -136,7 +140,7 @@ PROGRAM accelerate_driver
 
   DO iteration=1,its
 
-    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt )
+    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, iter_timings(iteration) )
 
   ENDDO
 
@@ -148,9 +152,15 @@ PROGRAM accelerate_driver
 
 
 
-  WRITE(*,*) "Accelerate time ",acceleration_time 
-  !WRITE(*,*) "X vel ",SUM(xvel1)
-  !WRITE(*,*) "Y vel ",SUM(yvel1)
+    WRITE(*,*) "Accelerate time ",acceleration_time 
+    !WRITE(*,*) "X vel ",SUM(xvel1)
+    !WRITE(*,*) "Y vel ",SUM(yvel1)
+    !WRITE(*,*) "First kernel time: ", iter_timings(1)
+    !WRITE(*,*) "Average of next ", SIZE(iter_timings(2:)), " iterations: ", SUM(iter_timings(2:))/(MAX(1, SIZE(iter_timings(2:))))
+
+
+
+
 
   ! Answers need checking
   DEALLOCATE(xarea)
