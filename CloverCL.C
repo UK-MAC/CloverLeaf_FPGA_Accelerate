@@ -2753,11 +2753,6 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
 {
     cl_int err; 
 
-#if PROFILE_OCL_KERNELS
-    long knl_start; 
-    long knl_end;
-#endif
-
     int x_rnd = (num_x / fixed_wg_min_size_large_dim ) * fixed_wg_min_size_large_dim;
 
     if ((x_rnd != num_x))
@@ -2830,10 +2825,6 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
 
 void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, int y_max)
 {
-#if PROFILE_OCL_KERNELS
-    long knl_start; 
-    long knl_end;
-#endif
 
     int x_max_opt;
     int x_tot = (x_max - x_min) + 1;
@@ -2904,10 +2895,6 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int x_min, int x_max, int y_min, 
 
 void CloverCL::enqueueKernel(cl_kernel kernel, int min, int max)
 {
-#if PROFILE_OCL_KERNELS
-    long knl_start; 
-    long knl_end;
-#endif
     cl_int err; 
 
     int tot = (max - min) + 1;
@@ -2952,7 +2939,7 @@ void CloverCL::enqueueKernel(cl_kernel kernel, int min, int max)
     
     clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, 0, NULL, &kernel_name_size);
     kernel_name = new char[kernel_name_size];
-    clGerKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, kernel_name_size, kernel_name, NULL);
 
     std::string kernel_name_str = std::string(kernel_name);
 
