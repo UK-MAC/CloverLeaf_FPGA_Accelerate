@@ -2539,7 +2539,7 @@ void CloverCL::writeAllCommunicationBuffers(
         checkErr(err, "readAllCommunicationBuffers() vol_flux_y");
 }
 
-void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
+void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, double * event_time)
 {
     cl_int err; 
 
@@ -2585,6 +2585,7 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
 
 #if PROFILE_OCL_KERNELS
     cl_ulong knl_start, knl_end;
+    double diff;
 
     size_t kernel_name_size;
     char *kernel_name;
@@ -2607,9 +2608,12 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y)
     clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &knl_start, NULL); 
     clGetEventProfilingInfo(last_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &knl_end, NULL); 
 
+    diff = (knl_end - knl_start)*CloverCL::NS_TO_SECONDS;
+
     std::cout << "[PROFILING]: " << kernel_name_str << " OpenCL kernel took "
-              << (knl_end - knl_start)*CloverCL::NS_TO_SECONDS
-              << " seconds (device time)" << std::endl;
+              << diff << " seconds (device time)" << std::endl;
+
+    *event_time = diff;
 #endif
 }
 
