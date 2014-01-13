@@ -61,6 +61,8 @@ extern "C" void accelerate_kernel_ocl_(
 
     CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl_c, *xmax+3, *ymax+3);
 
+    err = clFinish(CloverCL::queue_c);
+
 #if PROFILE_OCL_KERNELS
     timeval t_end;
     gettimeofday(&t_end, NULL);

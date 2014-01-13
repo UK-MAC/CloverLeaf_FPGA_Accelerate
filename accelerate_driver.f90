@@ -39,7 +39,7 @@ PROGRAM accelerate_driver
   REAL(KIND=8) :: kernel_time,timer,acceleration_time
 
   LOGICAL :: use_fortran_kernels,use_C_kernels
-  INTEGER :: x_min,x_max,y_min,y_max
+  INTEGER :: x_min,x_max,y_min,y_max,its,iteration
   REAL(KIND=8) :: dt
   !REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
   !REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
@@ -63,6 +63,7 @@ PROGRAM accelerate_driver
 
   x_size=100
   y_size=100
+  its=1
   OpenCL_vendor = "Nvidia"
   OpenCL_type = "GPU"
 
@@ -71,12 +72,18 @@ PROGRAM accelerate_driver
   DO i=1,numargs,2
     CALL GETARG(i,command_line)
     SELECT CASE (command_line)
+        CASE("-help")
+          WRITE(*,*) "Usage -nx 100 -ny 100 -its 10 -kernel fortran|c"
+          stop
         CASE("-nx")
             CALL GETARG(i+1,temp)
             READ(UNIT=temp,FMT="(I20)") x_size
         CASE("-ny")
             CALL GETARG(i+1,temp)
             READ(UNIT=temp,FMT="(I20)") y_size
+        CASE("-its")
+            CALL GETARG(i+1,temp)
+            READ(UNIT=temp,FMT="(I20)") its
         CASE("-kernel")
             CALL GETARG(i+1,temp)
             IF(temp.EQ."fortran") THEN
@@ -107,6 +114,7 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Accelerate Kernel"
   WRITE(*,*) "Mesh size ",x_size,y_size
   WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
+  WRITE(*,*) "Iterations ",its
 
   CALL allocate_aligned_array(density0_cptr  , (x_max+4)*(y_max+4))
   CALL allocate_aligned_array(pressure_cptr  , (x_max+4)*(y_max+4))
@@ -191,9 +199,11 @@ PROGRAM accelerate_driver
   acceleration_time=0.0_8
   kernel_time=timer()
 
+  DO iteration=1,its
 
-  CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt )
+    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt )
 
+  ENDDO
 
 
   acceleration_time=acceleration_time+(timer()-kernel_time)
