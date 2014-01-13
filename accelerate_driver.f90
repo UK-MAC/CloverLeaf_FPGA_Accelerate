@@ -41,9 +41,11 @@ PROGRAM accelerate_driver
   LOGICAL :: use_fortran_kernels,use_C_kernels
   INTEGER :: x_min,x_max,y_min,y_max,its,iteration
   REAL(KIND=8) :: dt
-  !REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
-  !REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
-  !REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+
+    !REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
+    !REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
+    !REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+    REAL(KIND=8),ALLOCATABLE :: iter_timings(:)
 
     REAL(C_DOUBLE), POINTER :: density0(:,:)
     REAL(C_DOUBLE), POINTER :: pressure(:,:)
@@ -111,22 +113,25 @@ PROGRAM accelerate_driver
   x_max=x_size
   y_max=y_size
 
-  WRITE(*,*) "Accelerate Kernel"
-  WRITE(*,*) "Mesh size ",x_size,y_size
-  WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
-  WRITE(*,*) "Iterations ",its
+    ALLOCATE(iter_timings(its))
 
-  CALL allocate_aligned_array(density0_cptr  , (x_max+4)*(y_max+4))
-  CALL allocate_aligned_array(pressure_cptr  , (x_max+4)*(y_max+4))
-  CALL allocate_aligned_array(viscosity_cptr , (x_max+4)*(y_max+4))
-  CALL allocate_aligned_array(xarea_cptr     , (x_max+5)*(y_max+4))
-  CALL allocate_aligned_array(yarea_cptr     , (x_max+4)*(y_max+5))
-  CALL allocate_aligned_array(volume_cptr    , (x_max+4)*(y_max+4))
-  CALL allocate_aligned_array(xvel0_cptr     , (x_max+5)*(y_max+5))
-  CALL allocate_aligned_array(yvel0_cptr     , (x_max+5)*(y_max+5))
-  CALL allocate_aligned_array(xvel1_cptr     , (x_max+5)*(y_max+5))
-  CALL allocate_aligned_array(yvel1_cptr     , (x_max+5)*(y_max+5))
-  CALL allocate_aligned_array(work_array_cptr, (x_max+5)*(y_max+5))
+
+    WRITE(*,*) "Accelerate Kernel"
+    WRITE(*,*) "Mesh size ",x_size,y_size
+    WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
+    WRITE(*,*) "Iterations ",its
+
+    CALL allocate_aligned_array(density0_cptr  , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(pressure_cptr  , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(viscosity_cptr , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(xarea_cptr     , (x_max+5)*(y_max+4))
+    CALL allocate_aligned_array(yarea_cptr     , (x_max+4)*(y_max+5))
+    CALL allocate_aligned_array(volume_cptr    , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(xvel0_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(yvel0_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(xvel1_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(yvel1_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(work_array_cptr, (x_max+5)*(y_max+5))
 
     CALL C_F_POINTER(density0_cptr, density0     , [(x_max+4),(y_max+4)])
     CALL C_F_POINTER(pressure_cptr, pressure     , [(x_max+4),(y_max+4)])
@@ -201,7 +206,7 @@ PROGRAM accelerate_driver
 
   DO iteration=1,its
 
-    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt )
+    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, iter_timings(iteration) )
 
   ENDDO
 
@@ -213,9 +218,15 @@ PROGRAM accelerate_driver
 
 
 
-  WRITE(*,*) "Accelerate time ",acceleration_time 
-  WRITE(*,*) "X vel ",SUM(xvel1)
-  WRITE(*,*) "Y vel ",SUM(yvel1)
+    WRITE(*,*) "Accelerate time ",acceleration_time 
+    WRITE(*,*) "X vel ",SUM(xvel1)
+    WRITE(*,*) "Y vel ",SUM(yvel1)
+    WRITE(*,*) "First kernel time: ", iter_timings(1)
+    WRITE(*,*) "Average of next ", SIZE(iter_timings(2:)), " iterations: ", SUM(iter_timings(2:))/(MAX(1, SIZE(iter_timings(2:))))
+
+
+
+
 
   ! Answers need checking
 
