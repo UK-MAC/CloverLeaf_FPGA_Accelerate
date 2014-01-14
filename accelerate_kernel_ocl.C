@@ -35,18 +35,20 @@
 #include <sys/time.h>
 
 extern "C" void accelerate_kernel_ocl_(
-        int *xmin,
-        int *xmax,
-        int *ymin,
-        int *ymax,
-        double *dbyt); 
+        int * xmin,
+        int * xmax,
+        int * ymin,
+        int * ymax,
+        double * dbyt, 
+        double * runtime);
 
 extern "C" void accelerate_kernel_ocl_(
-        int *xmin,
-        int *xmax,
-        int *ymin,
-        int *ymax,
-        double *dbyt)
+        int * xmin,
+        int * xmax,
+        int * ymin,
+        int * ymax,
+        double * dbyt,
+        double * runtime)
 {
 #if PROFILE_OCL_KERNELS
     timeval t_start;
@@ -59,7 +61,9 @@ extern "C" void accelerate_kernel_ocl_(
 
     CloverCL::checkErr(err, "accelerate OCL Kernel arg setting");
 
-    CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl_c, *xmax+3, *ymax+3);
+    CloverCL::enqueueKernel_nooffsets( CloverCL::accelerate_knl_c, *xmax+3, *ymax+3, runtime);
+
+    err = clFinish(CloverCL::queue_c);
 
 #if PROFILE_OCL_KERNELS
     timeval t_end;
