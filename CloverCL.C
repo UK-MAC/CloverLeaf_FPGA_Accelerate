@@ -3150,6 +3150,13 @@ void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1
     err = clFinish(CloverCL::outoforder_queue_c);
 }
 
+void CloverCL::call_clfinish()
+{
+    cl_int err;
+
+    err = clFinish(queue_c);
+}
+
 inline void CloverCL::checkErr(cl_int err, std::string name)
 {
     if (err != CL_SUCCESS) {
