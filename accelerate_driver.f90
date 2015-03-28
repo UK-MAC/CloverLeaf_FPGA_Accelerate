@@ -184,11 +184,27 @@ PROGRAM accelerate_driver
   acceleration_time=0.0
 
 
+    accelerate_iter1_before = timer_tod()
+    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, first_iteration )
+
+    CALL accelerate_ocl_call_clfinish()
+    accelerate_iter1_after = timer_tod()
+
+
+
+
+
+
+
   DO iteration=1,its
 
     kernel_time=timer()
 
+#ifdef PROFILE_OCL_KERNELS
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, iter_timings(iteration) )
+#else
+    CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, first_iteration )
+#endif
 
     acceleration_time=acceleration_time+(timer()-kernel_time)
     IF(reset_data) THEN
@@ -199,6 +215,7 @@ PROGRAM accelerate_driver
   ENDDO
 
 
+  CALL accelerate_ocl_call_clfinish()
 
   CALL accelerate_ocl_readbuffers(xvel1, yvel1);
 
@@ -260,8 +277,29 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Accelerate time ",acceleration_time 
   WRITE(*,*) "X vel ",SUM(xvel1)
   WRITE(*,*) "Y vel ",SUM(yvel1)
-    WRITE(*,*) "First kernel time: ", iter_timings(1)
-    WRITE(*,*) "Average of next ", SIZE(iter_timings(2:)), " iterations: ", SUM(iter_timings(2:))/(MAX(1, SIZE(iter_timings(2:))))
+
+#ifdef PROFILE_OCL_KERNELS
+    WRITE(*,*) "First kernel time: ", first_iteration
+    WRITE(*,*) "Average of next ", SIZE(iter_timings(1:)), " iterations: ", SUM(iter_timings(1:))/(MAX(1, SIZE(iter_timings(1:))))
+#endif
+
+    WRITE(*,*) ""
+    WRITE(*,*) "Tod before first kernel : ", accelerate_iter1_before
+    WRITE(*,*) "Tod after first kernel  : ", accelerate_iter1_after
+    WRITE(*,*) "First kernel launch took: ", accelerate_iter1_after-accelerate_iter1_before, " usec  ", &
+                                             (accelerate_iter1_after-accelerate_iter1_before)/10**6, " secs"
+    
+
+
+    WRITE(*,*) "Tod before main loop:    ", accelerate_main_before
+    WRITE(*,*) "Tod after main loop :    ", accelerate_main_after
+    WRITE(*,*) "Main loop took   : ", accelerate_main_after-accelerate_main_before, " usec ", & 
+                                     (accelerate_main_after-accelerate_main_before)/10**6, " secs"
+    WRITE(*,*) "Average iteration: ", (accelerate_main_after-accelerate_main_before)/its, " usec ", &
+                                      (accelerate_main_after-accelerate_main_before)/its/10**6, " secs"
+
+
+
 
   ! Answers need checking
   DEALLOCATE(xarea)
