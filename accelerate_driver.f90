@@ -189,7 +189,7 @@ PROGRAM accelerate_driver
     accelerate_iter1_before = timer_tod()
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, first_iteration )
 
-    !CALL accelerate_ocl_call_clfinish()
+    CALL accelerate_ocl_call_clfinish()
     accelerate_iter1_after = timer_tod()
 
 
@@ -217,7 +217,7 @@ PROGRAM accelerate_driver
   ENDDO
 
 
-  !CALL accelerate_ocl_call_clfinish()
+  CALL accelerate_ocl_call_clfinish()
 
   CALL accelerate_ocl_readbuffers(xvel1, yvel1);
 

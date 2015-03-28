@@ -41,6 +41,8 @@ extern "C" void accelerate_ocl_writebuffers_(double * density0, double * pressur
 
 extern "C" void accelerate_ocl_readbuffers_(double * xvel1, double * yvel1);
 
+extern "C" void accelerate_ocl_call_clfinish_();
+
 
 void accelerate_ocl_writebuffers_(double * density0, double * pressure, double * viscosity, 
                                   double * xvel0, double * xvel1, double * yvel0, double * yvel1, 
@@ -56,4 +58,9 @@ void accelerate_ocl_readbuffers_(double * xvel1, double * yvel1)
 
     CloverCL::read_accelerate_buffers_backfromcard(xvel1, yvel1);
 
+}
+
+extern "C" void accelerate_ocl_call_clfinish_()
+{
+    CloverCL::call_clfinish();
 }
