@@ -23,7 +23,7 @@
 PROGRAM accelerate_driver
 
   USE set_data_module
-  USE accelerate_kernel_module
+  !USE accelerate_kernel_module
 
   IMPLICIT NONE
 
@@ -36,7 +36,7 @@ PROGRAM accelerate_driver
 
   INTEGER :: x_size,y_size
 
-  REAL(KIND=8) :: kernel_time,timer,acceleration_time
+  REAL(KIND=8) :: kernel_time,timer,acceleration_time,timer_tod
 
   LOGICAL :: use_fortran_kernels,use_C_kernels,reset_data
   INTEGER :: x_min,x_max,y_min,y_max,its,iteration
@@ -47,6 +47,8 @@ PROGRAM accelerate_driver
   REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
   REAL(KIND=8),ALLOCATABLE :: xvel_orig(:,:),yvel_orig(:,:)
   REAL(KIND=8),ALLOCATABLE :: iter_timings(:)
+
+    REAL(KIND=8) :: accelerate_iter1_after, accelerate_iter1_before, accelerate_main_after, accelerate_main_before, first_iteration 
 
 !$OMP PARALLEL
 !$  IF(OMP_GET_THREAD_NUM().EQ.0) THEN
@@ -122,7 +124,7 @@ PROGRAM accelerate_driver
   WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
   WRITE(*,*) "Iterations ",its
 
-  kernel_time=timer()
+  kernel_time=timer_tod()
 
   CALL set_data(x_min,x_max,y_min,y_max, &
                 xarea=xarea,             &
@@ -163,7 +165,7 @@ PROGRAM accelerate_driver
     yvel_orig=yvel1
   ENDIF
   
-  WRITE(*,*) "Setup time ",timer()-kernel_time
+  WRITE(*,*) "Setup time ",timer_tod()-kernel_time
 
   WRITE(*,*) "Data initialised"
 
@@ -198,7 +200,7 @@ PROGRAM accelerate_driver
 
   DO iteration=1,its
 
-    kernel_time=timer()
+    kernel_time=timer_tod()
 
 #ifdef PROFILE_OCL_KERNELS
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, iter_timings(iteration) )
@@ -206,7 +208,7 @@ PROGRAM accelerate_driver
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, first_iteration )
 #endif
 
-    acceleration_time=acceleration_time+(timer()-kernel_time)
+    acceleration_time=acceleration_time+(timer_tod()-kernel_time)
     IF(reset_data) THEN
       xvel1=xvel_orig
       yvel1=yvel_orig
@@ -291,12 +293,15 @@ PROGRAM accelerate_driver
     
 
 
-    WRITE(*,*) "Tod before main loop:    ", accelerate_main_before
-    WRITE(*,*) "Tod after main loop :    ", accelerate_main_after
-    WRITE(*,*) "Main loop took   : ", accelerate_main_after-accelerate_main_before, " usec ", & 
-                                     (accelerate_main_after-accelerate_main_before)/10**6, " secs"
-    WRITE(*,*) "Average iteration: ", (accelerate_main_after-accelerate_main_before)/its, " usec ", &
-                                      (accelerate_main_after-accelerate_main_before)/its/10**6, " secs"
+    !WRITE(*,*) "Tod before main loop:    ", accelerate_main_before
+    !WRITE(*,*) "Tod after main loop :    ", accelerate_main_after
+    WRITE(*,*) "Main loop took   : ", acceleration_time, " usec ", (acceleration_time)/10**6, " secs"
+    WRITE(*,*) "Average iteration: ", (acceleration_time)/its, " usec ", (acceleration_time)/its/10**6, " secs"
+
+    !WRITE(*,*) "Main loop took   : ", accelerate_main_after-accelerate_main_before, " usec ", & 
+    !                                 (accelerate_main_after-accelerate_main_before)/10**6, " secs"
+    !WRITE(*,*) "Average iteration: ", (accelerate_main_after-accelerate_main_before)/its, " usec ", &
+    !                                  (accelerate_main_after-accelerate_main_before)/its/10**6, " secs"
 
 
 

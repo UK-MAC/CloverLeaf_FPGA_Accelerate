@@ -391,7 +391,7 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
         IF(x.NE.0.0_8) THEN
           theta=atan(y/x)
         ELSE
-          theta=atan(y/-(0.000000001_8))
+          theta=atan(y/(-0.000000001_8))
         ENDIF
         IF(radius.LE.2.5_8) THEN
           xvel0(j,k)=mult*(2.0_8-(radius*2.0_8/10.0_8))*sin(theta)
@@ -417,7 +417,7 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
         IF(x.NE.0.0_8) THEN
           theta=atan(y/x)
         ELSE
-          theta=atan(y/-(0.000000001_8))
+          theta=atan(y/(-0.000000001_8))
         ENDIF
         radius=sqrt((float(j)*dx-5.0_8)**2.0_8+(float(k)*dy-5.0_8)**2.0_8)
         IF(radius.LE.2.5_8) THEN
@@ -444,7 +444,7 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
         IF(x.NE.0.0_8) THEN
           theta=atan(y/x)
         ELSE
-          theta=atan(y/-(0.000000001_8))
+          theta=atan(y/(-0.000000001_8))
         ENDIF
         IF(radius.LE.2.5_8) THEN
           xvel1(j,k)=mult*(2.0_8-(radius*2.0_8/10.0_8))*sin(theta)
@@ -470,7 +470,7 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
         IF(x.NE.0.0_8) THEN
           theta=atan(y/x)
         ELSE
-          theta=atan(y/-(0.000000001_8))
+          theta=atan(y/(-0.000000001_8))
         ENDIF
         radius=sqrt((float(j)*dx-5.0_8)**2.0_8+(float(k)*dy-5.0_8)**2.0_8)
         IF(radius.LE.2.5_8) THEN
