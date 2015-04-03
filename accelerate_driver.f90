@@ -145,6 +145,8 @@ PROGRAM accelerate_driver
                 dt=dt                    )
 
   WRITE(*,*) "Data set"
+  WRITE(*,*) "X vel before:",SUM(xvel1)
+  WRITE(*,*) "Y vel before:",SUM(yvel1)
 
   CALL setup_opencl(TRIM(OpenCL_vendor)//char(0), TRIM(OpenCL_type)//char(0),&
                     x_min, x_max, y_min, y_max, &
