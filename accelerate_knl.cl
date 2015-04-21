@@ -43,7 +43,7 @@ __kernel void accelerate_ocl_kernel(
     int k = get_global_id(1);
     int j = get_global_id(0);
 
-    if ( (j>=2) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO) ) {
+    if ( (j>=2) && (k>=2) ) {
 
         nodal_mass=(density0[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]
                    +density0[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]
