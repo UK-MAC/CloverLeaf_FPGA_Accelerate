@@ -298,10 +298,10 @@ PROGRAM accelerate_driver
 
 
 
+  kernel_time=timer_tod()
 
   DO iteration=1,its
 
-    kernel_time=timer_tod()
 
 #ifdef PROFILE_OCL_KERNELS
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, iter_timings(iteration) )
@@ -309,7 +309,7 @@ PROGRAM accelerate_driver
     CALL accelerate_kernel_ocl(x_min, x_max, y_min, y_max, dt, first_iteration )
 #endif
 
-    acceleration_time=acceleration_time+(timer_tod()-kernel_time)
+    !doesnt work on card so moving the timing outside the loop, also not required for accelerate
     IF(reset_data) THEN
       xvel1=xvel_orig
       yvel1=yvel_orig
@@ -319,6 +319,7 @@ PROGRAM accelerate_driver
 
 
   CALL accelerate_ocl_call_clfinish()
+  acceleration_time=acceleration_time+(timer_tod()-kernel_time)
 
   CALL accelerate_ocl_readbuffers(xvel1, yvel1);
 
