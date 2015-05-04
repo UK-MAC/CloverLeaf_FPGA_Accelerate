@@ -361,8 +361,14 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
 
 ! OMP THIS WITH A REDUCTION
   IF(PRESENT(dt)) THEN
+
+!$OMP MASTER
     dt=0.0_8
     width=MIN(dx,dy)
+!$OMP END MASTER 
+
+!$OMP BARRIER
+
 !$OMP DO REDUCTION(MAX : dt)
     DO k=y_min,y_max
       DO j=x_min,x_max
@@ -371,9 +377,12 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
     ENDDO
 !$OMP ENDDO
 
+!$OMP BARRIER
+
 !$OMP MASTER
     dt=width*0.7_8/dt
 !$OMP END MASTER 
+
 !$OMP BARRIER
   ENDIF
 
