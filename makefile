@@ -52,8 +52,12 @@ OCL_AMD_INC=-I/opt/opencl/amd-app-2.7/include
 OCL_AMD_LIB=-L/opt/opencl/amd-app-2.7/lib/x86_64 -lOpenCL -lstdc++
 OCL_CRAY_INC=-I/opt/nvidia/cudatoolkit/default/include -I/home/users/p01379/lustre/OpenCL_headers
 OCL_CRAY_LIB=-L/opt/cray/nvidia/default/lib64 -lOpenCL
-OCL_ALTERA_INC=-I/opt/altera/13.0/AOCL/host/include
-OCL_ALTERA_LIB=-L/opt/altera/13.0/AOCL/linux64/lib -L/opt/altera/13.0/AOCL/host/linux64/lib -lalterahalmmd -lalterammdpcie -lpkg_editor -lalteracl -lelf -lrt -lstdc++
+#OCL_ALTERA_INC=-I/opt/altera/13.0/AOCL/host/include
+#OCL_ALTERA_LIB=-L/opt/altera/13.0/AOCL/linux64/lib -L/opt/altera/13.0/AOCL/host/linux64/lib -lalterahalmmd -lalterammdpcie -lpkg_editor -lalteracl -lelf -lrt -lstdc++
+#OCL_ALTERA_INC=-I/opt/altera/13.1/hld/host/include
+#OCL_ALTERA_LIB=-L/usr/lib64 -L/opt/altera/13.1/hld/linux64/lib -L/opt/altera/13.1/hld/host/linux64/lib -lalterahalmmd -lalterammdpcie -lalteracl -lelf -lrt -lstdc++
+OCL_ALTERA_INC=-I/opt/altera/14.1/hld/host/include -I/opt/altera/14.1/hld/board/nalla_pcie/include
+OCL_ALTERA_LIB=-L/opt/altera/14.1/hld/board/nalla_pcie/linux64/lib -L/opt/altera/14.1/hld/host/linux64/lib -lalteracl -lacl_emulator_kernel_rt  -lalterahalmmd -lnalla_pcie_mmd -lelf -lrt -ldl -lstdc++
 
 OCL_LIB=$(OCL_$(OCL_VENDOR)_LIB)
 OCL_INC=$(OCL_$(OCL_VENDOR)_INC)
@@ -89,8 +93,8 @@ ifdef IEEE
   I3E=$(I3E_$(COMPILER))
 endif
 
-FLAGS=$(FLAGS_$(COMPILER)) $(OMP) $(I3E) $(OPTIONS)
-CFLAGS=$(CFLAGS_$(COMPILER)) $(OMP) $(I3E) $(C_OPTIONS) -c -DCL_USE_DEPRECATED_OPENCL_1_1_APIS -DWG_SIZE_X=$(OCL_LOCAL_WG_SIZE_XDIM) -DWG_SIZE_Y=$(OCL_LOCAL_WG_SIZE_YDIM) -DUH_SMALL_DIM_DEPTHTWO=$(OCL_UH_LOCALWG_SMALLDIM_DEPTHTWO) -DCOMMS_SMALL_DIM_DEPTHTWO=$(OCL_COMMS_LOCALWG_SMALLDIM_DEPTHTWO) -DREDUCTION_WG_SIZE=$(OCL_REDUCTION_WG_SIZE) -DOCL_VERBOSE=1 -DPROFILE_OCL_KERNELS=1 #-DDUMP_BINARY
+FLAGS=$(FLAGS_$(COMPILER)) $(OMP) $(I3E) $(OPTIONS) -cpp
+CFLAGS=$(CFLAGS_$(COMPILER)) $(OMP) $(I3E) $(C_OPTIONS) -c -DCL_USE_DEPRECATED_OPENCL_1_1_APIS -DWG_SIZE_X=$(OCL_LOCAL_WG_SIZE_XDIM) -DWG_SIZE_Y=$(OCL_LOCAL_WG_SIZE_YDIM) -DUH_SMALL_DIM_DEPTHTWO=$(OCL_UH_LOCALWG_SMALLDIM_DEPTHTWO) -DCOMMS_SMALL_DIM_DEPTHTWO=$(OCL_COMMS_LOCALWG_SMALLDIM_DEPTHTWO) -DREDUCTION_WG_SIZE=$(OCL_REDUCTION_WG_SIZE) #-DOCL_VERBOSE=1 -DPROFILE_OCL_KERNELS=1 #-DDUMP_BINARY
 
 MPI_COMPILER=mpif90
 C_MPI_COMPILER=mpicc

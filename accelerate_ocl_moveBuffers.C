@@ -47,6 +47,9 @@ extern "C" void allocate_aligned_array_(void** pointer, int* size);
 
 extern "C" void free_aligned_array_(void* pointer);
 
+extern "C" void accelerate_ocl_call_clfinish_();
+
+
 void accelerate_ocl_writebuffers_(double * density0, double * pressure, double * viscosity, 
                                   double * xvel0, double * xvel1, double * yvel0, double * yvel1, 
                                   double * volume , double * xarea, double * yarea)
@@ -74,3 +77,7 @@ void free_aligned_array_(void* pointer)
     free(pointer);
 }
 
+extern "C" void accelerate_ocl_call_clfinish_()
+{
+    CloverCL::call_clfinish();
+}
