@@ -330,16 +330,16 @@ void CloverCL::init(
     loadProgram(x_min, x_max, y_min, y_max);
     createKernelObjects();
 
-    determineWorkGroupSizeInfo();
+    //determineWorkGroupSizeInfo();
 
     calculateKernelLaunchParams(x_max, y_max);
 
-    calculateReductionStructure(x_max, y_max);
+    //calculateReductionStructure(x_max, y_max);
 
     createBuffers(x_max, y_max, num_states);
-    allocateReductionInterBuffers();
-    allocateLocalMemoryObjects();
-    build_reduction_kernel_objects(); 
+    //allocateReductionInterBuffers();
+    //allocateLocalMemoryObjects();
+    //build_reduction_kernel_objects(); 
     std::cout << "after build reduction kernel objects " << std::endl;
 
 #ifdef DUMP_BINARY
@@ -1438,7 +1438,7 @@ void CloverCL::initCommandQueue()
         reportError(err, "Creating in order queue");
     }
 
-    outoforder_queue_c = clCreateCommandQueue(context_c, device_c, CL_QUEUE_PROFILING_ENABLE|CL_QUEUE_PROFILING_ENABLE, &err);
+    outoforder_queue_c = clCreateCommandQueue(context_c, device_c, CL_QUEUE_PROFILING_ENABLE, &err);
 
     if (err != CL_SUCCESS) {
         reportError(err, "Creating out of order queue");
@@ -1605,13 +1605,13 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
 {
     cl_int err; 
 
-    err = clSetKernelArg(viscosity_knl_c, 0, sizeof(cl_mem), &celldx_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 1, sizeof(cl_mem), &celldy_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 2, sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 3, sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 4, sizeof(cl_mem), &viscosity_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 5, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(viscosity_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 0, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 1, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 2, sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 3, sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 4, sizeof(cl_mem), &viscosity_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 5, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(viscosity_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
 
     err = clSetKernelArg(accelerate_knl_c, 1,  sizeof(cl_mem), &xarea_buffer_c);
     err = clSetKernelArg(accelerate_knl_c, 2,  sizeof(cl_mem), &yarea_buffer_c);
@@ -1625,307 +1625,307 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
     err = clSetKernelArg(accelerate_knl_c, 10, sizeof(cl_mem), &yvel1_buffer_c);
     //err = clSetKernelArg(accelerate_knl_c, 11, sizeof(cl_mem), &stepbymass_buffer_c);
 
-    err = clSetKernelArg(field_summary_knl_c, 0,  sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 1,  sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 2,  sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 3,  sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 4,  sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 5,  sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 6,  sizeof(cl_mem), &vol_tmp_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 7,  sizeof(cl_mem), &mass_tmp_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 8,  sizeof(cl_mem), &ie_tmp_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 9,  sizeof(cl_mem), &ke_tmp_buffer_c);
-    err = clSetKernelArg(field_summary_knl_c, 10, sizeof(cl_mem), &press_tmp_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 0,  sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 1,  sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 2,  sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 3,  sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 4,  sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 5,  sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 6,  sizeof(cl_mem), &vol_tmp_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 7,  sizeof(cl_mem), &mass_tmp_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 8,  sizeof(cl_mem), &ie_tmp_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 9,  sizeof(cl_mem), &ke_tmp_buffer_c);
+    //err = clSetKernelArg(field_summary_knl_c, 10, sizeof(cl_mem), &press_tmp_buffer_c);
 
-    err = clSetKernelArg(reset_field_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 2, sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 3, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 4, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 5, sizeof(cl_mem), &xvel1_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(reset_field_knl_c, 7, sizeof(cl_mem), &yvel1_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 2, sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 3, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 4, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 5, sizeof(cl_mem), &xvel1_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(reset_field_knl_c, 7, sizeof(cl_mem), &yvel1_buffer_c);
 
-    err = clSetKernelArg(revert_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(revert_knl_c, 1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(revert_knl_c, 2, sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(revert_knl_c, 3, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(revert_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(revert_knl_c, 1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(revert_knl_c, 2, sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(revert_knl_c, 3, sizeof(cl_mem), &energy1_buffer_c);
 
-    err = clSetKernelArg(flux_calc_knl_c, 1, sizeof(cl_mem), &xarea_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 2, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 3, sizeof(cl_mem), &xvel1_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 4, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 5, sizeof(cl_mem), &yarea_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 7, sizeof(cl_mem), &yvel1_buffer_c);
-    err = clSetKernelArg(flux_calc_knl_c, 8, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 1, sizeof(cl_mem), &xarea_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 2, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 3, sizeof(cl_mem), &xvel1_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 4, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 5, sizeof(cl_mem), &yarea_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 6, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 7, sizeof(cl_mem), &yvel1_buffer_c);
+    //err = clSetKernelArg(flux_calc_knl_c, 8, sizeof(cl_mem), &vol_flux_y_buffer_c);
 
-    err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 1, sizeof(cl_mem), &vertexx_buffer_c);
-    err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 2, sizeof(cl_mem), &cellx_buffer_c);
-    err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 3, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 1, sizeof(cl_mem), &vertexx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 2, sizeof(cl_mem), &cellx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_x_knl_c, 3, sizeof(cl_mem), &celldx_buffer_c);
 
-    err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      1, sizeof(cl_mem), &vertexy_buffer_c);
-    err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      2, sizeof(cl_mem), &celly_buffer_c);
-    err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      3, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      1, sizeof(cl_mem), &vertexy_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      2, sizeof(cl_mem), &celly_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_cell_y_knl_c,      3, sizeof(cl_mem), &celldy_buffer_c);
 
-    err = clSetKernelArg(initialise_chunk_vertex_x_knl_c,    2, sizeof(cl_mem), &vertexx_buffer_c);
-    err = clSetKernelArg(initialise_chunk_vertex_x_knl_c,    3, sizeof(cl_mem), &vertexdx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_vertex_x_knl_c,    2, sizeof(cl_mem), &vertexx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_vertex_x_knl_c,    3, sizeof(cl_mem), &vertexdx_buffer_c);
 
-    err = clSetKernelArg(initialise_chunk_vertex_y_knl_c,    2, sizeof(cl_mem), &vertexy_buffer_c);
-    err = clSetKernelArg(initialise_chunk_vertex_y_knl_c,    3, sizeof(cl_mem), &vertexdy_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_vertex_y_knl_c,    2, sizeof(cl_mem), &vertexy_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_vertex_y_knl_c,    3, sizeof(cl_mem), &vertexdy_buffer_c);
 
-    err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 2, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 3, sizeof(cl_mem), &celldx_buffer_c);
-    err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 4, sizeof(cl_mem), &celldy_buffer_c);
-    err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 5, sizeof(cl_mem), &xarea_buffer_c);
-    err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 6, sizeof(cl_mem), &yarea_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 2, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 3, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 4, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 5, sizeof(cl_mem), &xarea_buffer_c);
+    //err = clSetKernelArg(initialise_chunk_volume_area_knl_c, 6, sizeof(cl_mem), &yarea_buffer_c);
 
-    err = clSetKernelArg(generate_chunk_knl_c, 0,  sizeof(cl_mem), &vertexx_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 1,  sizeof(cl_mem), &vertexy_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 2,  sizeof(cl_mem), &cellx_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 3,  sizeof(cl_mem), &celly_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 5,  sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 6,  sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 7,  sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 9,  sizeof(cl_mem), &state_density_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 10, sizeof(cl_mem), &state_energy_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 11, sizeof(cl_mem), &state_xvel_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 12, sizeof(cl_mem), &state_yvel_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 13, sizeof(cl_mem), &state_xmin_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 14, sizeof(cl_mem), &state_xmax_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 15, sizeof(cl_mem), &state_ymin_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 16, sizeof(cl_mem), &state_ymax_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 17, sizeof(cl_mem), &state_radius_buffer_c);
-    err = clSetKernelArg(generate_chunk_knl_c, 18, sizeof(cl_mem), &state_geometry_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 0,  sizeof(cl_mem), &vertexx_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 1,  sizeof(cl_mem), &vertexy_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 2,  sizeof(cl_mem), &cellx_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 3,  sizeof(cl_mem), &celly_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 5,  sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 6,  sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 7,  sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 9,  sizeof(cl_mem), &state_density_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 10, sizeof(cl_mem), &state_energy_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 11, sizeof(cl_mem), &state_xvel_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 12, sizeof(cl_mem), &state_yvel_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 13, sizeof(cl_mem), &state_xmin_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 14, sizeof(cl_mem), &state_xmax_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 15, sizeof(cl_mem), &state_ymin_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 16, sizeof(cl_mem), &state_ymax_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 17, sizeof(cl_mem), &state_radius_buffer_c);
+    //err = clSetKernelArg(generate_chunk_knl_c, 18, sizeof(cl_mem), &state_geometry_buffer_c);
 
-    err = clSetKernelArg(pdv_correct_knl_c, 1,  sizeof(cl_mem), &xarea_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 2,  sizeof(cl_mem), &yarea_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 3,  sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 5,  sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 6,  sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 7,  sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 8,  sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 9,  sizeof(cl_mem), &viscosity_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 10, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 11, sizeof(cl_mem), &xvel1_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 12, sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 13, sizeof(cl_mem), &yvel1_buffer_c);
-    err = clSetKernelArg(pdv_correct_knl_c, 14, sizeof(cl_mem), &vol_tmp_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 1,  sizeof(cl_mem), &xarea_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 2,  sizeof(cl_mem), &yarea_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 3,  sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 5,  sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 6,  sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 7,  sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 8,  sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 9,  sizeof(cl_mem), &viscosity_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 10, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 11, sizeof(cl_mem), &xvel1_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 12, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 13, sizeof(cl_mem), &yvel1_buffer_c);
+    //err = clSetKernelArg(pdv_correct_knl_c, 14, sizeof(cl_mem), &vol_tmp_buffer_c);
 
-    err = clSetKernelArg(pdv_predict_knl_c, 1,  sizeof(cl_mem), &xarea_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 2,  sizeof(cl_mem), &yarea_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 3,  sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 5,  sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 6,  sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 7,  sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 8,  sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 9,  sizeof(cl_mem), &viscosity_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 10, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 11, sizeof(cl_mem), &xvel1_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 12, sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 13, sizeof(cl_mem), &yvel1_buffer_c);
-    err = clSetKernelArg(pdv_predict_knl_c, 14, sizeof(cl_mem), &vol_tmp_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 1,  sizeof(cl_mem), &xarea_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 2,  sizeof(cl_mem), &yarea_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 3,  sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 4,  sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 5,  sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 6,  sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 7,  sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 8,  sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 9,  sizeof(cl_mem), &viscosity_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 10, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 11, sizeof(cl_mem), &xvel1_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 12, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 13, sizeof(cl_mem), &yvel1_buffer_c);
+    //err = clSetKernelArg(pdv_predict_knl_c, 14, sizeof(cl_mem), &vol_tmp_buffer_c);
 
-    err = clSetKernelArg(dt_calc_knl_c, 0,  sizeof(double), &g_small);
-    err = clSetKernelArg(dt_calc_knl_c, 1,  sizeof(double), &g_big);
-    err = clSetKernelArg(dt_calc_knl_c, 2,  sizeof(double), &dtmin);
-    err = clSetKernelArg(dt_calc_knl_c, 3,  sizeof(double), &dtc_safe);
-    err = clSetKernelArg(dt_calc_knl_c, 4,  sizeof(double), &dtu_safe);
-    err = clSetKernelArg(dt_calc_knl_c, 5,  sizeof(double), &dtv_safe);
-    err = clSetKernelArg(dt_calc_knl_c, 6,  sizeof(double), &dtdiv_safe);
-    err = clSetKernelArg(dt_calc_knl_c, 7,  sizeof(cl_mem), &xarea_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 8,  sizeof(cl_mem), &yarea_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 9,  sizeof(cl_mem), &cellx_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 10, sizeof(cl_mem), &celly_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 11, sizeof(cl_mem), &celldx_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 12, sizeof(cl_mem), &celldy_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 13, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 14, sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 15, sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 16, sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 17, sizeof(cl_mem), &viscosity_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 18, sizeof(cl_mem), &soundspeed_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 19, sizeof(cl_mem), &xvel0_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 20, sizeof(cl_mem), &yvel0_buffer_c);
-    err = clSetKernelArg(dt_calc_knl_c, 21, sizeof(cl_mem), &dt_min_val_array_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 0,  sizeof(double), &g_small);
+    //err = clSetKernelArg(dt_calc_knl_c, 1,  sizeof(double), &g_big);
+    //err = clSetKernelArg(dt_calc_knl_c, 2,  sizeof(double), &dtmin);
+    //err = clSetKernelArg(dt_calc_knl_c, 3,  sizeof(double), &dtc_safe);
+    //err = clSetKernelArg(dt_calc_knl_c, 4,  sizeof(double), &dtu_safe);
+    //err = clSetKernelArg(dt_calc_knl_c, 5,  sizeof(double), &dtv_safe);
+    //err = clSetKernelArg(dt_calc_knl_c, 6,  sizeof(double), &dtdiv_safe);
+    //err = clSetKernelArg(dt_calc_knl_c, 7,  sizeof(cl_mem), &xarea_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 8,  sizeof(cl_mem), &yarea_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 9,  sizeof(cl_mem), &cellx_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 10, sizeof(cl_mem), &celly_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 11, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 12, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 13, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 14, sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 15, sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 16, sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 17, sizeof(cl_mem), &viscosity_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 18, sizeof(cl_mem), &soundspeed_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 19, sizeof(cl_mem), &xvel0_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 20, sizeof(cl_mem), &yvel0_buffer_c);
+    //err = clSetKernelArg(dt_calc_knl_c, 21, sizeof(cl_mem), &dt_min_val_array_buffer_c);
 
-    err = clSetKernelArg(ideal_gas_predict_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(ideal_gas_predict_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(ideal_gas_predict_knl_c,    2, sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(ideal_gas_predict_knl_c,    3, sizeof(cl_mem), &soundspeed_buffer_c);
+    //err = clSetKernelArg(ideal_gas_predict_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(ideal_gas_predict_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(ideal_gas_predict_knl_c,    2, sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(ideal_gas_predict_knl_c,    3, sizeof(cl_mem), &soundspeed_buffer_c);
 
-    err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
-    err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 1, sizeof(cl_mem), &energy0_buffer_c);
-    err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 2, sizeof(cl_mem), &pressure_buffer_c);
-    err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 3, sizeof(cl_mem), &soundspeed_buffer_c);
-
-
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
-
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
-
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+    //err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 0, sizeof(cl_mem), &density0_buffer_c);
+    //err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 1, sizeof(cl_mem), &energy0_buffer_c);
+    //err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 2, sizeof(cl_mem), &pressure_buffer_c);
+    //err = clSetKernelArg(ideal_gas_NO_predict_knl_c, 3, sizeof(cl_mem), &soundspeed_buffer_c);
 
 
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
-
-
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
-
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
-
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
 
 
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdx_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
-    err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    //err = clSetKernelArg(advec_cell_xdir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
 
 
-    err = clSetKernelArg(advec_mom_vol_knl_c,             0, sizeof(cl_mem), &volume_buffer_c);
-    err = clSetKernelArg(advec_mom_vol_knl_c,             1, sizeof(cl_mem), &vol_flux_x_buffer_c);
-    err = clSetKernelArg(advec_mom_vol_knl_c,             2, sizeof(cl_mem), &vol_flux_y_buffer_c);
-    err = clSetKernelArg(advec_mom_vol_knl_c,             3, sizeof(cl_mem), &pre_vol_buffer_c);
-    err = clSetKernelArg(advec_mom_vol_knl_c,             4, sizeof(cl_mem), &post_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 2, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 3, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec1_knl_c, 4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_mom_node_x_knl_c,          0, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
-    err = clSetKernelArg(advec_mom_node_x_knl_c,          1, sizeof(cl_mem), &CloverCL::node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_node_x_knl_c,          2, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_mom_node_x_knl_c,          3, sizeof(cl_mem), &post_vol_buffer_c);
-    err = clSetKernelArg(advec_mom_node_x_knl_c,          4, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 0, sizeof(cl_mem), &node_mass_pre_buffer_c);
-    err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 1, sizeof(cl_mem), &node_mass_post_buffer_c);
-    err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 2, sizeof(cl_mem), &CloverCL::node_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep1_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_node_y_knl_c,          0, sizeof(cl_mem), &mass_flux_y_buffer_c);
-    err = clSetKernelArg(advec_mom_node_y_knl_c,          1, sizeof(cl_mem), &node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_node_y_knl_c,          2, sizeof(cl_mem), &node_mass_post_buffer_c);
-    err = clSetKernelArg(advec_mom_node_y_knl_c,          3, sizeof(cl_mem), &density1_buffer_c);
-    err = clSetKernelArg(advec_mom_node_y_knl_c,          4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 0, sizeof(cl_mem), &node_mass_pre_buffer_c);
-    err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 1, sizeof(cl_mem), &node_mass_post_buffer_c);
-    err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 2, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 0, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 1, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 2, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec1_knl_c, 3, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     0, sizeof(cl_mem), &node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    0, sizeof(cl_mem), &vertexdy_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    1, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    2, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    3, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    4, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    5, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec2_knl_c,    6, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     3, sizeof(cl_mem), &advec_vel_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     4, sizeof(cl_mem), &mom_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     5, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    0, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    1, sizeof(cl_mem), &energy1_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    2, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    3, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    4, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    5, sizeof(cl_mem), &pre_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    6, sizeof(cl_mem), &post_mass_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    7, sizeof(cl_mem), &advec_vol_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    8, sizeof(cl_mem), &post_ener_buffer_c);
+    //err = clSetKernelArg(advec_cell_ydir_sweep2_sec3_knl_c,    9, sizeof(cl_mem), &ener_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  0, sizeof(cl_mem), &node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  1, sizeof(cl_mem), &node_mass_pre_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  3, sizeof(cl_mem), &advec_vel_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  4, sizeof(cl_mem), &mom_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  5, sizeof(cl_mem), &celldx_buffer_c);
+    //err = clSetKernelArg(advec_mom_vol_knl_c,             0, sizeof(cl_mem), &volume_buffer_c);
+    //err = clSetKernelArg(advec_mom_vol_knl_c,             1, sizeof(cl_mem), &vol_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_mom_vol_knl_c,             2, sizeof(cl_mem), &vol_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_mom_vol_knl_c,             3, sizeof(cl_mem), &pre_vol_buffer_c);
+    //err = clSetKernelArg(advec_mom_vol_knl_c,             4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     0, sizeof(cl_mem), &node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_x_knl_c,          0, sizeof(cl_mem), &CloverCL::mass_flux_x_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_x_knl_c,          1, sizeof(cl_mem), &CloverCL::node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_x_knl_c,          2, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_x_knl_c,          3, sizeof(cl_mem), &post_vol_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_x_knl_c,          4, sizeof(cl_mem), &node_mass_post_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     3, sizeof(cl_mem), &advec_vel_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     4, sizeof(cl_mem), &mom_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     5, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 0, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 1, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_x_knl_c, 2, sizeof(cl_mem), &CloverCL::node_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  0, sizeof(cl_mem), &node_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_y_knl_c,          0, sizeof(cl_mem), &mass_flux_y_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_y_knl_c,          1, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_y_knl_c,          2, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_y_knl_c,          3, sizeof(cl_mem), &density1_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_y_knl_c,          4, sizeof(cl_mem), &post_vol_buffer_c);
 
-    err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  3, sizeof(cl_mem), &advec_vel_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  4, sizeof(cl_mem), &mom_flux_buffer_c);
-    err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  5, sizeof(cl_mem), &celldy_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 0, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 1, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_mom_node_mass_pre_y_knl_c, 2, sizeof(cl_mem), &node_flux_buffer_c);
 
-    err = clSetKernelArg(advec_mom_vel_x_knl_c,           0, sizeof(cl_mem), &node_mass_post_buffer_c);
-    err = clSetKernelArg(advec_mom_vel_x_knl_c,           1, sizeof(cl_mem), &node_mass_pre_buffer_c);
-    err = clSetKernelArg(advec_mom_vel_x_knl_c,           2, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     0, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     1, sizeof(cl_mem), &node_mass_pre_buffer_c);
 
-    err = clSetKernelArg(advec_mom_vel_y_knl_c,           0, sizeof(cl_mem), &node_mass_post_buffer_c);
-    err = clSetKernelArg(advec_mom_vel_y_knl_c,           1, sizeof(cl_mem), &node_mass_pre_buffer_c);
-    err = clSetKernelArg(advec_mom_vel_y_knl_c,           2, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     3, sizeof(cl_mem), &advec_vel_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     4, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vec1_knl_c,     5, sizeof(cl_mem), &celldx_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  0, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  3, sizeof(cl_mem), &advec_vel_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  4, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_x_vecnot1_knl_c,  5, sizeof(cl_mem), &celldx_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     0, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     3, sizeof(cl_mem), &advec_vel_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     4, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vec1_knl_c,     5, sizeof(cl_mem), &celldy_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  0, sizeof(cl_mem), &node_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  3, sizeof(cl_mem), &advec_vel_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  4, sizeof(cl_mem), &mom_flux_buffer_c);
+    //err = clSetKernelArg(advec_mom_flux_y_vecnot1_knl_c,  5, sizeof(cl_mem), &celldy_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_vel_x_knl_c,           0, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_mom_vel_x_knl_c,           1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_vel_x_knl_c,           2, sizeof(cl_mem), &mom_flux_buffer_c);
+
+    //err = clSetKernelArg(advec_mom_vel_y_knl_c,           0, sizeof(cl_mem), &node_mass_post_buffer_c);
+    //err = clSetKernelArg(advec_mom_vel_y_knl_c,           1, sizeof(cl_mem), &node_mass_pre_buffer_c);
+    //err = clSetKernelArg(advec_mom_vel_y_knl_c,           2, sizeof(cl_mem), &mom_flux_buffer_c);
 
 }
 
@@ -1936,9 +1936,9 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_knl.aocx", &ideal_gas_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "viscosity_knl.aocx", &viscosity_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "update_halo_knl.aocx", &update_halo_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_viscosity_updatehalo_knl.aocx", &ideal_vis_uh_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "ideal_gas_viscosity_updatehalo_knl.aocx", &ideal_vis_uh_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "calc_dt_min_reduction_knl.aocx", &calcdt_minred_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_min_reduction_knl.aocx", &calcdt_minred_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
@@ -1950,17 +1950,17 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
 
     //build_one_program(xmin, xmax, ymin, ymax, "flux_calc_knl.aocx", &flux_calc_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "pdv_knl.aocx", &pdv_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "pdv_fluxcalc_knl.aocx", &pdv_fluxcalc_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "pdv_fluxcalc_knl.aocx", &pdv_fluxcalc_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "field_summary_knl.aocx", &field_summary_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "sum_reduction_knl.aocx", &sum_reduction_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "reset_field_knl.aocx", &reset_field_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "fieldsummary_sumreduction_reset_knl.aocx", &field_sumred_reset_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "fieldsummary_sumreduction_reset_knl.aocx", &field_sumred_reset_prog);
 
 
     //build_one_program(xmin, xmax, ymin, ymax, "initialise_chunk_knl.aocx", &initialise_chunk_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "generate_chunk_knl.aocx", &generate_chunk_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "initialise_generate_chunk_knl.aocx", &initialise_generate_chunk_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "initialise_generate_chunk_knl.aocx", &initialise_generate_chunk_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1.aocx",          &advec_cell_knl_xdir_sec1_sweep1_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_xdir_sec1_sweep2.aocx",   &advec_cell_knl_xdir_sec1_sweep2_prog);
@@ -1970,20 +1970,20 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec1_sweep2.aocx",      &advec_cell_knl_y_sec1_sweep2_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec2.aocx",             &advec_cell_knl_y_sec2_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_knl_y_sec3.aocx",             &advec_cell_knl_y_sec3_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep1_knls.aocx",          &advec_cell_knl_xdir_sweep1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep2_knls.aocx",          &advec_cell_knl_xdir_sweep2_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep1_knls.aocx",          &advec_cell_knl_ydir_sweep1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep2_knls.aocx",          &advec_cell_knl_ydir_sweep2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep1_knls.aocx",          &advec_cell_knl_xdir_sweep1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_xdir_sweep2_knls.aocx",          &advec_cell_knl_xdir_sweep2_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep1_knls.aocx",          &advec_cell_knl_ydir_sweep1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_cell_ydir_sweep2_knls.aocx",          &advec_cell_knl_ydir_sweep2_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx",                 &advec_mom_knl_vol_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx",              &advec_mom_knl_node_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx",              &advec_mom_knl_node_y_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx",     &advec_mom_knl_node_mass_pre_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx",     &advec_mom_knl_node_mass_pre_y_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx",  &advec_mom_knl_mom_flux_x_notvec1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx",  &advec_mom_knl_mom_flux_y_notvec1_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx",               &advec_mom_knl_vel_x_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx",               &advec_mom_knl_vel_y_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vol.aocx",                 &advec_mom_knl_vol_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_x.aocx",              &advec_mom_knl_node_x_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_y.aocx",              &advec_mom_knl_node_y_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_x.aocx",     &advec_mom_knl_node_mass_pre_x_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_node_mass_pre_y.aocx",     &advec_mom_knl_node_mass_pre_y_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_notvec1.aocx",  &advec_mom_knl_mom_flux_x_notvec1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_notvec1.aocx",  &advec_mom_knl_mom_flux_y_notvec1_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_x.aocx",               &advec_mom_knl_vel_x_prog);
+    //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_vel_y.aocx",               &advec_mom_knl_vel_y_prog);
     
     //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_x_vec1.aocx", &advec_mom_knl_mom_flux_x_vec1_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "advec_mom_knl_mom_flux_y_vec1.aocx", &advec_mom_knl_mom_flux_y_vec1_prog);
@@ -2104,37 +2104,37 @@ void CloverCL::createKernelObjects() {
     /*
      * Set up the kernels here!
      */
-    ideal_gas_predict_knl_c = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
-    if (err != CL_SUCCESS) {
-        reportError(err, "ideal_gas_predict_kernel"); 
-    }
+    //ideal_gas_predict_knl_c = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
+    //if (err != CL_SUCCESS) {
+    //    reportError(err, "ideal_gas_predict_kernel"); 
+    //}
 
 
-    ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
+    //ideal_gas_NO_predict_knl_c          = clCreateKernel(ideal_vis_uh_prog, "ideal_gas_ocl_kernel", &err);
 
-    viscosity_knl_c                     = clCreateKernel(ideal_vis_uh_prog, "viscosity_ocl_kernel", &err);
+    //viscosity_knl_c                     = clCreateKernel(ideal_vis_uh_prog, "viscosity_ocl_kernel", &err);
 
-    flux_calc_knl_c                     = clCreateKernel(pdv_fluxcalc_prog, "flux_calc_ocl_kernel", &err);
+    //flux_calc_knl_c                     = clCreateKernel(pdv_fluxcalc_prog, "flux_calc_ocl_kernel", &err);
 
     //accelerate_knl_c                    = clCreateKernel(accel_revert_prog, "accelerate_ocl_kernel", &err);
     accelerate_knl_c                    = clCreateKernel(accelerate_prog, "accelerate_ocl_kernel", &err);
 
 
-    advec_cell_xdir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
-    advec_cell_xdir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
-    advec_cell_xdir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
+    //advec_cell_xdir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
+    //advec_cell_xdir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section2_kernel", &err);
+    //advec_cell_xdir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section3_kernel", &err);
 
-    advec_cell_xdir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
-    advec_cell_xdir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section2_kernel", &err);
-    advec_cell_xdir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section3_kernel", &err);
+    //advec_cell_xdir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
+    //advec_cell_xdir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section2_kernel", &err);
+    //advec_cell_xdir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_xdir_sweep2_prog, "advec_cell_xdir_section3_kernel", &err);
 
-    advec_cell_ydir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
-    advec_cell_ydir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
-    advec_cell_ydir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
+    //advec_cell_ydir_sweep1_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section1_sweep1_kernel", &err);
+    //advec_cell_ydir_sweep1_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section2_kernel", &err);
+    //advec_cell_ydir_sweep1_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
 
-    advec_cell_ydir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
-    advec_cell_ydir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section2_kernel", &err);
-    advec_cell_ydir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section3_kernel", &err);
+    //advec_cell_ydir_sweep2_sec1_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section1_sweep2_kernel", &err);
+    //advec_cell_ydir_sweep2_sec2_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section2_kernel", &err);
+    //advec_cell_ydir_sweep2_sec3_knl_c = clCreateKernel(advec_cell_knl_ydir_sweep2_prog, "advec_cell_ydir_section3_kernel", &err);
 
     //advec_cell_xdir_sec1_s1_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep1_kernel", &err);
     //advec_cell_xdir_sec1_s2_knl_c       = clCreateKernel(advec_cell_knl_xdir_sweep1_prog, "advec_cell_xdir_section1_sweep2_kernel", &err);
@@ -2146,83 +2146,83 @@ void CloverCL::createKernelObjects() {
     //advec_cell_ydir_sec3_knl_c          = clCreateKernel(advec_cell_knl_ydir_sweep1_prog, "advec_cell_ydir_section3_kernel", &err);
 
 
-    advec_mom_vol_knl_c                 = clCreateKernel(advec_mom_knl_vol_prog, "advec_mom_vol_ocl_kernel", &err);
+    //advec_mom_vol_knl_c                 = clCreateKernel(advec_mom_knl_vol_prog, "advec_mom_vol_ocl_kernel", &err);
 
-    advec_mom_node_x_knl_c              = clCreateKernel(advec_mom_knl_node_x_prog, "advec_mom_node_ocl_kernel_x", &err);
+    //advec_mom_node_x_knl_c              = clCreateKernel(advec_mom_knl_node_x_prog, "advec_mom_node_ocl_kernel_x", &err);
 
-    advec_mom_node_mass_pre_x_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_x_prog, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
+    //advec_mom_node_mass_pre_x_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_x_prog, "advec_mom_node_mass_pre_ocl_kernel_x", &err);
 
-    advec_mom_flux_x_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_x_vec1_prog, "advec_mom_flux_ocl_kernel_x_vec1", &err);
+    //advec_mom_flux_x_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_x_vec1_prog, "advec_mom_flux_ocl_kernel_x_vec1", &err);
 
-    advec_mom_flux_x_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_x_notvec1_prog, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
+    //advec_mom_flux_x_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_x_notvec1_prog, "advec_mom_flux_ocl_kernel_x_notvec1", &err);
 
-    advec_mom_vel_x_knl_c               = clCreateKernel(advec_mom_knl_vel_x_prog, "advec_mom_vel_ocl_kernel_x", &err);
+    //advec_mom_vel_x_knl_c               = clCreateKernel(advec_mom_knl_vel_x_prog, "advec_mom_vel_ocl_kernel_x", &err);
 
-    advec_mom_node_y_knl_c              = clCreateKernel(advec_mom_knl_node_y_prog, "advec_mom_node_ocl_kernel_y", &err);
+    //advec_mom_node_y_knl_c              = clCreateKernel(advec_mom_knl_node_y_prog, "advec_mom_node_ocl_kernel_y", &err);
 
-    advec_mom_node_mass_pre_y_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_y_prog, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
+    //advec_mom_node_mass_pre_y_knl_c     = clCreateKernel(advec_mom_knl_node_mass_pre_y_prog, "advec_mom_node_mass_pre_ocl_kernel_y", &err);
 
-    advec_mom_flux_y_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_y_vec1_prog, "advec_mom_flux_ocl_kernel_y_vec1", &err);
-    
-    advec_mom_flux_y_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_y_notvec1_prog, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
+    //advec_mom_flux_y_vec1_knl_c         = clCreateKernel(advec_mom_knl_mom_flux_y_vec1_prog, "advec_mom_flux_ocl_kernel_y_vec1", &err);
+    //
+    //advec_mom_flux_y_vecnot1_knl_c      = clCreateKernel(advec_mom_knl_mom_flux_y_notvec1_prog, "advec_mom_flux_ocl_kernel_y_notvec1", &err);
 
-    advec_mom_vel_y_knl_c               = clCreateKernel(advec_mom_knl_vel_y_prog, "advec_mom_vel_ocl_kernel_y", &err);       
+    //advec_mom_vel_y_knl_c               = clCreateKernel(advec_mom_knl_vel_y_prog, "advec_mom_vel_ocl_kernel_y", &err);       
 
-    pdv_correct_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_correct_ocl_kernel", &err);
+    //pdv_correct_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_correct_ocl_kernel", &err);
 
-    pdv_predict_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_predict_ocl_kernel", &err);
+    //pdv_predict_knl_c                   = clCreateKernel(pdv_fluxcalc_prog, "pdv_predict_ocl_kernel", &err);
 
-    dt_calc_knl_c                       = clCreateKernel(calcdt_minred_prog, "calc_dt_ocl_kernel", &err);
+    //dt_calc_knl_c                       = clCreateKernel(calcdt_minred_prog, "calc_dt_ocl_kernel", &err);
 
-    revert_knl_c                        = clCreateKernel(accel_revert_prog, "revert_ocl_kernel", &err);
+    //revert_knl_c                        = clCreateKernel(accel_revert_prog, "revert_ocl_kernel", &err);
 
-    reset_field_knl_c                   = clCreateKernel(field_sumred_reset_prog, "reset_field_ocl_kernel", &err);
+    //reset_field_knl_c                   = clCreateKernel(field_sumred_reset_prog, "reset_field_ocl_kernel", &err);
 
-    generate_chunk_knl_c                = clCreateKernel(initialise_generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
+    //generate_chunk_knl_c                = clCreateKernel(initialise_generate_chunk_prog, "generate_chunk_ocl_kernel", &err);
 
-    initialise_chunk_cell_x_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_x_ocl_kernel", &err);
+    //initialise_chunk_cell_x_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_x_ocl_kernel", &err);
 
-    initialise_chunk_cell_y_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_y_ocl_kernel", &err);
+    //initialise_chunk_cell_y_knl_c       = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_cell_y_ocl_kernel", &err);
 
-    initialise_chunk_vertex_x_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_x_ocl_kernel", &err);
+    //initialise_chunk_vertex_x_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_x_ocl_kernel", &err);
 
-    initialise_chunk_vertex_y_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_y_ocl_kernel", &err);
+    //initialise_chunk_vertex_y_knl_c     = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_vertex_y_ocl_kernel", &err);
 
-    initialise_chunk_volume_area_knl_c  = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_volume_area_ocl_kernel", &err);
+    //initialise_chunk_volume_area_knl_c  = clCreateKernel(initialise_generate_chunk_prog, "initialise_chunk_volume_area_ocl_kernel", &err);
 
-    field_summary_knl_c                 = clCreateKernel(field_sumred_reset_prog, "field_summary_ocl_kernel", &err);
+    //field_summary_knl_c                 = clCreateKernel(field_sumred_reset_prog, "field_summary_ocl_kernel", &err);
 
-    update_halo_bottom_cell_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_cell_ocl_kernel", &err);
+    //update_halo_bottom_cell_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_cell_ocl_kernel", &err);
 
-    update_halo_bottom_vel_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_vel_ocl_kernel", &err);
+    //update_halo_bottom_vel_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_vel_ocl_kernel", &err);
 
-    update_halo_bottom_flux_x_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_x_ocl_kernel", &err);
+    //update_halo_bottom_flux_x_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_x_ocl_kernel", &err);
 
-    update_halo_bottom_flux_y_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_y_ocl_kernel", &err);
+    //update_halo_bottom_flux_y_knl_c     = clCreateKernel(ideal_vis_uh_prog, "update_halo_bottom_flux_y_ocl_kernel", &err);
 
-    update_halo_top_cell_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_cell_ocl_kernel", &err);
+    //update_halo_top_cell_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_cell_ocl_kernel", &err);
 
-    update_halo_top_vel_knl_c           = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_vel_ocl_kernel", &err); 
+    //update_halo_top_vel_knl_c           = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_vel_ocl_kernel", &err); 
 
-    update_halo_top_flux_x_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_x_ocl_kernel", &err);
+    //update_halo_top_flux_x_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_x_ocl_kernel", &err);
 
-    update_halo_top_flux_y_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_y_ocl_kernel", &err);
+    //update_halo_top_flux_y_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_top_flux_y_ocl_kernel", &err);
 
-    update_halo_right_cell_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_cell_ocl_kernel", &err);
+    //update_halo_right_cell_knl_c        = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_cell_ocl_kernel", &err);
 
-    update_halo_right_vel_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_vel_ocl_kernel", &err);
+    //update_halo_right_vel_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_vel_ocl_kernel", &err);
 
-    update_halo_right_flux_x_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_x_ocl_kernel", &err);
+    //update_halo_right_flux_x_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_x_ocl_kernel", &err);
 
-    update_halo_right_flux_y_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_y_ocl_kernel", &err);
+    //update_halo_right_flux_y_knl_c      = clCreateKernel(ideal_vis_uh_prog, "update_halo_right_flux_y_ocl_kernel", &err);
 
-    update_halo_left_cell_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_cell_ocl_kernel", &err);
+    //update_halo_left_cell_knl_c         = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_cell_ocl_kernel", &err);
 
-    update_halo_left_vel_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_vel_ocl_kernel", &err);
+    //update_halo_left_vel_knl_c          = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_vel_ocl_kernel", &err);
 
-    update_halo_left_flux_x_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_x_ocl_kernel", &err);
+    //update_halo_left_flux_x_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_x_ocl_kernel", &err);
 
-    update_halo_left_flux_y_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_y_ocl_kernel", &err);
+    //update_halo_left_flux_y_knl_c       = clCreateKernel(ideal_vis_uh_prog, "update_halo_left_flux_y_ocl_kernel", &err);
 
     //read_top_buffer_knl_c               = clCreateKernel(pack_comms_buffers_prog, "top_comm_buffer_pack", &err);
 
@@ -2741,8 +2741,10 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, 
         y_rnd = y_rnd + fixed_wg_min_size_small_dim; 
     }
 
-    size_t global_wi [2] = {x_rnd, y_rnd}; 
-    size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
+    //size_t global_wi [2] = {x_rnd, y_rnd}; 
+    //size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
+    size_t global_wi [2] = {3843,3843}; 
+    size_t local_wi [2] = {1,1}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
@@ -3100,34 +3102,23 @@ void CloverCL::write_accelerate_buffers_tocard(double* density0, double* pressur
     cl_int err; 
 
     err = clFinish(CloverCL::queue_c);
-    err = clFinish(CloverCL::outoforder_queue_c);
 
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::density0_buffer_c,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), density0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
 
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
 
 
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
 
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::outoforder_queue_c, CloverCL::yarea_buffer_c, CL_FALSE, 0, 
-                               (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea, 0, NULL, NULL);
 
-    err = clFinish(CloverCL::outoforder_queue_c);
+    err = clFinish(CloverCL::queue_c);
 }
 
 void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1)
@@ -3135,17 +3126,20 @@ void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1
     cl_int err;
 
     err = clFinish(CloverCL::queue_c);
-    err = clFinish(CloverCL::outoforder_queue_c);
     
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
 
-    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, 
-                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
-
-    err = clEnqueueReadBuffer(CloverCL::outoforder_queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, 
-                              (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
 
 
-    err = clFinish(CloverCL::outoforder_queue_c);
+    err = clFinish(CloverCL::queue_c);
+}
+
+void CloverCL::call_clfinish()
+{
+    cl_int err;
+
+    err = clFinish(queue_c);
 }
 
 inline void CloverCL::checkErr(cl_int err, std::string name)
