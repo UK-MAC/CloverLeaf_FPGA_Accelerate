@@ -32,3 +32,17 @@ FUNCTION timer()
 
 END FUNCTION
 
+
+
+FUNCTION timer_tod()
+
+
+  IMPLICIT none
+
+  INTEGER(KIND=8) :: timer_tod
+
+  CALL timer_c_tod(timer_tod)
+
+
+END FUNCTION
+
