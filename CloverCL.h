@@ -325,6 +325,8 @@ class CloverCL {
                                          double* vol_flux_y, double* mass_flux_y,
                                          double* celldx, double* celldy, double* volume ); 
 
+        static void call_clfinish();
+
         static void dumpBinary();
 
 
