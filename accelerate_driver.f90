@@ -159,6 +159,7 @@ PROGRAM accelerate_driver
 
   CALL accelerate_ocl_writebuffers(density0, pressure, viscosity, xvel0, xvel1, yvel0, yvel1, volume, xarea, yarea)
 
+  CALL accelerate_ocl_call_clfinish()
 
   IF(reset_data) THEN
     ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
@@ -223,6 +224,7 @@ PROGRAM accelerate_driver
 
   CALL accelerate_ocl_readbuffers(xvel1, yvel1);
 
+  CALL accelerate_ocl_call_clfinish()
 
 
   !IF(use_fortran_kernels) THEN
