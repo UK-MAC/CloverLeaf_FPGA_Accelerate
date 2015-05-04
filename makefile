@@ -54,8 +54,10 @@ OCL_CRAY_INC=-I/opt/nvidia/cudatoolkit/default/include -I/home/users/p01379/lust
 OCL_CRAY_LIB=-L/opt/cray/nvidia/default/lib64 -lOpenCL
 #OCL_ALTERA_INC=-I/opt/altera/13.0/AOCL/host/include
 #OCL_ALTERA_LIB=-L/opt/altera/13.0/AOCL/linux64/lib -L/opt/altera/13.0/AOCL/host/linux64/lib -lalterahalmmd -lalterammdpcie -lpkg_editor -lalteracl -lelf -lrt -lstdc++
-OCL_ALTERA_INC=-I/opt/altera/13.1/hld/host/include
-OCL_ALTERA_LIB=-L/usr/lib64 -L/opt/altera/13.1/hld/linux64/lib -L/opt/altera/13.1/hld/host/linux64/lib -lalterahalmmd -lalterammdpcie -lalteracl -lelf -lrt -lstdc++
+#OCL_ALTERA_INC=-I/opt/altera/13.1/hld/host/include
+#OCL_ALTERA_LIB=-L/usr/lib64 -L/opt/altera/13.1/hld/linux64/lib -L/opt/altera/13.1/hld/host/linux64/lib -lalterahalmmd -lalterammdpcie -lalteracl -lelf -lrt -lstdc++
+OCL_ALTERA_INC=-I/opt/altera/14.1/hld/host/include -I/opt/altera/14.1/hld/board/nalla_pcie/include
+OCL_ALTERA_LIB=-L/opt/altera/14.1/hld/board/nalla_pcie/linux64/lib -L/opt/altera/14.1/hld/host/linux64/lib -lalteracl -lacl_emulator_kernel_rt  -lalterahalmmd -lnalla_pcie_mmd -lelf -lrt -ldl -lstdc++
 
 OCL_LIB=$(OCL_$(OCL_VENDOR)_LIB)
 OCL_INC=$(OCL_$(OCL_VENDOR)_INC)
