@@ -27,6 +27,8 @@
 #include <stdlib.h>
 
 void timer_c_( double *elapsed_time);
+void timer_c_tod_( long *tod_time);
+
 
 
 void timer_c_( double *elapsed_time)
@@ -35,5 +37,14 @@ void timer_c_( double *elapsed_time)
    gettimeofday(&t, (struct timezone *) NULL);
    *elapsed_time = t.tv_sec + t.tv_usec * 1.0E-6;
          
+}
+
+
+void timer_c_tod_( long *tod_time)
+{
+   struct timeval t;
+   gettimeofday(&t, (struct timezone *) NULL);
+   *tod_time = (long)((t.tv_sec*1.0E6) + t.tv_usec);
+
 }
 
