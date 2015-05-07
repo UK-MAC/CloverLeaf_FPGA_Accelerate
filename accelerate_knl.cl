@@ -35,10 +35,10 @@ __kernel void accelerate_ocl_kernel(
     __global const double2 * restrict xvel0,
     __global const double2 * restrict yvel0,
     __global double2 * restrict xvel1,
-    __global double2 * restrict yvel1,
-    __global double2 * restrict stepbymass)
+    __global double2 * restrict yvel1)
+    //__global double2 * restrict stepbymass
 {
-    double2 nodal_mass;
+    double2 nodal_mass, stepbymass;
 
     int k = get_global_id(1);
     int j = get_global_id(0);
@@ -66,7 +66,7 @@ __kernel void accelerate_ocl_kernel(
                        +density0_tmp_left.y * volume_tmp_left.y) *0.25; 
 
 
-        stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
+        stepbymass=0.5*dt/nodal_mass;
         
 
 
@@ -77,12 +77,46 @@ __kernel void accelerate_ocl_kernel(
         //           *0.25;
         //stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
 
-        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
-                                                    -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
-                                                    *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
-                                                    *(pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
-                                                    +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
-                                                    *(pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
+
+        pressure_tmp_current = pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]
+        pressure_tmp_down    = pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]
+        xvel0_tmp_current    = xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
+        xarea_tmp_current    = xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
+        xarea_tmp_down       = xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
+
+
+        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].y = xvel0_tmp_current.y
+                                             -stepbymass.y
+                                             *(xarea_tmp_current.y
+                                              *(pressure_tmp_current.y - pressure_tmp_current.x)
+                                               +xarea_tmp_down.y
+                                               *(pressure_tmp_down.y - pressure_tmp_down.x)
+                                              );
+
+        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = xvel0_tmp_current.x
+                                             -stepbymass.x
+                                             *(xarea_tmp_current.x
+                                              *(pressure_tmp_current.x - pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)].y)
+                                               +xarea_tmp_down.x
+                                               *(pressure_tmp_down.x - pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)].y)
+                                              );
+
+
+
+
+
+
+        //orig 
+
+        //xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
+        //                                 -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
+        //                                            *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
+        //                                             *(pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
+        //                                              +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
+        //                                            *(pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
+
+
+
 
         yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=yvel0[ARRAYXY(j      ,k,XMAXPLUSFIVE)]
                                                    -stepbymass[ARRAYXY(j ,k,XMAXPLUSFIVE)]
