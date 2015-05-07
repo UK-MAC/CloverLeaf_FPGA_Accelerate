@@ -26,31 +26,56 @@
 
 __kernel void accelerate_ocl_kernel(
     const double dt,
-    __global const double * restrict xarea,
-    __global const double * restrict yarea,
-    __global const double * restrict volume,
-    __global const double * restrict density0,
-    __global const double * restrict pressure,
-    __global const double * restrict viscosity,
-    __global const double * restrict xvel0,
-    __global const double * restrict yvel0,
-    __global double * restrict xvel1,
-    __global double * restrict yvel1,
-    __global double * restrict stepbymass)
+    __global const double2 * restrict xarea,
+    __global const double2 * restrict yarea,
+    __global const double2 * restrict volume,
+    __global const double2 * restrict density0,
+    __global const double2 * restrict pressure,
+    __global const double2 * restrict viscosity,
+    __global const double2 * restrict xvel0,
+    __global const double2 * restrict yvel0,
+    __global double2 * restrict xvel1,
+    __global double2 * restrict yvel1,
+    __global double2 * restrict stepbymass)
 {
-    double nodal_mass;
+    double2 nodal_mass;
 
     int k = get_global_id(1);
     int j = get_global_id(0);
 
-    if ( (j>=2) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO) ) {
+    if ( (j>=1) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO) ) {
 
-        nodal_mass=(density0[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]
-                   +density0[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]
-                   +density0[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]
-                   +density0[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)])
-                   *0.25;
+        density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
+        density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)]; 
+        density0_tmp_left     = density0[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)]; 
+        density0_tmp_leftdown = density0[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
+
+        volume_tmp_current  = volume[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
+        volume_tmp_down     = volume[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
+        volume_tmp_left     = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
+        volume_tmp_leftdown = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
+
+        nodal_mass.y = (density0_tmp_down.x * volume_tmp_down.x
+                       +density0_tmp_down.y * volume_tmp_down.y
+                       +density0_tmp_current.y * volume_tmp_current.y
+                       +density0_tmp_current.x * volume_tmp_current.x)*0.25;
+
+        nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
+                       +density0_tmp_down.x * volume_tmp_down.x
+                       +density0_tmp_current.x * volume_tmp_current.x
+                       +density0_tmp_left.y * volume_tmp_left.y) *0.25; 
+
+
         stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
+        
+
+
+        //nodal_mass=(density0[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]
+        //           +density0[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]
+        //           +density0[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]
+        //           +density0[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)])
+        //           *0.25;
+        //stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
 
         xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
                                                     -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
