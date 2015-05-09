@@ -45,6 +45,7 @@ __kernel void accelerate_ocl_kernel(
     double2 xvel0_tmp_current, xarea_tmp_current, xarea_tmp_down;
     double2 yvel0_tmp_current, yarea_tmp_current, yarea_tmp_left;
     double2 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown; 
+    double2 den0_vol_tmp_down_res, den0_vol_tmp_current_res;
 
     int k = get_global_id(1);
     int j = get_global_id(0);
@@ -61,15 +62,28 @@ __kernel void accelerate_ocl_kernel(
         volume_tmp_left     = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
         volume_tmp_leftdown = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
 
-        nodal_mass.y = (density0_tmp_down.x * volume_tmp_down.x
-                       +density0_tmp_down.y * volume_tmp_down.y
-                       +density0_tmp_current.y * volume_tmp_current.y
-                       +density0_tmp_current.x * volume_tmp_current.x)*0.25;
+        den0_vol_tmp_down_res    = density0_tmp_down * volume_tmp_down; 
+        den0_vol_tmp_current_res = density0_tmp_current * volume_tmp_current;
+
+        nodal_mass.y = (den0_vol_tmp_down_res.x
+                       +den0_vol_tmp_down_res.y
+                       +den0_vol_tmp_current_res.y
+                       +den0_vol_tmp_current_res.x)*0.25;
+
+                       // density0_tmp_down.x * volume_tmp_down.x
+                       //+density0_tmp_down.y * volume_tmp_down.y
+                       //+density0_tmp_current.y * volume_tmp_current.y
+                       //+density0_tmp_current.x * volume_tmp_current.x)*0.25;
 
         nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
-                       +density0_tmp_down.x * volume_tmp_down.x
-                       +density0_tmp_current.x * volume_tmp_current.x
-                       +density0_tmp_left.y * volume_tmp_left.y) *0.25; 
+                       +den0_vol_tmp_down_res.x 
+                       +den0_vol_tmp_current_res.x
+                       +density0_tmp_left.y * volume_tmp_left.y)*0.25; 
+
+        //nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
+        //               +density0_tmp_down.x * volume_tmp_down.x
+        //               +density0_tmp_current.x * volume_tmp_current.x
+        //               +density0_tmp_left.y * volume_tmp_left.y) *0.25; 
 
 
         stepbymass=0.5*dt/nodal_mass;
@@ -114,23 +128,13 @@ __kernel void accelerate_ocl_kernel(
                         *(pressure_tmp_down.x - pressure_tmp_leftdown.y)
                        );
 
-
+        double ya_press_tmp_x = yarea_tmp_current.x * (pressure_tmp_current.x - pressure_tmp_down.x); 
 
         yvel1_tmp.y = yvel0_tmp_current.y 
-                      -stepbymass.y
-                      *(yarea_tmp_current.y 
-                       *(pressure_tmp_current.y - pressure_tmp_down.y)
-                        +yarea_tmp_current.x 
-                        *(pressure_tmp_current.x - pressure_tmp_down.x)
-                       );
+                      - stepbymass.y * (yarea_tmp_current.y * (pressure_tmp_current.y - pressure_tmp_down.y) + ya_press_tmp_x);
 
         yvel1_tmp.x = yvel0_tmp_current.x 
-                      -stepbymass.x
-                      *(yarea_tmp_current.x 
-                       *(pressure_tmp_current.x - pressure_tmp_down.x)
-                        +yarea_tmp_left.y 
-                        *(pressure_tmp_left.y - pressure_tmp_leftdown.y)
-                       );
+                      - stepbymass.x * (ya_press_tmp_x + yarea_tmp_left.y * (pressure_tmp_left.y - pressure_tmp_leftdown.y));
 
 
 
@@ -176,22 +180,14 @@ __kernel void accelerate_ocl_kernel(
                                  *(viscosity_tmp_down.x - viscosity_tmp_leftdown.y)
                             );
 
+        double ya_vis_tmp_x = yarea_tmp_current.x * (viscosity_tmp_current.x - viscosity_tmp_down.x);
+
 
         yvel1_output.y = yvel1_tmp.y
-                         - stepbymass.y
-                           *(yarea_tmp_current.y 
-                             *(viscosity_tmp_current.y - viscosity_tmp_down.y)
-                               +yarea_tmp_current.x 
-                                *(viscosity_tmp_current.x - viscosity_tmp_down.x)
-                            );
+                         - stepbymass.y *(yarea_tmp_current.y *(viscosity_tmp_current.y - viscosity_tmp_down.y) + ya_vis_tmp_x);
 
         yvel1_output.x = yvel1_tmp.x
-                         - stepbymass.x
-                           *(yarea_tmp_current.x 
-                             *(viscosity_tmp_current.x - viscosity_tmp_down.x)
-                               + yarea_tmp_left.y
-                                 *(viscosity_tmp_left.y - viscosity_tmp_leftdown.y)
-                            );
+                         - stepbymass.x *(ya_vis_tmp_x + yarea_tmp_left.y *(viscosity_tmp_left.y - viscosity_tmp_leftdown.y) );
 
 
         //write results to memory, masked for final element 
