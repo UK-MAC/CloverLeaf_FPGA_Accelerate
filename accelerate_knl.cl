@@ -38,12 +38,18 @@ __kernel void accelerate_ocl_kernel(
     __global double2 * restrict yvel1)
     //__global double2 * restrict stepbymass
 {
-    double2 nodal_mass, stepbymass;
+    double2 nodal_mass, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
+    double2 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
+    double2 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
+    double2 pressure_tmp_current, pressure_tmp_down, pressure_tmp_left, pressure_tmp_leftdown;
+    double2 xvel0_tmp_current, xarea_tmp_current, xarea_tmp_down;
+    double2 yvel0_tmp_current, yarea_tmp_current, yarea_tmp_left;
+    double2 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown; 
 
     int k = get_global_id(1);
     int j = get_global_id(0);
 
-    if ( (j>=1) && (j<=XMAXPLUSTWO) && (k>=2) && (k<=YMAXPLUSTWO) ) {
+    if ( (j>=1) && (j<=XLIMIT) && (k>=2) && (k<=YMAXPLUSTWO) ) {
 
         density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
         density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)]; 
@@ -78,28 +84,53 @@ __kernel void accelerate_ocl_kernel(
         //stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
 
 
-        pressure_tmp_current = pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]
-        pressure_tmp_down    = pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]
-        xvel0_tmp_current    = xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
-        xarea_tmp_current    = xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
-        xarea_tmp_down       = xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
+        pressure_tmp_current  = pressure[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
+        pressure_tmp_down     = pressure[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
+        pressure_tmp_left     = pressure[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
+        pressure_tmp_leftdown = pressure[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
+
+        xvel0_tmp_current    = xvel0[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
+        xarea_tmp_current    = xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
+        xarea_tmp_down       = xarea[ARRAYXY(j    ,k-1,XMAXPLUSFIVE)];
+
+        yvel0_tmp_current = yvel0[ARRAYXY(j     ,k,XMAXPLUSFIVE)]; 
+        yarea_tmp_current = yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)];
+        yarea_tmp_left    = yarea[ARRAYXY(j-1   ,k,XMAXPLUSFOUR)];
 
 
-        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].y = xvel0_tmp_current.y
-                                             -stepbymass.y
-                                             *(xarea_tmp_current.y
-                                              *(pressure_tmp_current.y - pressure_tmp_current.x)
-                                               +xarea_tmp_down.y
-                                               *(pressure_tmp_down.y - pressure_tmp_down.x)
-                                              );
+        xvel1_tmp.y = xvel0_tmp_current.y
+                      -stepbymass.y
+                      *(xarea_tmp_current.y
+                       *(pressure_tmp_current.y - pressure_tmp_current.x)
+                        +xarea_tmp_down.y
+                        *(pressure_tmp_down.y - pressure_tmp_down.x)
+                       );
 
-        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = xvel0_tmp_current.x
-                                             -stepbymass.x
-                                             *(xarea_tmp_current.x
-                                              *(pressure_tmp_current.x - pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)].y)
-                                               +xarea_tmp_down.x
-                                               *(pressure_tmp_down.x - pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)].y)
-                                              );
+        xvel1_tmp.x = xvel0_tmp_current.x
+                      -stepbymass.x
+                      *(xarea_tmp_current.x
+                       *(pressure_tmp_current.x - pressure_tmp_left.y)
+                        +xarea_tmp_down.x
+                        *(pressure_tmp_down.x - pressure_tmp_leftdown.y)
+                       );
+
+
+
+        yvel1_tmp.y = yvel0_tmp_current.y 
+                      -stepbymass.y
+                      *(yarea_tmp_current.y 
+                       *(pressure_tmp_current.y - pressure_tmp_down.y)
+                        +yarea_tmp_current.x 
+                        *(pressure_tmp_current.x - pressure_tmp_down.x)
+                       );
+
+        yvel1_tmp.x = yvel0_tmp_current.x 
+                      -stepbymass.x
+                      *(yarea_tmp_current.x 
+                       *(pressure_tmp_current.x - pressure_tmp_down.x)
+                        +yarea_tmp_left.y 
+                        *(pressure_tmp_left.y - pressure_tmp_leftdown.y)
+                       );
 
 
 
@@ -107,37 +138,86 @@ __kernel void accelerate_ocl_kernel(
 
 
         //orig 
-
-        //xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
+        //xvel1_tmp=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
         //                                 -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
         //                                            *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
         //                                             *(pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
         //                                              +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
         //                                            *(pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
 
+        //yvel1_tmp=yvel0[ARRAYXY(j      ,k,XMAXPLUSFIVE)]
+        //                                           -stepbymass[ARRAYXY(j ,k,XMAXPLUSFIVE)]
+        //                                           *(yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)]
+        //                                           *(pressure[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
+        //                                           +yarea[ARRAYXY(j-1    ,k,XMAXPLUSFOUR)]
+        //                                           *(pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
+
+
+ 
+        viscosity_tmp_current  = viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]; 
+        viscosity_tmp_down     = viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]; 
+        viscosity_tmp_left     = viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]; 
+        viscosity_tmp_leftdown = viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]; 
+
+
+        xvel1_output.y = xvel1_tmp.y
+                         - stepbymass.y
+                           *(xarea_tmp_current.y
+                             *(viscosity_tmp_current.y - viscosity_tmp_current.x)
+                               + xarea_tmp_down.y 
+                                 *(viscosity_tmp_down.y - viscosity_tmp_down.x)
+                            );
+
+        xvel1_output.x = xvel1_tmp.x
+                         - stepbymass.x
+                           *(xarea_tmp_current.x 
+                             *(viscosity_tmp_current.x - viscosity_tmp_left.y)
+                               + xarea_tmp_down.x 
+                                 *(viscosity_tmp_down.x - viscosity_tmp_leftdown.y)
+                            );
+
+
+        yvel1_output.y = yvel1_tmp.y
+                         - stepbymass.y
+                           *(yarea_tmp_current.y 
+                             *(viscosity_tmp_current.y - viscosity_tmp_down.y)
+                               +yarea_tmp_current.x 
+                                *(viscosity_tmp_current.x - viscosity_tmp_down.x)
+                            );
+
+        yvel1_output.x = yvel1_tmp.x
+                         - stepbymass.x
+                           *(yarea_tmp_current.x 
+                             *(viscosity_tmp_current.x - viscosity_tmp_down.x)
+                               + yarea_tmp_left.y
+                                 *(viscosity_tmp_left.y - viscosity_tmp_leftdown.y)
+                            );
+
+
+        //write results to memory, masked for final element 
+        if (j == XLIMIT) {
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = xvel1_output.x;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = yvel1_output.x; 
+        } else {
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = xvel1_output;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1_output; 
+        }
 
 
 
-        yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=yvel0[ARRAYXY(j      ,k,XMAXPLUSFIVE)]
-                                                   -stepbymass[ARRAYXY(j ,k,XMAXPLUSFIVE)]
-                                                   *(yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)]
-                                                   *(pressure[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
-                                                   +yarea[ARRAYXY(j-1    ,k,XMAXPLUSFOUR)]
-                                                   *(pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
+        //xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel1_tmp
+        //                                           -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
+        //                                           *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
+        //                                           *(viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
+        //                                           +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
+        //                                           *(viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
 
-        xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel1[ARRAYXY(j     ,k  ,XMAXPLUSFIVE)]
-                                                   -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
-                                                   *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
-                                                   *(viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
-                                                   +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
-                                                   *(viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
-
-        yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=yvel1[ARRAYXY(j       ,k,XMAXPLUSFIVE)]
-                                                   -stepbymass[ARRAYXY(j  ,k,XMAXPLUSFIVE)]
-                                                   *(yarea[ARRAYXY(j      ,k,XMAXPLUSFOUR)]
-                                                   *(viscosity[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
-                                                   +yarea[ARRAYXY(j-1     ,k,XMAXPLUSFOUR)]
-                                                   *(viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
+        //yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=yvel1_tmp
+        //                                           -stepbymass[ARRAYXY(j  ,k,XMAXPLUSFIVE)]
+        //                                           *(yarea[ARRAYXY(j      ,k,XMAXPLUSFOUR)]
+        //                                           *(viscosity[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
+        //                                           +yarea[ARRAYXY(j-1     ,k,XMAXPLUSFOUR)]
+        //                                           *(viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
     }
 }
 
