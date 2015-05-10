@@ -70,32 +70,14 @@ __kernel void accelerate_ocl_kernel(
                        +den0_vol_tmp_current_res.y
                        +den0_vol_tmp_current_res.x)*0.25;
 
-                       // density0_tmp_down.x * volume_tmp_down.x
-                       //+density0_tmp_down.y * volume_tmp_down.y
-                       //+density0_tmp_current.y * volume_tmp_current.y
-                       //+density0_tmp_current.x * volume_tmp_current.x)*0.25;
-
         nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
                        +den0_vol_tmp_down_res.x 
                        +den0_vol_tmp_current_res.x
                        +density0_tmp_left.y * volume_tmp_left.y)*0.25; 
 
-        //nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
-        //               +density0_tmp_down.x * volume_tmp_down.x
-        //               +density0_tmp_current.x * volume_tmp_current.x
-        //               +density0_tmp_left.y * volume_tmp_left.y) *0.25; 
-
-
         stepbymass=0.5*dt/nodal_mass;
         
 
-
-        //nodal_mass=(density0[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]
-        //           +density0[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]
-        //           +density0[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k  ,XMAXPLUSFOUR)]
-        //           +density0[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k  ,XMAXPLUSFOUR)])
-        //           *0.25;
-        //stepbymass[ARRAYXY(j,k,XMAXPLUSFIVE)]=0.5*dt/nodal_mass;
 
 
         pressure_tmp_current  = pressure[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
@@ -141,22 +123,6 @@ __kernel void accelerate_ocl_kernel(
 
 
 
-        //orig 
-        //xvel1_tmp=xvel0[ARRAYXY(j      ,k  ,XMAXPLUSFIVE)]
-        //                                 -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
-        //                                            *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
-        //                                             *(pressure[ARRAYXY(j ,k  ,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
-        //                                              +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
-        //                                            *(pressure[ARRAYXY(j ,k-1,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
-
-        //yvel1_tmp=yvel0[ARRAYXY(j      ,k,XMAXPLUSFIVE)]
-        //                                           -stepbymass[ARRAYXY(j ,k,XMAXPLUSFIVE)]
-        //                                           *(yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)]
-        //                                           *(pressure[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
-        //                                           +yarea[ARRAYXY(j-1    ,k,XMAXPLUSFOUR)]
-        //                                           *(pressure[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-pressure[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
-
-
  
         viscosity_tmp_current  = viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]; 
         viscosity_tmp_down     = viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]; 
@@ -199,21 +165,6 @@ __kernel void accelerate_ocl_kernel(
             yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1_output; 
         }
 
-
-
-        //xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=xvel1_tmp
-        //                                           -stepbymass[ARRAYXY(j,k  ,XMAXPLUSFIVE)]
-        //                                           *(xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)]
-        //                                           *(viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)])
-        //                                           +xarea[ARRAYXY(j     ,k-1,XMAXPLUSFIVE)]
-        //                                           *(viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
-
-        //yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)]=yvel1_tmp
-        //                                           -stepbymass[ARRAYXY(j  ,k,XMAXPLUSFIVE)]
-        //                                           *(yarea[ARRAYXY(j      ,k,XMAXPLUSFOUR)]
-        //                                           *(viscosity[ARRAYXY(j  ,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)])
-        //                                           +yarea[ARRAYXY(j-1     ,k,XMAXPLUSFOUR)]
-        //                                           *(viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]-viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]));
     }
 }
 
