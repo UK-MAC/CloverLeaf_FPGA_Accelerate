@@ -162,8 +162,10 @@ PROGRAM accelerate_driver
   CALL accelerate_ocl_call_clfinish()
 
   IF(reset_data) THEN
-    ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
-    ALLOCATE(yvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(yvel_orig(x_min-2:x_max+6,y_min-2:y_max+3))
+    ALLOCATE(yvel_orig(x_min-2:x_max+6,y_min-2:y_max+3))
     xvel_orig=xvel1
     yvel_orig=yvel1
   ENDIF
