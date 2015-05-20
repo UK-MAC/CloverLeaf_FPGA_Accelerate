@@ -26,30 +26,30 @@
 
 __kernel void accelerate_ocl_kernel(
     const double dt,
-    __global const double4 * restrict xarea,
-    __global const double4 * restrict yarea,
-    __global const double4 * restrict volume,
-    __global const double4 * restrict density0,
-    __global const double4 * restrict pressure,
-    __global const double4 * restrict viscosity,
-    __global const double4 * restrict xvel0,
-    __global const double4 * restrict yvel0,
-    __global double4 * restrict xvel1,
-    __global double4 * restrict yvel1)
+    __global const double8 * restrict xarea,
+    __global const double8 * restrict yarea,
+    __global const double8 * restrict volume,
+    __global const double8 * restrict density0,
+    __global const double8 * restrict pressure,
+    __global const double8 * restrict viscosity,
+    __global const double8 * restrict xvel0,
+    __global const double8 * restrict yvel0,
+    __global double8 * restrict xvel1,
+    __global double8 * restrict yvel1)
     //__global double4 * restrict stepbymass
 {
-    double4 nodal_mass, nodal_mass_tmp, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
-    double4 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
-    double4 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
-    double4 pressure_tmp_current, pressure_tmp_down, pressure_tmp_left, pressure_tmp_leftdown;
-    double4 xvel0_tmp_current, xarea_tmp_current, xarea_tmp_down;
-    double4 yvel0_tmp_current, yarea_tmp_current, yarea_tmp_left;
-    double4 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown;
+    double8 nodal_mass, nodal_mass_tmp, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
+    double8 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
+    double8 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
+    double8 pressure_tmp_current, pressure_tmp_down, pressure_tmp_left, pressure_tmp_leftdown;
+    double8 xvel0_tmp_current, xarea_tmp_current, xarea_tmp_down;
+    double8 yvel0_tmp_current, yarea_tmp_current, yarea_tmp_left;
+    double8 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown;
 
-    double4 den0_vol_tmp_current, den0_vol_tmp_down, den0_vol_cd_res;
+    double8 den0_vol_tmp_current, den0_vol_tmp_down, den0_vol_cd_res;
     double den0_vol_tmp_left, den0_vol_tmp_leftdown, den0_vol_lld_res;
-    double4 press_tmp_curr_rShift, press_tmp_down_rShift, yarea_tmp_curr_rShift; 
-    double4 vis_tmp_curr_rShift, vis_tmp_down_rShift; 
+    double8 press_tmp_curr_rShift, press_tmp_down_rShift, yarea_tmp_curr_rShift; 
+    double8 vis_tmp_curr_rShift, vis_tmp_down_rShift; 
 
     int k = get_global_id(1);
     int j = get_global_id(0);
