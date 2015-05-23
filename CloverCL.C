@@ -2753,7 +2753,7 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, 
 
     //size_t global_wi [2] = {x_rnd, y_rnd}; 
     //size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
-    size_t global_wi [2] = {961,3843}; 
+    size_t global_wi [2] = {1922,3843}; 
     size_t local_wi [2] = {1,1}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
