@@ -76,17 +76,21 @@ __kernel void accelerate_ocl_kernel(
             den0_vol_tmp_left     = 0;
             den0_vol_tmp_leftdown = 0;
         } else { 
-            den0_vol_tmp_left     = density0_tmp_left.w * volume_tmp_left.w;
-            den0_vol_tmp_leftdown = density0_tmp_leftdown.w * volume_tmp_leftdown.w;
+            den0_vol_tmp_left     = density0_tmp_left.s7 * volume_tmp_left.s7;
+            den0_vol_tmp_leftdown = density0_tmp_leftdown.s7 * volume_tmp_leftdown.s7;
         }
 
         den0_vol_cd_res = den0_vol_tmp_current + den0_vol_tmp_down;
         den0_vol_lld_res = den0_vol_tmp_left + den0_vol_tmp_leftdown;
 
-        nodal_mass_tmp.x = den0_vol_lld_res + den0_vol_cd_res.x; 
-        nodal_mass_tmp.y = den0_vol_cd_res.x + den0_vol_cd_res.y;
-        nodal_mass_tmp.z = den0_vol_cd_res.y + den0_vol_cd_res.z;
-        nodal_mass_tmp.w = den0_vol_cd_res.z + den0_vol_cd_res.w;
+        nodal_mass_tmp.s0 = den0_vol_lld_res + den0_vol_cd_res.s0; 
+        nodal_mass_tmp.s1 = den0_vol_cd_res.s0 + den0_vol_cd_res.s1; 
+        nodal_mass_tmp.s2 = den0_vol_cd_res.s1 + den0_vol_cd_res.s2;
+        nodal_mass_tmp.s3 = den0_vol_cd_res.s2 + den0_vol_cd_res.s3;
+        nodal_mass_tmp.s4 = den0_vol_cd_res.s3 + den0_vol_cd_res.s4;
+        nodal_mass_tmp.s5 = den0_vol_cd_res.s4 + den0_vol_cd_res.s5;
+        nodal_mass_tmp.s6 = den0_vol_cd_res.s5 + den0_vol_cd_res.s6;
+        nodal_mass_tmp.s7 = den0_vol_cd_res.s6 + den0_vol_cd_res.s7;
 
         nodal_mass = nodal_mass_tmp * 0.25; 
 
@@ -119,20 +123,32 @@ __kernel void accelerate_ocl_kernel(
         viscosity_tmp_leftdown = viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)];
 
 
-        press_tmp_curr_rShift.x = pressure_tmp_left.w;  
-        press_tmp_curr_rShift.y = pressure_tmp_current.x;
-        press_tmp_curr_rShift.z = pressure_tmp_current.y;
-        press_tmp_curr_rShift.w = pressure_tmp_current.z;
+        press_tmp_curr_rShift.s0 = pressure_tmp_left.s7;  
+        press_tmp_curr_rShift.s1 = pressure_tmp_current.s0;
+        press_tmp_curr_rShift.s2 = pressure_tmp_current.s1;
+        press_tmp_curr_rShift.s3 = pressure_tmp_current.s2;
+        press_tmp_curr_rShift.s4 = pressure_tmp_current.s3;
+        press_tmp_curr_rShift.s5 = pressure_tmp_current.s4;
+        press_tmp_curr_rShift.s6 = pressure_tmp_current.s5;
+        press_tmp_curr_rShift.s7 = pressure_tmp_current.s6;
 
-        press_tmp_down_rShift.x = pressure_tmp_leftdown.w; 
-        press_tmp_down_rShift.y = pressure_tmp_down.x;
-        press_tmp_down_rShift.z = pressure_tmp_down.y;
-        press_tmp_down_rShift.w = pressure_tmp_down.z;
+        press_tmp_down_rShift.s0 = pressure_tmp_leftdown.s7; 
+        press_tmp_down_rShift.s1 = pressure_tmp_down.s0;
+        press_tmp_down_rShift.s2 = pressure_tmp_down.s1;
+        press_tmp_down_rShift.s3 = pressure_tmp_down.s2;
+        press_tmp_down_rShift.s4 = pressure_tmp_down.s3;
+        press_tmp_down_rShift.s5 = pressure_tmp_down.s4;
+        press_tmp_down_rShift.s6 = pressure_tmp_down.s5;
+        press_tmp_down_rShift.s7 = pressure_tmp_down.s6;
 
-        yarea_tmp_curr_rShift.x = yarea_tmp_left.w; 
-        yarea_tmp_curr_rShift.y = yarea_tmp_current.x;
-        yarea_tmp_curr_rShift.z = yarea_tmp_current.y; 
-        yarea_tmp_curr_rShift.w = yarea_tmp_current.z;
+        yarea_tmp_curr_rShift.s0 = yarea_tmp_left.s7; 
+        yarea_tmp_curr_rShift.s1 = yarea_tmp_current.s0;
+        yarea_tmp_curr_rShift.s2 = yarea_tmp_current.s1; 
+        yarea_tmp_curr_rShift.s3 = yarea_tmp_current.s2;
+        yarea_tmp_curr_rShift.s4 = yarea_tmp_current.s3;
+        yarea_tmp_curr_rShift.s5 = yarea_tmp_current.s4;
+        yarea_tmp_curr_rShift.s6 = yarea_tmp_current.s5;
+        yarea_tmp_curr_rShift.s7 = yarea_tmp_current.s6;
 
 
         xvel1_tmp = xvel0_tmp_current
@@ -149,15 +165,23 @@ __kernel void accelerate_ocl_kernel(
                      );
 
 
-        vis_tmp_curr_rShift.x = viscosity_tmp_left.w; 
-        vis_tmp_curr_rShift.y = viscosity_tmp_current.x;
-        vis_tmp_curr_rShift.z = viscosity_tmp_current.y;
-        vis_tmp_curr_rShift.w = viscosity_tmp_current.z;
+        vis_tmp_curr_rShift.s0 = viscosity_tmp_left.s7; 
+        vis_tmp_curr_rShift.s1 = viscosity_tmp_current.s0;
+        vis_tmp_curr_rShift.s2 = viscosity_tmp_current.s1;
+        vis_tmp_curr_rShift.s3 = viscosity_tmp_current.s2;
+        vis_tmp_curr_rShift.s4 = viscosity_tmp_current.s3;
+        vis_tmp_curr_rShift.s5 = viscosity_tmp_current.s4;
+        vis_tmp_curr_rShift.s6 = viscosity_tmp_current.s5;
+        vis_tmp_curr_rShift.s7 = viscosity_tmp_current.s6;
 
-        vis_tmp_down_rShift.x = viscosity_tmp_leftdown.w;
-        vis_tmp_down_rShift.y = viscosity_tmp_down.x;
-        vis_tmp_down_rShift.z = viscosity_tmp_down.y;
-        vis_tmp_down_rShift.w = viscosity_tmp_down.z;
+        vis_tmp_down_rShift.s0 = viscosity_tmp_leftdown.s7; 
+        vis_tmp_down_rShift.s1 = viscosity_tmp_down.s0;
+        vis_tmp_down_rShift.s2 = viscosity_tmp_down.s1;
+        vis_tmp_down_rShift.s3 = viscosity_tmp_down.s2;
+        vis_tmp_down_rShift.s4 = viscosity_tmp_down.s3;
+        vis_tmp_down_rShift.s5 = viscosity_tmp_down.s4;
+        vis_tmp_down_rShift.s6 = viscosity_tmp_down.s5;
+        vis_tmp_down_rShift.s7 = viscosity_tmp_down.s6;
 
 
         xvel1_output = xvel1_tmp 
@@ -174,20 +198,28 @@ __kernel void accelerate_ocl_kernel(
 
         if (j==0) {
             // only send z and w back to memory
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].z = xvel1_output.z;
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].w = xvel1_output.w;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s2 = xvel1_output.s2;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s3 = xvel1_output.s3;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s4 = xvel1_output.s4;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s5 = xvel1_output.s5;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s6 = xvel1_output.s6;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s7 = xvel1_output.s7;
 
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].z = yvel1_output.z;
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].w = yvel1_output.w;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s2 = yvel1_output.s2;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s3 = yvel1_output.s3;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s4 = yvel1_output.s4;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s5 = yvel1_output.s5;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s6 = yvel1_output.s6;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s7 = yvel1_output.s7;
         }
         else if (j == XLIMIT) {
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = xvel1_output.x;
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].y = xvel1_output.y;
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].z = xvel1_output.z;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s0 = xvel1_output.s0;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s1 = xvel1_output.s1;
+            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s2 = xvel1_output.s2;
 
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].x = yvel1_output.x;
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].y = yvel1_output.y;
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].z = yvel1_output.z;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s0 = yvel1_output.s0;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s1 = yvel1_output.s1;
+            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)].s2 = yvel1_output.s2;
         }
         else {
             // else write the full vector back 
