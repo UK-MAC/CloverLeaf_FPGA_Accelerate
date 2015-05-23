@@ -38,7 +38,7 @@ __kernel void accelerate_ocl_kernel(
     __global double4 * restrict yvel1)
     //__global double4 * restrict stepbymass
 {
-    double4 nodal_mass, nodal_mass_tmp, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
+    double4 nodal_mass, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
     double4 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
     double4 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
     double4 pressure_tmp_current, pressure_tmp_down, pressure_tmp_left, pressure_tmp_leftdown;
@@ -48,26 +48,19 @@ __kernel void accelerate_ocl_kernel(
 
     double4 den0_vol_tmp_current, den0_vol_tmp_down, den0_vol_cd_res;
     double den0_vol_tmp_left, den0_vol_tmp_leftdown, den0_vol_lld_res;
-    double4 press_tmp_curr_rShift, press_tmp_down_rShift, yarea_tmp_curr_rShift; 
-    double4 vis_tmp_curr_rShift, vis_tmp_down_rShift; 
+
+    //double4 press_tmp_curr_rShift, press_tmp_down_rShift, yarea_tmp_curr_rShift; 
+    //double4 vis_tmp_curr_rShift, vis_tmp_down_rShift; 
 
     int k = get_global_id(1);
     int j = get_global_id(0);
 
     if ( (k>=2) && (k<=YMAXPLUSTWO) ) {
-        // (j>=2) && (j<=XMAXPLUSTWO) && 
 
         density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
         density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
         volume_tmp_current  = volume[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
         volume_tmp_down     = volume[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
-
-        if (j > 0) {
-            density0_tmp_left     = density0[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
-            density0_tmp_leftdown = density0[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
-            volume_tmp_left       = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
-            volume_tmp_leftdown   = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
-        }
 
         den0_vol_tmp_current  = density0_tmp_current * volume_tmp_current;
         den0_vol_tmp_down     = density0_tmp_down * volume_tmp_down;
@@ -76,6 +69,12 @@ __kernel void accelerate_ocl_kernel(
             den0_vol_tmp_left     = 0;
             den0_vol_tmp_leftdown = 0;
         } else { 
+
+            density0_tmp_left     = density0[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
+            density0_tmp_leftdown = density0[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
+            volume_tmp_left       = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
+            volume_tmp_leftdown   = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
+
             den0_vol_tmp_left     = density0_tmp_left.w * volume_tmp_left.w;
             den0_vol_tmp_leftdown = density0_tmp_leftdown.w * volume_tmp_leftdown.w;
         }
@@ -83,12 +82,11 @@ __kernel void accelerate_ocl_kernel(
         den0_vol_cd_res = den0_vol_tmp_current + den0_vol_tmp_down;
         den0_vol_lld_res = den0_vol_tmp_left + den0_vol_tmp_leftdown;
 
-        nodal_mass_tmp.x = den0_vol_lld_res + den0_vol_cd_res.x; 
-        nodal_mass_tmp.y = den0_vol_cd_res.x + den0_vol_cd_res.y;
-        nodal_mass_tmp.z = den0_vol_cd_res.y + den0_vol_cd_res.z;
-        nodal_mass_tmp.w = den0_vol_cd_res.z + den0_vol_cd_res.w;
+        nodal_mass.x = (den0_vol_lld_res + den0_vol_cd_res.x)*0.25; 
+        nodal_mass.y = (den0_vol_cd_res.x + den0_vol_cd_res.y)*0.25;
+        nodal_mass.z = (den0_vol_cd_res.y + den0_vol_cd_res.z)*0.25;
+        nodal_mass.w = (den0_vol_cd_res.z + den0_vol_cd_res.w)*0.25;
 
-        nodal_mass = nodal_mass_tmp * 0.25; 
 
         //nodal_mass=(density0[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]
         //           +density0[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]*volume[ARRAYXY(j  ,k-1,XMAXPLUSFOUR)]
@@ -119,58 +117,141 @@ __kernel void accelerate_ocl_kernel(
         viscosity_tmp_leftdown = viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)];
 
 
-        press_tmp_curr_rShift.x = pressure_tmp_left.w;  
-        press_tmp_curr_rShift.y = pressure_tmp_current.x;
-        press_tmp_curr_rShift.z = pressure_tmp_current.y;
-        press_tmp_curr_rShift.w = pressure_tmp_current.z;
+        //press_tmp_curr_rShift.x = pressure_tmp_left.w;  
+        //press_tmp_curr_rShift.y = pressure_tmp_current.x;
+        //press_tmp_curr_rShift.z = pressure_tmp_current.y;
+        //press_tmp_curr_rShift.w = pressure_tmp_current.z;
 
-        press_tmp_down_rShift.x = pressure_tmp_leftdown.w; 
-        press_tmp_down_rShift.y = pressure_tmp_down.x;
-        press_tmp_down_rShift.z = pressure_tmp_down.y;
-        press_tmp_down_rShift.w = pressure_tmp_down.z;
+        //press_tmp_down_rShift.x = pressure_tmp_leftdown.w; 
+        //press_tmp_down_rShift.y = pressure_tmp_down.x;
+        //press_tmp_down_rShift.z = pressure_tmp_down.y;
+        //press_tmp_down_rShift.w = pressure_tmp_down.z;
 
-        yarea_tmp_curr_rShift.x = yarea_tmp_left.w; 
-        yarea_tmp_curr_rShift.y = yarea_tmp_current.x;
-        yarea_tmp_curr_rShift.z = yarea_tmp_current.y; 
-        yarea_tmp_curr_rShift.w = yarea_tmp_current.z;
-
-
-        xvel1_tmp = xvel0_tmp_current
-                    -stepbymass
-                    *(xarea_tmp_current*(pressure_tmp_current - press_tmp_curr_rShift)
-                     +xarea_tmp_down*(pressure_tmp_down - press_tmp_down_rShift)
-                     );
+        //yarea_tmp_curr_rShift.x = yarea_tmp_left.w; 
+        //yarea_tmp_curr_rShift.y = yarea_tmp_current.x;
+        //yarea_tmp_curr_rShift.z = yarea_tmp_current.y; 
+        //yarea_tmp_curr_rShift.w = yarea_tmp_current.z;
 
 
-        yvel1_tmp = yvel0_tmp_current
-                    -stepbymass
-                    *(yarea_tmp_current*(pressure_tmp_current - pressure_tmp_down)
-                     +yarea_tmp_curr_rShift*(press_tmp_curr_rShift-press_tmp_down_rShift)
-                     );
+
+        xvel1_tmp.w = xvel0_tmp_current.w
+                      -stepbymass.w
+                      *(xarea_tmp_current.w*(pressure_tmp_current.w - pressure_tmp_current.z)
+                       +xarea_tmp_down.w*(pressure_tmp_down.w - pressure_tmp_down.z)
+                       );
+
+        xvel1_tmp.z = xvel0_tmp_current.z
+                      -stepbymass.z
+                      *(xarea_tmp_current.z*(pressure_tmp_current.z - pressure_tmp_current.y)
+                       +xarea_tmp_down.z*(pressure_tmp_down.z - pressure_tmp_down.y)
+                       );
+
+        xvel1_tmp.y = xvel0_tmp_current.y
+                      -stepbymass.y
+                      *(xarea_tmp_current.y*(pressure_tmp_current.y - pressure_tmp_current.x)
+                       +xarea_tmp_down.y*(pressure_tmp_down.y - pressure_tmp_down.x)
+                       );
+
+        xvel1_tmp.x = xvel0_tmp_current.x
+                      -stepbymass.x
+                      *(xarea_tmp_current.x *(pressure_tmp_current.x - pressure_tmp_left.w)
+                       +xarea_tmp_down.x *(pressure_tmp_down.x - pressure_tmp_leftdown.w)
+                       );
 
 
-        vis_tmp_curr_rShift.x = viscosity_tmp_left.w; 
-        vis_tmp_curr_rShift.y = viscosity_tmp_current.x;
-        vis_tmp_curr_rShift.z = viscosity_tmp_current.y;
-        vis_tmp_curr_rShift.w = viscosity_tmp_current.z;
 
-        vis_tmp_down_rShift.x = viscosity_tmp_leftdown.w;
-        vis_tmp_down_rShift.y = viscosity_tmp_down.x;
-        vis_tmp_down_rShift.z = viscosity_tmp_down.y;
-        vis_tmp_down_rShift.w = viscosity_tmp_down.z;
+        //double ya_press_tmp_x = yarea_tmp_current.x * (pressure_tmp_current.x - pressure_tmp_down.x);
+        //double ya_press_tmp_y = yarea_tmp_current.y * (pressure_tmp_current.y - pressure_tmp_down.y);
+        //double ya_press_tmp_z = yarea_tmp_current.z * (pressure_tmp_current.z - pressure_tmp_down.z);
+
+        yvel1_tmp.w = yvel0_tmp_current.w
+                      -stepbymass.w
+                      *(yarea_tmp_current.w*(pressure_tmp_current.w - pressure_tmp_down.w)
+                       +yarea_tmp_current.z*(pressure_tmp_current.z - pressure_tmp_down.z)
+                       );
+
+        yvel1_tmp.z = yvel0_tmp_current.z
+                      -stepbymass.z
+                      *(yarea_tmp_current.z*(pressure_tmp_current.z - pressure_tmp_down.z)
+                       +yarea_tmp_current.y*(pressure_tmp_current.y - pressure_tmp_down.y)
+                       );
+
+        yvel1_tmp.y = yvel0_tmp_current.y
+                      -stepbymass.y
+                      *(yarea_tmp_current.y*(pressure_tmp_current.y - pressure_tmp_down.y)
+                       +yarea_tmp_current.x*(pressure_tmp_current.x - pressure_tmp_down.x)
+                       );
+
+        yvel1_tmp.x = yvel0_tmp_current.x
+                      -stepbymass.x
+                      *(yarea_tmp_current.x*(pressure_tmp_current.x - pressure_tmp_down.x)
+                       +yarea_tmp_left.w*(pressure_tmp_left.w - pressure_tmp_leftdown.w)
+                       );
 
 
-        xvel1_output = xvel1_tmp 
-                       -stepbymass
-                       *(xarea_tmp_current*(viscosity_tmp_current - vis_tmp_curr_rShift)
-                        +xarea_tmp_down*(viscosity_tmp_down - vis_tmp_down_rShift)
-                        );
 
-        yvel1_output = yvel1_tmp 
-                       -stepbymass
-                       *(yarea_tmp_current*(viscosity_tmp_current - viscosity_tmp_down)
-                        +yarea_tmp_curr_rShift*(vis_tmp_curr_rShift - vis_tmp_down_rShift)
-                        );
+
+
+        //vis_tmp_curr_rShift.x = viscosity_tmp_left.w; 
+        //vis_tmp_curr_rShift.y = viscosity_tmp_current.x;
+        //vis_tmp_curr_rShift.z = viscosity_tmp_current.y;
+        //vis_tmp_curr_rShift.w = viscosity_tmp_current.z;
+
+        //vis_tmp_down_rShift.x = viscosity_tmp_leftdown.w;
+        //vis_tmp_down_rShift.y = viscosity_tmp_down.x;
+        //vis_tmp_down_rShift.z = viscosity_tmp_down.y;
+        //vis_tmp_down_rShift.w = viscosity_tmp_down.z;
+
+
+        xvel1_output.w = xvel1_tmp.w
+                         -stepbymass.w
+                         *(xarea_tmp_current.w*(viscosity_tmp_current.w - viscosity_tmp_current.z)
+                          +xarea_tmp_down.w*(viscosity_tmp_down.w - viscosity_tmp_down.z)
+                          );
+        xvel1_output.z = xvel1_tmp.z
+                         -stepbymass.z
+                         *(xarea_tmp_current.z*(viscosity_tmp_current.z - viscosity_tmp_current.y)
+                          +xarea_tmp_down.z*(viscosity_tmp_down.z - viscosity_tmp_down.y)
+                          );
+        xvel1_output.y = xvel1_tmp.y
+                         -stepbymass.y
+                         *(xarea_tmp_current.y*(viscosity_tmp_current.y - viscosity_tmp_current.x)
+                          +xarea_tmp_down.y*(viscosity_tmp_down.y - viscosity_tmp_down.x)
+                          );
+        xvel1_output.x = xvel1_tmp.x
+                         - stepbymass.x
+                         *(xarea_tmp_current.x*(viscosity_tmp_current.x - viscosity_tmp_left.w)
+                          +xarea_tmp_down.x*(viscosity_tmp_down.x - viscosity_tmp_leftdown.w)
+                          );
+
+        //double ya_vis_tmp_x = yarea_tmp_current.x*(viscosity_tmp_current.x - viscosity_tmp_down.x);
+        //double ya_vis_tmp_y = yarea_tmp_current.y*(viscosity_tmp_current.y - viscosity_tmp_down.y);
+        //double ya_vis_tmp_z = yarea_tmp_current.z*(viscosity_tmp_current.z - viscosity_tmp_down.z);
+
+        yvel1_output.w = yvel1_tmp.w
+                         -stepbymass.w
+                         *(yarea_tmp_current.w*(viscosity_tmp_current.w - viscosity_tmp_down.w)
+                          +yarea_tmp_current.z*(viscosity_tmp_current.z - viscosity_tmp_down.z)
+                          );
+        yvel1_output.z = yvel1_tmp.z
+                         -stepbymass.z
+                         *(yarea_tmp_current.z*(viscosity_tmp_current.z - viscosity_tmp_down.z)
+                          +yarea_tmp_current.y*(viscosity_tmp_current.y - viscosity_tmp_down.y)
+                          );
+        yvel1_output.y = yvel1_tmp.y
+                         -stepbymass.y
+                         *(yarea_tmp_current.y*(viscosity_tmp_current.y - viscosity_tmp_down.y)
+                          +yarea_tmp_current.x*(viscosity_tmp_current.x - viscosity_tmp_down.x)
+                          );
+        yvel1_output.x = yvel1_tmp.x
+                         -stepbymass.x
+                         *(yarea_tmp_current.x*(viscosity_tmp_current.x - viscosity_tmp_down.x)
+                          +yarea_tmp_left.w*(viscosity_tmp_left.w - viscosity_tmp_leftdown.w)
+                          );
+
+
+
+
 
         if (j==0) {
             // only send z and w back to memory
