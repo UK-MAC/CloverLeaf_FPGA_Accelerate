@@ -1950,7 +1950,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_1921_3842_1922_1923.aocx", &accelerate_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_memopsatstart_1921_3842_1922_1923.aocx", &accelerate_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_wg_1921_3842_1922_1923.aocx", &accelerate_prog);
 
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
@@ -2752,8 +2752,8 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, 
 
     //size_t global_wi [2] = {x_rnd, y_rnd}; 
     //size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
-    size_t global_wi [2] = {1922,3843}; 
-    size_t local_wi [2] = {1,1}; 
+    size_t global_wi [2] = {1928,3856}; 
+    size_t local_wi [2] = {8,16}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
