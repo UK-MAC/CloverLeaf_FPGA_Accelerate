@@ -47,13 +47,13 @@ __kernel void accelerate_ocl_kernel(
     double2 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown; 
     double2 den0_vol_tmp_down_res, den0_vol_tmp_current_res;
 
-    int k = get_global_id(1);
-    int j = get_global_id(0);
+    //int k = get_global_id(1);
+    //int j = get_global_id(0);
 
     //if ( (j>=1) && (j<=XLIMIT) && (k>=2) && (k<=YMAXPLUSTWO) ) {
 
-    for (k=2; k<=YMAXPLUSTWO; k++) {
-        for (j=1; j<=XLIMIT; j++) {
+    for (unsigned k=2; k<=YMAXPLUSTWO; k++) {
+        for (unsigned j=1; j<=XLIMIT; j++) {
 
             density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
             density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)]; 
