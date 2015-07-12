@@ -26,18 +26,31 @@
 
 __kernel void accelerate_ocl_kernel(
     const double dt,
-    __global const double2 * restrict xarea,
-    __global const double2 * restrict yarea,
-    __global const double2 * restrict volume,
-    __global const double2 * restrict density0,
-    __global const double2 * restrict pressure,
-    __global const double2 * restrict viscosity,
-    __global const double2 * restrict xvel0,
-    __global const double2 * restrict yvel0,
-    __global double2 * restrict xvel1,
-    __global double2 * restrict yvel1)
+    __global const double2 * restrict g_xarea,
+    __global const double2 * restrict g_yarea,
+    __global const double2 * restrict g_volume,
+    __global const double2 * restrict g_density0,
+    __global const double2 * restrict g_pressure,
+    __global const double2 * restrict g_viscosity,
+    __global const double2 * restrict g_xvel0,
+    __global const double2 * restrict g_yvel0,
+    __global double2 * restrict g_xvel1,
+    __global double2 * restrict g_yvel1)
     //__global double2 * restrict stepbymass
 {
+    __global double2 (*xarea)[XMAXPLUSFIVE] = (__global double2 (*)[XMAXPLUSFIVE])g_xarea;
+    __global double2 (*yarea)[XMAXPLUSFOUR] = (__global double2 (*)[XMAXPLUSFOUR])g_yarea;
+    __global double2 (*volume)[XMAXPLUSFOUR] = (__global double2 (*)[XMAXPLUSFOUR])g_volume;
+    __global double2 (*density0)[XMAXPLUSFOUR] = (__global double2 (*)[XMAXPLUSFOUR])g_density0;
+    __global double2 (*pressure)[XMAXPLUSFOUR] = (__global double2 (*)[XMAXPLUSFOUR])g_pressure;
+    __global double2 (*viscosity)[XMAXPLUSFOUR] = (__global double2 (*)[XMAXPLUSFOUR])g_viscosity;
+
+    __global double2 (*xvel0)[XMAXPLUSFIVE] = (__global double2 (*)[XMAXPLUSFIVE])g_xvel0;
+    __global double2 (*yvel0)[XMAXPLUSFIVE] = (__global double2 (*)[XMAXPLUSFIVE])g_yvel0;
+    __global double2 (*xvel1)[XMAXPLUSFIVE] = (__global double2 (*)[XMAXPLUSFIVE])g_xvel1;
+    __global double2 (*yvel1)[XMAXPLUSFIVE] = (__global double2 (*)[XMAXPLUSFIVE])g_yvel1;
+
+
     double2 nodal_mass, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
     double2 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
     double2 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
@@ -48,45 +61,41 @@ __kernel void accelerate_ocl_kernel(
     double2 den0_vol_tmp_down_res, den0_vol_tmp_current_res;
     double2 xvel1_last, yvel1_last; 
 
-    //int k = get_global_id(1);
-    //int j = get_global_id(0);
-
-    //if ( (j>=1) && (j<=XLIMIT) && (k>=2) && (k<=YMAXPLUSTWO) ) {
 
     for (unsigned k=2; k<=YMAXPLUSTWO; k++) {
         for (unsigned j=1; j<=XLIMIT; j++) {
 
-            density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
-            density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)]; 
-            density0_tmp_left     = density0[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)]; 
-            density0_tmp_leftdown = density0[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
+            density0_tmp_current  = density0[k  ][j  ]; 
+            density0_tmp_down     = density0[k-1][j  ]; 
+            density0_tmp_left     = density0[k  ][j-1]; 
+            density0_tmp_leftdown = density0[k-1][j-1]; 
 
-            volume_tmp_current  = volume[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
-            volume_tmp_down     = volume[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
-            volume_tmp_left     = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
-            volume_tmp_leftdown = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
+            volume_tmp_current  = volume[k  ][j  ];
+            volume_tmp_down     = volume[k-1][j  ];
+            volume_tmp_left     = volume[k  ][j-1];
+            volume_tmp_leftdown = volume[k-1][j-1];
 
-            pressure_tmp_current  = pressure[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
-            pressure_tmp_down     = pressure[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
-            pressure_tmp_left     = pressure[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
-            pressure_tmp_leftdown = pressure[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
+            pressure_tmp_current  = pressure[k  ][j  ];
+            pressure_tmp_down     = pressure[k-1][j  ];
+            pressure_tmp_left     = pressure[k  ][j-1];
+            pressure_tmp_leftdown = pressure[k-1][j-1]; 
 
-            xvel0_tmp_current    = xvel0[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
-            xarea_tmp_current    = xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
-            xarea_tmp_down       = xarea[ARRAYXY(j    ,k-1,XMAXPLUSFIVE)];
+            xvel0_tmp_current    = xvel0[k][j];
+            xarea_tmp_current    = xarea[k][j];
+            xarea_tmp_down       = xarea[k-1][j];
 
-            yvel0_tmp_current = yvel0[ARRAYXY(j     ,k,XMAXPLUSFIVE)]; 
-            yarea_tmp_current = yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)];
-            yarea_tmp_left    = yarea[ARRAYXY(j-1   ,k,XMAXPLUSFOUR)];
+            yvel0_tmp_current = yvel0[k][j]; 
+            yarea_tmp_current = yarea[k][j];
+            yarea_tmp_left    = yarea[k][j-1];
 
-            viscosity_tmp_current  = viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]; 
-            viscosity_tmp_down     = viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]; 
-            viscosity_tmp_left     = viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]; 
-            viscosity_tmp_leftdown = viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]; 
+            viscosity_tmp_current  = viscosity[k  ][j  ]; 
+            viscosity_tmp_down     = viscosity[k-1][j  ]; 
+            viscosity_tmp_left     = viscosity[k  ][j-1]; 
+            viscosity_tmp_leftdown = viscosity[k-1][j-1]; 
 
             if (j == XLIMIT) {
-                xvel1_last = xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
-                yvel1_last = yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
+                xvel1_last = xvel1[k][j];
+                yvel1_last = yvel1[k][j];
             } 
 
             den0_vol_tmp_down_res    = density0_tmp_down * volume_tmp_down; 
@@ -174,8 +183,8 @@ __kernel void accelerate_ocl_kernel(
                 yvel1_output.y = yvel1_last.y; 
             }
 
-            xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = xvel1_output;
-            yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1_output; 
+            xvel1[k][j] = xvel1_output;
+            yvel1[k][j] = yvel1_output; 
 
         }
     }
