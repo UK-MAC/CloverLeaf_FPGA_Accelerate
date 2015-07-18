@@ -48,27 +48,26 @@ __kernel void accelerate_ocl_kernel(
     double2 den0_vol_tmp_down_res, den0_vol_tmp_current_res;
     double2 xvel1_last, yvel1_last; 
 
-    //int k = get_global_id(1);
-    //int j = get_global_id(0);
-
-    //if ( (j>=1) && (j<=XLIMIT) && (k>=2) && (k<=YMAXPLUSTWO) ) {
-
     for (unsigned k=2; k<=YMAXPLUSTWO; k++) {
+        
+        density0_tmp_left  = density0[ARRAYXY(0, k  ,XMAXPLUSFOUR)]; 
+        volume_tmp_left    = volume[ARRAYXY(0, k  ,XMAXPLUSFOUR)];
+        pressure_tmp_left  = pressure[ARRAYXY(0, k  ,XMAXPLUSFOUR)];
+        yarea_tmp_left     = yarea[ARRAYXY(0   ,k,XMAXPLUSFOUR)];
+        viscosity_tmp_left = viscosity[ARRAYXY(0,k,XMAXPLUSFOUR)]; 
+
         for (unsigned j=1; j<=XLIMIT; j++) {
 
             density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
             density0_tmp_down     = density0[ARRAYXY(j  , k-1,XMAXPLUSFOUR)]; 
-            density0_tmp_left     = density0[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)]; 
             density0_tmp_leftdown = density0[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
 
             volume_tmp_current  = volume[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
             volume_tmp_down     = volume[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
-            volume_tmp_left     = volume[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
             volume_tmp_leftdown = volume[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)];
 
             pressure_tmp_current  = pressure[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
             pressure_tmp_down     = pressure[ARRAYXY(j  , k-1,XMAXPLUSFOUR)];
-            pressure_tmp_left     = pressure[ARRAYXY(j-1, k  ,XMAXPLUSFOUR)];
             pressure_tmp_leftdown = pressure[ARRAYXY(j-1, k-1,XMAXPLUSFOUR)]; 
 
             xvel0_tmp_current    = xvel0[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
@@ -77,11 +76,9 @@ __kernel void accelerate_ocl_kernel(
 
             yvel0_tmp_current = yvel0[ARRAYXY(j     ,k,XMAXPLUSFIVE)]; 
             yarea_tmp_current = yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)];
-            yarea_tmp_left    = yarea[ARRAYXY(j-1   ,k,XMAXPLUSFOUR)];
 
             viscosity_tmp_current  = viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]; 
             viscosity_tmp_down     = viscosity[ARRAYXY(j,k-1,XMAXPLUSFOUR)]; 
-            viscosity_tmp_left     = viscosity[ARRAYXY(j-1,k,XMAXPLUSFOUR)]; 
             viscosity_tmp_leftdown = viscosity[ARRAYXY(j-1,k-1,XMAXPLUSFOUR)]; 
 
             if (j == XLIMIT) {
@@ -177,6 +174,11 @@ __kernel void accelerate_ocl_kernel(
             xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = xvel1_output;
             yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)] = yvel1_output; 
 
+            density0_tmp_left  = density0_tmp_current;
+            volume_tmp_left    = volume_tmp_current;
+            pressure_tmp_left  = pressure_tmp_current;
+            yarea_tmp_left     = yarea_tmp_current;
+            viscosity_tmp_left = viscosity_tmp_current;
         }
     }
 }
