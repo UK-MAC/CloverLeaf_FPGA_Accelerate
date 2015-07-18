@@ -39,16 +39,16 @@ __kernel void accelerate_ocl_kernel(
     //__global double2 * restrict stepbymass
 {
     double2 nodal_mass, stepbymass, xvel1_tmp, yvel1_tmp, xvel1_output, yvel1_output;
-    double2 density0_tmp_current, density0_tmp_down, density0_tmp_left, density0_tmp_leftdown;
-    double2 volume_tmp_current, volume_tmp_down, volume_tmp_left, volume_tmp_leftdown;
-    double2 pressure_tmp_current, pressure_tmp_down, pressure_tmp_left, pressure_tmp_leftdown;
-    double2 xvel0_tmp_current, xarea_tmp_current, xarea_tmp_down;
+    double2 density0_tmp_current, density0_tmp_left;
+    double2 volume_tmp_current, volume_tmp_left;
+    double2 pressure_tmp_current, pressure_tmp_left;
+    double2 xvel0_tmp_current, xarea_tmp_current;
     double2 yvel0_tmp_current, yarea_tmp_current, yarea_tmp_left;
-    double2 viscosity_tmp_current, viscosity_tmp_down, viscosity_tmp_left, viscosity_tmp_leftdown; 
+    double2 viscosity_tmp_current, viscosity_tmp_left; 
     double2 den0_vol_tmp_down_res, den0_vol_tmp_current_res;
     double2 xvel1_last, yvel1_last; 
 
-    double2 density0_Kbuffer[XLIMIT+1], volume_Kbuffer[XLIMIT+1], pressure_Kbuffer[XLIMIT+1], viscosity_Kbuffer[XLIMIT+1];
+    double2 density0_Kbuffer[XLIMITPLUSONE], volume_Kbuffer[XLIMITPLUSONE], pressure_Kbuffer[XLIMITPLUSONE], viscosity_Kbuffer[XLIMITPLUSONE], xarea_Kbuffer[XLIMITPLUSONE];
 
     // k = 1
     for (unsigned jj=0; jj<=XLIMIT; jj++) {
@@ -56,48 +56,40 @@ __kernel void accelerate_ocl_kernel(
         volume_Kbuffer[jj]    = volume[ARRAYXY(jj   , 1, XMAXPLUSFOUR)];
         pressure_Kbuffer[jj]  = pressure[ARRAYXY(jj , 1, XMAXPLUSFOUR)];
         viscosity_Kbuffer[jj] = viscosity[ARRAYXY(jj, 1, XMAXPLUSFOUR)];
+        xarea_Kbuffer[jj]     = xarea[ARRAYXY(jj    , 1, XMAXPLUSFIVE)];
     }    
 
 
     for (unsigned k=2; k<=YMAXPLUSTWO; k++) {
         
-        density0_tmp_left  = density0[ARRAYXY(0, k  ,XMAXPLUSFOUR)]; 
-        volume_tmp_left    = volume[ARRAYXY(0, k  ,XMAXPLUSFOUR)];
-        pressure_tmp_left  = pressure[ARRAYXY(0, k  ,XMAXPLUSFOUR)];
-        yarea_tmp_left     = yarea[ARRAYXY(0   ,k,XMAXPLUSFOUR)];
-        viscosity_tmp_left = viscosity[ARRAYXY(0,k,XMAXPLUSFOUR)]; 
+        density0_tmp_left  = density0[ARRAYXY( 0, k, XMAXPLUSFOUR)]; 
+        volume_tmp_left    = volume[ARRAYXY(   0, k, XMAXPLUSFOUR)];
+        pressure_tmp_left  = pressure[ARRAYXY( 0, k, XMAXPLUSFOUR)];
+        yarea_tmp_left     = yarea[ARRAYXY(    0, k, XMAXPLUSFOUR)];
+        viscosity_tmp_left = viscosity[ARRAYXY(0, k, XMAXPLUSFOUR)]; 
 
         for (unsigned j=1; j<=XLIMIT; j++) {
 
             density0_tmp_current  = density0[ARRAYXY(j  , k  ,XMAXPLUSFOUR)]; 
-            density0_tmp_down     = density0_Kbuffer[j];
-            density0_tmp_leftdown = density0_Kbuffer[j-1];
 
             volume_tmp_current  = volume[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
-            volume_tmp_down     = volume_Kbuffer[j]; 
-            volume_tmp_leftdown = volume_Kbuffer[j-1];
 
             pressure_tmp_current  = pressure[ARRAYXY(j  , k  ,XMAXPLUSFOUR)];
-            pressure_tmp_down     = pressure_Kbuffer[j];
-            pressure_tmp_leftdown = pressure_Kbuffer[j-1];
 
             xvel0_tmp_current    = xvel0[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
             xarea_tmp_current    = xarea[ARRAYXY(j    ,k  ,XMAXPLUSFIVE)];
-            xarea_tmp_down       = xarea[ARRAYXY(j    ,k-1,XMAXPLUSFIVE)];
 
             yvel0_tmp_current = yvel0[ARRAYXY(j     ,k,XMAXPLUSFIVE)]; 
             yarea_tmp_current = yarea[ARRAYXY(j     ,k,XMAXPLUSFOUR)];
 
             viscosity_tmp_current  = viscosity[ARRAYXY(j,k  ,XMAXPLUSFOUR)]; 
-            viscosity_tmp_down     = viscosity_Kbuffer[j];
-            viscosity_tmp_leftdown = viscosity_Kbuffer[j-1];
 
             if (j == XLIMIT) {
                 xvel1_last = xvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
                 yvel1_last = yvel1[ARRAYXY(j,k,XMAXPLUSFIVE)];
             } 
 
-            den0_vol_tmp_down_res    = density0_tmp_down * volume_tmp_down; 
+            den0_vol_tmp_down_res    = density0_Kbuffer[j] * volume_Kbuffer[j]; 
             den0_vol_tmp_current_res = density0_tmp_current * volume_tmp_current;
 
 
@@ -106,7 +98,7 @@ __kernel void accelerate_ocl_kernel(
                            +den0_vol_tmp_current_res.y
                            +den0_vol_tmp_current_res.x)*0.25;
 
-            nodal_mass.x = (density0_tmp_leftdown.y * volume_tmp_leftdown.y
+            nodal_mass.x = (density0_Kbuffer[j-1].y * volume_Kbuffer[j-1].y
                            +den0_vol_tmp_down_res.x 
                            +den0_vol_tmp_current_res.x
                            +density0_tmp_left.y * volume_tmp_left.y)*0.25; 
@@ -122,25 +114,25 @@ __kernel void accelerate_ocl_kernel(
                           -stepbymass.y
                           *(xarea_tmp_current.y
                            *(pressure_tmp_current.y - pressure_tmp_current.x)
-                            +xarea_tmp_down.y
-                            *(pressure_tmp_down.y - pressure_tmp_down.x)
+                            +xarea_Kbuffer[j].y
+                            *(pressure_Kbuffer[j].y - pressure_Kbuffer[j].x)
                            );
 
             xvel1_tmp.x = xvel0_tmp_current.x
                           -stepbymass.x
                           *(xarea_tmp_current.x
                            *(pressure_tmp_current.x - pressure_tmp_left.y)
-                            +xarea_tmp_down.x
-                            *(pressure_tmp_down.x - pressure_tmp_leftdown.y)
+                            +xarea_Kbuffer[j].x
+                            *(pressure_Kbuffer[j].x - pressure_Kbuffer[j-1].y)
                            );
 
-            double ya_press_tmp_x = yarea_tmp_current.x * (pressure_tmp_current.x - pressure_tmp_down.x); 
+            double ya_press_tmp_x = yarea_tmp_current.x * (pressure_tmp_current.x - pressure_Kbuffer[j].x); 
 
             yvel1_tmp.y = yvel0_tmp_current.y 
-                          - stepbymass.y * (yarea_tmp_current.y * (pressure_tmp_current.y - pressure_tmp_down.y) + ya_press_tmp_x);
+                          - stepbymass.y * (yarea_tmp_current.y * (pressure_tmp_current.y - pressure_Kbuffer[j].y) + ya_press_tmp_x);
 
             yvel1_tmp.x = yvel0_tmp_current.x 
-                          - stepbymass.x * (ya_press_tmp_x + yarea_tmp_left.y * (pressure_tmp_left.y - pressure_tmp_leftdown.y));
+                          - stepbymass.x * (ya_press_tmp_x + yarea_tmp_left.y * (pressure_tmp_left.y - pressure_Kbuffer[j-1].y));
 
 
 
@@ -154,26 +146,26 @@ __kernel void accelerate_ocl_kernel(
                              - stepbymass.y
                                *(xarea_tmp_current.y
                                  *(viscosity_tmp_current.y - viscosity_tmp_current.x)
-                                   + xarea_tmp_down.y 
-                                     *(viscosity_tmp_down.y - viscosity_tmp_down.x)
+                                   + xarea_Kbuffer[j].y 
+                                     *(viscosity_Kbuffer[j].y - viscosity_Kbuffer[j].x)
                                 );
 
             xvel1_output.x = xvel1_tmp.x
                              - stepbymass.x
                                *(xarea_tmp_current.x 
                                  *(viscosity_tmp_current.x - viscosity_tmp_left.y)
-                                   + xarea_tmp_down.x 
-                                     *(viscosity_tmp_down.x - viscosity_tmp_leftdown.y)
+                                   + xarea_Kbuffer[j].x 
+                                     *(viscosity_Kbuffer[j].x - viscosity_Kbuffer[j-1].y)
                                 );
 
-            double ya_vis_tmp_x = yarea_tmp_current.x * (viscosity_tmp_current.x - viscosity_tmp_down.x);
+            double ya_vis_tmp_x = yarea_tmp_current.x * (viscosity_tmp_current.x - viscosity_Kbuffer[j].x);
 
 
             yvel1_output.y = yvel1_tmp.y
-                             - stepbymass.y *(yarea_tmp_current.y *(viscosity_tmp_current.y - viscosity_tmp_down.y) + ya_vis_tmp_x);
+                             - stepbymass.y *(yarea_tmp_current.y *(viscosity_tmp_current.y - viscosity_Kbuffer[j].y) + ya_vis_tmp_x);
 
             yvel1_output.x = yvel1_tmp.x
-                             - stepbymass.x *(ya_vis_tmp_x + yarea_tmp_left.y *(viscosity_tmp_left.y - viscosity_tmp_leftdown.y) );
+                             - stepbymass.x *(ya_vis_tmp_x + yarea_tmp_left.y *(viscosity_tmp_left.y - viscosity_Kbuffer[j-1].y) );
 
 
             //write results to memory, masked for final element 
@@ -191,6 +183,8 @@ __kernel void accelerate_ocl_kernel(
             volume_Kbuffer[j-1]    = volume_tmp_left;
             pressure_Kbuffer[j-1]  = pressure_tmp_left;
             viscosity_Kbuffer[j-1] = viscosity_tmp_left;
+
+            xarea_Kbuffer[j] = xarea_tmp_current; 
 
             density0_tmp_left  = density0_tmp_current;
             volume_tmp_left    = volume_tmp_current;
