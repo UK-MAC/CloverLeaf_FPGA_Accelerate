@@ -1623,7 +1623,7 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
     err = clSetKernelArg(accelerate_knl_c, 8,  sizeof(cl_mem), &yvel0_buffer_c);
     err = clSetKernelArg(accelerate_knl_c, 9,  sizeof(cl_mem), &xvel1_buffer_c);
     err = clSetKernelArg(accelerate_knl_c, 10, sizeof(cl_mem), &yvel1_buffer_c);
-    err = clSetKernelArg(accelerate_knl_c, 11, sizeof(cl_mem), &stepbymass_buffer_c);
+    //err = clSetKernelArg(accelerate_knl_c, 11, sizeof(cl_mem), &stepbymass_buffer_c);
 
     //err = clSetKernelArg(field_summary_knl_c, 0,  sizeof(cl_mem), &volume_buffer_c);
     //err = clSetKernelArg(field_summary_knl_c, 1,  sizeof(cl_mem), &density0_buffer_c);
@@ -1942,8 +1942,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_3842_3842_3844_3845.aocx", &accelerate_prog);
-
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_3842_3842_3844_3845.aocx", &accelerate_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
