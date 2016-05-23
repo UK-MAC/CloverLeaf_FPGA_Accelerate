@@ -1950,7 +1950,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_1921_3842_1922_1923.aocx", &accelerate_prog);
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_wg_singleWI_1921_3842_1922_1923_pipelineOpts_2Darray_rollingX.aocx", &accelerate_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_wg_singleWI_1921_3842_1922_1923_pipelineOpts_2Darray_rollingX_rollingY.aocx", &accelerate_prog);
 
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
