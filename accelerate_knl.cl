@@ -109,14 +109,15 @@ __kernel void accelerate_ocl_kernel(
 
 
 
-
-            xvel1_tmp.y = xvel0_tmp_current.y
-                          -stepbymass.y
-                          *(xarea_tmp_current.y
-                           *(pressure_tmp_current.y - pressure_tmp_current.x)
-                            +xarea_Kbuffer[j].y
-                            *(pressure_Kbuffer[j].y - pressure_Kbuffer[j].x)
-                           );
+            if (j != XLIMIT) {
+                xvel1_tmp.y = xvel0_tmp_current.y
+                              -stepbymass.y
+                              *(xarea_tmp_current.y
+                               *(pressure_tmp_current.y - pressure_tmp_current.x)
+                                +xarea_Kbuffer[j].y
+                                *(pressure_Kbuffer[j].y - pressure_Kbuffer[j].x)
+                               );
+            }
 
             xvel1_tmp.x = xvel0_tmp_current.x
                           -stepbymass.x
@@ -128,8 +129,10 @@ __kernel void accelerate_ocl_kernel(
 
             double ya_press_tmp_x = yarea_tmp_current.x * (pressure_tmp_current.x - pressure_Kbuffer[j].x); 
 
-            yvel1_tmp.y = yvel0_tmp_current.y 
-                          - stepbymass.y * (yarea_tmp_current.y * (pressure_tmp_current.y - pressure_Kbuffer[j].y) + ya_press_tmp_x);
+            if (j != XLIMIT) {
+                yvel1_tmp.y = yvel0_tmp_current.y 
+                              - stepbymass.y * (yarea_tmp_current.y * (pressure_tmp_current.y - pressure_Kbuffer[j].y) + ya_press_tmp_x);
+            }
 
             yvel1_tmp.x = yvel0_tmp_current.x 
                           - stepbymass.x * (ya_press_tmp_x + yarea_tmp_left.y * (pressure_tmp_left.y - pressure_Kbuffer[j-1].y));
@@ -141,14 +144,15 @@ __kernel void accelerate_ocl_kernel(
 
  
 
-
-            xvel1_output.y = xvel1_tmp.y
-                             - stepbymass.y
-                               *(xarea_tmp_current.y
-                                 *(viscosity_tmp_current.y - viscosity_tmp_current.x)
-                                   + xarea_Kbuffer[j].y 
-                                     *(viscosity_Kbuffer[j].y - viscosity_Kbuffer[j].x)
-                                );
+            if (j != XLIMIT) {
+                xvel1_output.y = xvel1_tmp.y
+                                 - stepbymass.y
+                                   *(xarea_tmp_current.y
+                                     *(viscosity_tmp_current.y - viscosity_tmp_current.x)
+                                       + xarea_Kbuffer[j].y 
+                                         *(viscosity_Kbuffer[j].y - viscosity_Kbuffer[j].x)
+                                    );
+            }
 
             xvel1_output.x = xvel1_tmp.x
                              - stepbymass.x
@@ -160,9 +164,10 @@ __kernel void accelerate_ocl_kernel(
 
             double ya_vis_tmp_x = yarea_tmp_current.x * (viscosity_tmp_current.x - viscosity_Kbuffer[j].x);
 
-
-            yvel1_output.y = yvel1_tmp.y
-                             - stepbymass.y *(yarea_tmp_current.y *(viscosity_tmp_current.y - viscosity_Kbuffer[j].y) + ya_vis_tmp_x);
+            if (j != XLIMIT) {
+                yvel1_output.y = yvel1_tmp.y
+                                 - stepbymass.y *(yarea_tmp_current.y *(viscosity_tmp_current.y - viscosity_Kbuffer[j].y) + ya_vis_tmp_x);
+            }
 
             yvel1_output.x = yvel1_tmp.x
                              - stepbymass.x *(ya_vis_tmp_x + yarea_tmp_left.y *(viscosity_tmp_left.y - viscosity_Kbuffer[j-1].y) );
