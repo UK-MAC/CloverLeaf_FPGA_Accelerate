@@ -1942,8 +1942,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_3842_3842_3844_3845.aocx", &accelerate_prog);
-
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_O3_knl.aocx", &accelerate_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
