@@ -25,20 +25,20 @@
 #include "ocl_knls.h"
 
 __kernel void accelerate_ocl_kernel(
-    const double dt,
-    __global const double * restrict xarea,
-    __global const double * restrict yarea,
-    __global const double * restrict volume,
-    __global const double * restrict density0,
-    __global const double * restrict pressure,
-    __global const double * restrict viscosity,
-    __global const double * restrict xvel0,
-    __global const double * restrict yvel0,
-    __global double * restrict xvel1,
-    __global double * restrict yvel1,
-    __global double * restrict stepbymass)
+    const float dt,
+    __global const float * restrict xarea,
+    __global const float * restrict yarea,
+    __global const float * restrict volume,
+    __global const float * restrict density0,
+    __global const float * restrict pressure,
+    __global const float * restrict viscosity,
+    __global const float * restrict xvel0,
+    __global const float * restrict yvel0,
+    __global float * restrict xvel1,
+    __global float * restrict yvel1,
+    __global float * restrict stepbymass)
 {
-    double nodal_mass;
+    float nodal_mass;
 
     int k = get_global_id(1);
     int j = get_global_id(0);
