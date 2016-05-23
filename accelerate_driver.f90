@@ -162,8 +162,10 @@ PROGRAM accelerate_driver
   CALL accelerate_ocl_call_clfinish()
 
   IF(reset_data) THEN
-    ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
-    ALLOCATE(yvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel_orig(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(yvel_orig(x_min-2:x_max+4,y_min-2:y_max+3))
+    ALLOCATE(yvel_orig(x_min-2:x_max+4,y_min-2:y_max+3))
     xvel_orig=xvel1
     yvel_orig=yvel1
   ENDIF
@@ -285,6 +287,8 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Accelerate time ",acceleration_time 
   WRITE(*,*) "X vel ",SUM(xvel1)
   WRITE(*,*) "Y vel ",SUM(yvel1)
+
+
 
 #ifdef PROFILE_OCL_KERNELS
     WRITE(*,*) "First kernel time: ", first_iteration
