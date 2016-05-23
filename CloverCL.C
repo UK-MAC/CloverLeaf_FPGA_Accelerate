@@ -1475,17 +1475,26 @@ void CloverCL::createBuffers(int x_max, int y_max, int num_states)
 
     viscosity_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+4)*(y_max+4)*sizeof(double), NULL, &err);
 
-    xvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
 
-    yvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    //xvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    xvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+8)*(y_max+5)*sizeof(double), NULL, &err);
 
-    xvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    //yvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    yvel0_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+8)*(y_max+5)*sizeof(double), NULL, &err);
 
-    yvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    //xvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    xvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+8)*(y_max+5)*sizeof(double), NULL, &err);
 
-    xarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    //yvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+5)*sizeof(double), NULL, &err);
+    yvel1_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+8)*(y_max+5)*sizeof(double), NULL, &err);
+
+    //xarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
+    xarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+8)*(y_max+4)*sizeof(double), NULL, &err);
+
 
     yarea_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_ONLY, (x_max+4)*(y_max+5)*sizeof(double), NULL, &err);
+
+
 
     vol_flux_x_buffer_c = clCreateBuffer( context_c, CL_MEM_READ_WRITE, (x_max+5)*(y_max+4)*sizeof(double), NULL, &err);
 
@@ -1623,7 +1632,7 @@ void CloverCL::initialiseKernelArgs(int x_min, int x_max, int y_min, int y_max,
     err = clSetKernelArg(accelerate_knl_c, 8,  sizeof(cl_mem), &yvel0_buffer_c);
     err = clSetKernelArg(accelerate_knl_c, 9,  sizeof(cl_mem), &xvel1_buffer_c);
     err = clSetKernelArg(accelerate_knl_c, 10, sizeof(cl_mem), &yvel1_buffer_c);
-    err = clSetKernelArg(accelerate_knl_c, 11, sizeof(cl_mem), &stepbymass_buffer_c);
+    //err = clSetKernelArg(accelerate_knl_c, 11, sizeof(cl_mem), &stepbymass_buffer_c);
 
     //err = clSetKernelArg(field_summary_knl_c, 0,  sizeof(cl_mem), &volume_buffer_c);
     //err = clSetKernelArg(field_summary_knl_c, 1,  sizeof(cl_mem), &density0_buffer_c);
@@ -1942,7 +1951,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_3842_3842_3844_3845.aocx", &accelerate_prog);
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_removeMemOp_double2_1921_3842_1922_1923.aocx", &accelerate_prog);
 
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
@@ -2744,7 +2753,7 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, 
 
     //size_t global_wi [2] = {x_rnd, y_rnd}; 
     //size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
-    size_t global_wi [2] = {3843,3843}; 
+    size_t global_wi [2] = {1922,3843}; 
     size_t local_wi [2] = {1,1}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
@@ -3108,15 +3117,21 @@ void CloverCL::write_accelerate_buffers_tocard(double* density0, double* pressur
     err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::pressure_buffer_c,    CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), pressure, 0, NULL, NULL);
     err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::viscosity_buffer_c,   CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), viscosity, 0, NULL, NULL);
 
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    //err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    //err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    //err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    //err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), xvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel0_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), yvel0, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
 
 
     err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::volume_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+4)*sizeof(double), volume, 0, NULL, NULL);
 
-    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+    //err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::xarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+4)*sizeof(double), xarea, 0, NULL, NULL);
+
     err = clEnqueueWriteBuffer(CloverCL::queue_c, CloverCL::yarea_buffer_c, CL_FALSE, 0, (CloverCL::xmax_c+4)*(CloverCL::ymax_c+5)*sizeof(double), yarea, 0, NULL, NULL);
 
     err = clFinish(CloverCL::queue_c);
@@ -3128,9 +3143,11 @@ void CloverCL::read_accelerate_buffers_backfromcard(double* xvel1, double* yvel1
 
     err = clFinish(CloverCL::queue_c);
     
-    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    //err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::xvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), xvel1, 0, NULL, NULL);
 
-    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    //err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+5)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(CloverCL::queue_c, CloverCL::yvel1_buffer_c,       CL_FALSE, 0, (CloverCL::xmax_c+6)*(CloverCL::ymax_c+5)*sizeof(double), yvel1, 0, NULL, NULL);
 
 
     err = clFinish(CloverCL::queue_c);

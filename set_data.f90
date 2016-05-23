@@ -108,7 +108,9 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
     ALLOCATE(celldy(y_min-2:y_max+2))
   ENDIF
   IF(PRESENT(xarea)) THEN
-    ALLOCATE(xarea(x_min-2:x_max+3 ,y_min-2:y_max+2))
+    !ALLOCATE(xarea(x_min-2:x_max+3 ,y_min-2:y_max+2))
+    ALLOCATE(xarea(x_min-2:x_max+4 ,y_min-2:y_max+2))
+    xarea = 0.0
   ENDIF
   IF(PRESENT(yarea)) THEN
     ALLOCATE(yarea(x_min-2:x_max+2 ,y_min-2:y_max+3))
@@ -138,16 +140,24 @@ SUBROUTINE set_data(x_min,x_max,y_min,y_max,     &
     ALLOCATE(viscosity(x_min-2:x_max+2,y_min-2:y_max+2))
   ENDIF
   IF(PRESENT(xvel0)) THEN
-    ALLOCATE(xvel0(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel0(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(xvel0(x_min-2:x_max+4,y_min-2:y_max+3))
+    xvel0 = 0.0
   ENDIF
   IF(PRESENT(yvel0)) THEN
-    ALLOCATE(yvel0(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(yvel0(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(yvel0(x_min-2:x_max+4,y_min-2:y_max+3))
+    yvel0 = 0.0
   ENDIF
   IF(PRESENT(xvel1)) THEN
-    ALLOCATE(xvel1(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(xvel1(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(xvel1(x_min-2:x_max+4,y_min-2:y_max+3))
+    xvel1 = 0.0
   ENDIF
   IF(PRESENT(yvel1)) THEN
-    ALLOCATE(yvel1(x_min-2:x_max+3,y_min-2:y_max+3))
+    !ALLOCATE(yvel1(x_min-2:x_max+3,y_min-2:y_max+3))
+    ALLOCATE(yvel1(x_min-2:x_max+4,y_min-2:y_max+3))
+    yvel1 = 0.0
   ENDIF
   IF(PRESENT(work_array1)) THEN
     ALLOCATE(work_array1(x_min-2:x_max+3,y_min-2:y_max+3))
