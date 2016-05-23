@@ -105,6 +105,7 @@ size_t CloverCL::device_max_wg_size;
 cl_ulong CloverCL::device_local_mem_size;
 cl_device_type CloverCL::device_type; 
 size_t CloverCL::device_prefer_wg_multiple;
+size_t CloverCL::device_max_wi_dims;
 
 int CloverCL::number_of_red_levels;
 int CloverCL::xmax_plusfour_rounded;
@@ -424,6 +425,9 @@ void CloverCL::determineWorkGroupSizeInfo() {
     err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(cl_uint), &device_max_wg_size, NULL); 
     err = clGetDeviceInfo(device_c, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &device_local_mem_size, NULL); 
 
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(uint), &device_max_wi_dims, NULL); 
+    size_t* device_max_wi_sizes = new size_t[device_max_wi_dims];
+    err = clGetDeviceInfo(device_c, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t[device_max_wi_dims]), device_max_wi_sizes, NULL); 
     //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, &prefer_wg_multiple);
     //ideal_gas_predict_knl.getWorkGroupInfo(device, CL_KERNEL_WORK_GROUP_SIZE, &max_reduction_wg_size);
 
@@ -456,6 +460,11 @@ void CloverCL::determineWorkGroupSizeInfo() {
     }
     else {
         std::cout << "ERROR Device Type selected: NOT SUPPORTED" << std::endl;
+    }
+
+    std::cout << "Device Max WI Dimernsions: " << device_max_wi_dims << std::endl;
+    for (int i=0; i<device_max_wi_dims; i++) {
+        std::cout << "Device Max WI Dimernsions dim: " << i+1  << " max: " << device_max_wi_sizes[i] << std::endl;
     }
 #endif
 
@@ -1942,8 +1951,7 @@ void CloverCL::loadProgram(int xmin, int xmax, int ymin, int ymax)
     //build_one_program(xmin, xmax, ymin, ymax, "calc_dt_knl.aocx", &calc_dt_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "min_reduction_knl.aocx", &min_reduction_prog);
 
-    build_one_program(xmin, xmax, ymin, ymax, "accelerate_3842_3842_3844_3845.aocx", &accelerate_prog);
-
+    build_one_program(xmin, xmax, ymin, ymax, "accelerate_wgsize_knl.aocx", &accelerate_prog);
 
     //build_one_program(xmin, xmax, ymin, ymax, "accelerate_revert_knl.aocx", &calcdt_minred_prog);
     //build_one_program(xmin, xmax, ymin, ymax, "revert_knl.aocx", &revert_prog);
@@ -2743,9 +2751,10 @@ void CloverCL::enqueueKernel_nooffsets( cl_kernel kernel, int num_x, int num_y, 
     }
 
     //size_t global_wi [2] = {x_rnd, y_rnd}; 
+    size_t global_wi [2] = {963, 963}; 
     //size_t local_wi [2] = {fixed_wg_min_size_large_dim, fixed_wg_min_size_small_dim}; 
-    size_t global_wi [2] = {3843,3843}; 
-    size_t local_wi [2] = {1,1}; 
+    size_t local_wi [2] = {963, 963}; 
+    size_t global_offset [2] = {1, 1}; 
                 
         err = clEnqueueNDRangeKernel(queue_c, kernel, 2, NULL, global_wi, local_wi, 0, NULL, &last_event );
 
