@@ -281,6 +281,11 @@ PROGRAM accelerate_driver
   !  ENDDO
   !ENDIF
 
+    WRITE(*,*) "Accelerate time ",acceleration_time 
+    !WRITE(*,*) "X vel ",SUM(xvel1)
+    !WRITE(*,*) "Y vel ",SUM(yvel1)
+    !WRITE(*,*) "First kernel time: ", iter_timings(1)
+    !WRITE(*,*) "Average of next ", SIZE(iter_timings(2:)), " iterations: ", SUM(iter_timings(2:))/(MAX(1, SIZE(iter_timings(2:))))
 
   WRITE(*,*) "Accelerate time ",acceleration_time 
   WRITE(*,*) "X vel ",SUM(xvel1)

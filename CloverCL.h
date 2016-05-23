@@ -161,12 +161,26 @@ class CloverCL {
         static cl_ulong device_local_mem_size;
         static cl_device_type device_type;
 
+        static size_t device_max_wi_dims;
+
         static int number_of_red_levels;
         static cl_event last_event;
 
         static int mpi_rank; 
         static int xmax_c;
         static int ymax_c;
+
+        static void * density0_ptr;
+        static void * pressure_ptr;
+        static void * viscosity_ptr;
+        static void * xvel0_ptr;
+        static void * xvel1_ptr;
+        static void * yvel0_ptr;
+        static void * yvel1_ptr;
+        static void * volume_ptr;
+        static void * xarea_ptr;
+        static void * yarea_ptr;
+        static void * work_array1_ptr;
 
         static void init(
                 std::string platform_name,
