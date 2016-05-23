@@ -23,6 +23,7 @@
 PROGRAM accelerate_driver
 
   USE set_data_module
+  USE iso_c_binding
   !USE accelerate_kernel_module
 
   IMPLICIT NONE
@@ -41,12 +42,36 @@ PROGRAM accelerate_driver
   LOGICAL :: use_fortran_kernels,use_C_kernels,reset_data
   INTEGER :: x_min,x_max,y_min,y_max,its,iteration
   REAL(KIND=8) :: dt
+<<<<<<< HEAD
+
+    !REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
+    !REAL(KIND=8),ALLOCATABLE :: density0(:,:),pressure(:,:),viscosity(:,:)
+    !REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
+    REAL(KIND=8),ALLOCATABLE :: iter_timings(:)
+
+    REAL(C_DOUBLE), POINTER :: density0(:,:)
+    REAL(C_DOUBLE), POINTER :: pressure(:,:)
+    REAL(C_DOUBLE), POINTER :: viscosity(:,:)
+    REAL(C_DOUBLE), POINTER :: xarea(:,:)
+    REAL(C_DOUBLE), POINTER :: yarea(:,:)
+    REAL(C_DOUBLE), POINTER :: volume(:,:)
+    REAL(C_DOUBLE), POINTER :: xvel0(:,:)
+    REAL(C_DOUBLE), POINTER :: yvel0(:,:)
+    REAL(C_DOUBLE), POINTER :: xvel1(:,:)
+    REAL(C_DOUBLE), POINTER :: yvel1(:,:)
+    REAL(C_DOUBLE), POINTER :: work_array1(:,:)
+
+    TYPE(C_PTR) :: density0_cptr, pressure_cptr, viscosity_cptr, xarea_cptr, yarea_cptr, volume_cptr
+    TYPE(C_PTR) :: xvel0_cptr, yvel0_cptr, xvel1_cptr, yvel1_cptr, work_array_cptr
+
+=======
   REAL(KIND=8),ALLOCATABLE :: xarea(:,:),yarea(:,:),volume(:,:)
   REAL(KIND=8),ALLOCATABLE :: celldx(:),celldy(:)
   REAL(KIND=8),ALLOCATABLE :: density0(:,:),energy0(:,:),pressure(:,:),soundspeed(:,:),viscosity(:,:)
   REAL(KIND=8),ALLOCATABLE :: xvel0(:,:),yvel0(:,:),xvel1(:,:),yvel1(:,:),work_array1(:,:)
   REAL(KIND=8),ALLOCATABLE :: xvel_orig(:,:),yvel_orig(:,:)
   REAL(KIND=8),ALLOCATABLE :: iter_timings(:)
+>>>>>>> master_cbindings_acceleratedriver_fpga_alignmem
 
     REAL(KIND=8) :: accelerate_iter1_after, accelerate_iter1_before, accelerate_main_after, accelerate_main_before, first_iteration 
 
@@ -119,6 +144,77 @@ PROGRAM accelerate_driver
 
     ALLOCATE(iter_timings(its))
 
+<<<<<<< HEAD
+
+    WRITE(*,*) "Accelerate Kernel"
+    WRITE(*,*) "Mesh size ",x_size,y_size
+    WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
+    WRITE(*,*) "Iterations ",its
+
+    CALL allocate_aligned_array(density0_cptr  , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(pressure_cptr  , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(viscosity_cptr , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(xarea_cptr     , (x_max+5)*(y_max+4))
+    CALL allocate_aligned_array(yarea_cptr     , (x_max+4)*(y_max+5))
+    CALL allocate_aligned_array(volume_cptr    , (x_max+4)*(y_max+4))
+    CALL allocate_aligned_array(xvel0_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(yvel0_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(xvel1_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(yvel1_cptr     , (x_max+5)*(y_max+5))
+    CALL allocate_aligned_array(work_array_cptr, (x_max+5)*(y_max+5))
+
+    CALL C_F_POINTER(density0_cptr, density0     , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(pressure_cptr, pressure     , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(viscosity_cptr, viscosity   , [(x_max+4),(y_max+4)] )
+    CALL C_F_POINTER(xarea_cptr, xarea           , [(x_max+5),(y_max+4)])
+    CALL C_F_POINTER(yarea_cptr, yarea           , [(x_max+4),(y_max+5)]            )
+    CALL C_F_POINTER(volume_cptr, volume         , [(x_max+4),(y_max+4)])
+    CALL C_F_POINTER(xvel0_cptr, xvel0           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(yvel0_cptr, yvel0           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(xvel1_cptr, xvel1           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(yvel1_cptr, yvel1           , [(x_max+5),(y_max+5)])
+    CALL C_F_POINTER(work_array_cptr, work_array1, [(x_max+5),(y_max+5)])
+
+    WRITE(*,*) "After c to f pointers "
+
+    !density0(1,1)=2.0_8
+    density0((x_max/2)+2:,:)=2.0_8
+    density0(:(x_max/2)+2,:)=1.0_8
+
+    pressure((x_max/2)+2:,:)=2.0_8
+    pressure(:(x_max/2)+2,:)=1.0_8
+
+    viscosity=0.0_8
+    viscosity((x_max/2)+2,:)=0.1_8
+
+    xarea=1.0_8
+    yarea=1.0_8
+    volume=1.0_8
+    xvel0=1.0
+    yvel0=1.0
+    xvel1=1.0
+    yvel1=1.0
+    dt=0.0001_8 ! Needs to be mesh specific
+    WRITE(*,*) "Data set"
+
+
+
+  !caLL set_data(x_min,x_max,y_min,y_max, &
+  !              xarea=xarea,             &
+  !              yarea=yarea,             &
+  !              volume=volume,           &
+  !              density0=density0,       &
+  !              pressure=pressure,       &
+  !              viscosity=viscosity,     &
+  !              xvel0=xvel0,             &
+  !              xvel1=xvel1,             &
+  !              yvel0=yvel0,             &
+  !              yvel1=yvel1,             &
+  !              work_array1=work_array1, &
+  !              dt=dt                    )
+
+
+=======
   WRITE(*,*) "Accelerate Kernel"
   WRITE(*,*) "Mesh size ",x_size,y_size
   WRITE(*,*) "OpenCL Type: ", OpenCL_type, " OpenCL Vendor: ", OpenCL_vendor
@@ -147,6 +243,7 @@ PROGRAM accelerate_driver
   WRITE(*,*) "Data set"
   WRITE(*,*) "X vel before:",SUM(xvel1)
   WRITE(*,*) "Y vel before:",SUM(yvel1)
+>>>>>>> master_cbindings_acceleratedriver_fpga_alignmem
 
   CALL setup_opencl(TRIM(OpenCL_vendor)//char(0), TRIM(OpenCL_type)//char(0),&
                     x_min, x_max, y_min, y_max, &
@@ -281,6 +378,11 @@ PROGRAM accelerate_driver
   !  ENDDO
   !ENDIF
 
+    WRITE(*,*) "Accelerate time ",acceleration_time 
+    WRITE(*,*) "X vel ",SUM(xvel1)
+    WRITE(*,*) "Y vel ",SUM(yvel1)
+    WRITE(*,*) "First kernel time: ", iter_timings(1)
+    WRITE(*,*) "Average of next ", SIZE(iter_timings(2:)), " iterations: ", SUM(iter_timings(2:))/(MAX(1, SIZE(iter_timings(2:))))
 
   WRITE(*,*) "Accelerate time ",acceleration_time 
   WRITE(*,*) "X vel ",SUM(xvel1)
@@ -313,6 +415,32 @@ PROGRAM accelerate_driver
 
 
   ! Answers need checking
+<<<<<<< HEAD
+
+  !CALL free_aligned_array(density0_cptr)
+  !CALL free_aligned_array(pressure_cptr)
+  !CALL free_aligned_array(viscosity_cptr)
+  !CALL free_aligned_array(xarea_cptr)
+  !CALL free_aligned_array(yarea_cptr)
+  !CALL free_aligned_array(volume_cptr)
+  !CALL free_aligned_array(xvel0_cptr)
+  !CALL free_aligned_array(yvel0_cptr)
+  !CALL free_aligned_array(xvel1_cptr)
+  !CALL free_aligned_array(yvel1_cptr)
+  !CALL free_aligned_array(work_array_cptr)
+
+  !DEALLOCATE(xarea)
+  !DEALLOCATE(yarea)
+  !DEALLOCATE(volume)
+  !DEALLOCATE(density0)
+  !DEALLOCATE(pressure)
+  !DEALLOCATE(viscosity)
+  !DEALLOCATE(xvel0)
+  !DEALLOCATE(yvel0)
+  !DEALLOCATE(xvel1)
+  !DEALLOCATE(yvel1)
+  !DEALLOCATE(work_array1)
+=======
   DEALLOCATE(xarea)
   DEALLOCATE(yarea)
   DEALLOCATE(celldx)
@@ -332,6 +460,7 @@ PROGRAM accelerate_driver
     DEALLOCATE(xvel_orig)
     DEALLOCATE(yvel_orig)
   ENDIF
+>>>>>>> master_cbindings_acceleratedriver_fpga_alignmem
 
 END PROGRAM accelerate_driver
 
